@@ -6,19 +6,15 @@
 #ifndef BITCOIN_TXMEMPOOL_H
 #define BITCOIN_TXMEMPOOL_H
 
+#include <list>
 #include <memory>
 #include <set>
-#include <map>
-#include <vector>
-#include <utility>
-#include <string>
 
 #include "amount.h"
 #include "coins.h"
 #include "indirectmap.h"
 #include "primitives/transaction.h"
 #include "sync.h"
-#include "random.h"
 
 #undef foreach
 #include "boost/multi_index_container.hpp"
@@ -62,7 +58,7 @@ class CTxMemPool;
 
 /** \class CTxMemPoolEntry
  *
- * CTxMemPoolEntry stores data about the corresponding transaction, as well
+ * CTxMemPoolEntry stores data about the correponding transaction, as well
  * as data about all in-mempool transactions that depend on the transaction
  * ("descendant" transactions).
  *
@@ -80,7 +76,7 @@ class CTxMemPool;
 class CTxMemPoolEntry
 {
 private:
-    CTransactionRef tx;
+    std::shared_ptr<const CTransaction> tx;
     CAmount nFee;              //!< Cached to avoid expensive parent-transaction lookups
     size_t nTxWeight;          //!< ... and avoid recomputing tx weight (also used for GetTxSize())
     size_t nModSize;           //!< ... and modified size for priority
@@ -118,7 +114,7 @@ public:
     CTxMemPoolEntry(const CTxMemPoolEntry& other);
 
     const CTransaction& GetTx() const { return *this->tx; }
-    CTransactionRef GetSharedTx() const { return this->tx; }
+    std::shared_ptr<const CTransaction> GetSharedTx() const { return this->tx; }
     /**
      * Fast calculation of lower bound of current priority as update
      * from entry priority. Only inputs that were originally in-chain will age.
@@ -322,30 +318,24 @@ class CBlockPolicyEstimator;
 struct TxMempoolInfo
 {
     /** The transaction itself */
-    CTransactionRef tx;
+    std::shared_ptr<const CTransaction> tx;
 
     /** Time the transaction entered the mempool. */
     int64_t nTime;
 
     /** Feerate of the transaction. */
     CFeeRate feeRate;
-
-    /** The fee delta. */
-    int64_t nFeeDelta;
 };
 
 /**
- * CTxMemPool stores valid-according-to-the-current-best-chain transactions
- * that may be included in the next block.
+ * CTxMemPool stores valid-according-to-the-current-best-chain
+ * transactions that may be included in the next block.
  *
- * Transactions are added when they are seen on the network (or created by the
- * local node), but not all transactions seen are added to the pool. For
- * example, the following new transactions will not be added to the mempool:
- * - a transaction which doesn't make the mimimum fee requirements.
- * - a new transaction that double-spends an input of a transaction already in
- * the pool where the new transaction does not meet the Replace-By-Fee
- * requirements as defined in BIP 125.
- * - a non-standard transaction.
+ * Transactions are added when they are seen on the network
+ * (or created by the local node), but not all transactions seen
+ * are added to the pool: if a new transaction double-spends
+ * an input of a transaction in the pool, it is dropped,
+ * as are non-standard transactions.
  *
  * CTxMemPool::mapTx, and CTxMemPoolEntry bookkeeping:
  *
@@ -472,7 +462,7 @@ public:
     indexed_transaction_set mapTx;
 
     typedef indexed_transaction_set::nth_index<0>::type::iterator txiter;
-    std::vector<std::pair<uint256, txiter> > vTxHashes; //!< All tx witness hashes/entries in mapTx, in random order
+    std::vector<std::pair<uint256, txiter> > vTxHashes; //!< All tx hashes/entries in mapTx, in random order
 
     struct CompareIteratorByHash {
         bool operator()(const txiter &a, const txiter &b) const {
@@ -527,11 +517,11 @@ public:
     bool addUnchecked(const uint256& hash, const CTxMemPoolEntry &entry, bool fCurrentEstimate = true);
     bool addUnchecked(const uint256& hash, const CTxMemPoolEntry &entry, setEntries &setAncestors, bool fCurrentEstimate = true);
 
-    void removeRecursive(const CTransaction &tx);
+    void removeRecursive(const CTransaction &tx, std::list<CTransaction>& removed);
     void removeForReorg(const CCoinsViewCache *pcoins, unsigned int nMemPoolHeight, int flags);
-    void removeConflicts(const CTransaction &tx);
-    void removeForBlock(const std::vector<CTransactionRef>& vtx, unsigned int nBlockHeight,
-                        bool fCurrentEstimate = true);
+    void removeConflicts(const CTransaction &tx, std::list<CTransaction>& removed);
+    void removeForBlock(const std::vector<CTransaction>& vtx, unsigned int nBlockHeight,
+                        std::list<CTransaction>& conflicts, bool fCurrentEstimate = true);
     void clear();
     void _clear(); //lock free
     bool CompareDepthAndScore(const uint256& hasha, const uint256& hashb);
@@ -623,7 +613,7 @@ public:
         return (mapTx.count(hash) != 0);
     }
 
-    CTransactionRef get(const uint256& hash) const;
+    std::shared_ptr<const CTransaction> get(const uint256& hash) const;
     TxMempoolInfo info(const uint256& hash) const;
     std::vector<TxMempoolInfo> infoAll() const;
 

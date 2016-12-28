@@ -42,7 +42,7 @@ static void add_coin(const CAmount& nValue, int nAge = 6*24, bool fIsFromMe = fa
         // so stop vin being empty, and cache a non-zero Debit to fake out IsFromMe()
         tx.vin.resize(1);
     }
-    CWalletTx* wtx = new CWalletTx(&wallet, MakeTransactionRef(std::move(tx)));
+    CWalletTx* wtx = new CWalletTx(&wallet, tx);
     if (fIsFromMe)
     {
         wtx->fDebitCached = true;
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
         // test with many inputs
         for (CAmount amt=1500; amt < COIN; amt*=10) {
              empty_wallet();
-             // Create 676 inputs (=  (old MAX_STANDARD_TX_SIZE == 100000)  / 148 bytes per input)
+             // Create 676 inputs (= MAX_STANDARD_TX_SIZE / 148 bytes per input)
              for (uint16_t j = 0; j < 676; j++)
                  add_coin(amt);
              BOOST_CHECK(wallet.SelectCoinsMinConf(2000, 1, 1, vCoins, setCoinsRet, nValueRet));

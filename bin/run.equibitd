@@ -1,0 +1,80 @@
+#
+# Server bitcoin/equibit server
+#
+# Commonly used options:
+#
+# -help		Get help
+# -eb_help	Get help
+#
+#
+# -daemon				Runs process as a daemon. Output is not written to the terminal. 
+#						Incompatible with -usehsm.
+#
+# -logtimestamps 
+# -eb_logtimestamps
+# -logtimemicros 
+# -eb_logtimemicros
+# -debug 
+# -eb_debug				Logging options
+#
+# -server 
+# -eb_server			If specified then RPC commands are handled
+#
+# -regtest 
+# -eb_regtest			Use regression test network. If neither -regtest/-testnet is specified
+#                       then the default (main) network is used.
+# -testnet
+# -eb_testnet			Use regression test network. If neither -regtest/-testnet is specified 
+#						then the default (main) network is used.
+#
+# -eb_usehsm			Use Thales HSM for digital signing. Incompatible with -daemon.
+#
+# -eb_relaypriority=false
+#						Currently required to enable equibit transactions.
+#
+# -rpcallowip=IP		
+# -eb_rpcallowip=IP		Allow clients at specified RPC to connect to the server.
+#
+# -eb_connect=IP
+# -connect=IP			Connect to server at specified IP.
+#
+# -eb_cacert=cert-file
+# -eb_cert=cert-file
+# -eb_privkey=key-file	SSL security files. All three files must be specified in order to enable
+#						secure user messaging. 
+
+# -eb_usehsm=false
+# -daemon
+
+sudo ./equibitd \
+-logtimestamps -eb_logtimestamps \
+-logtimemicros -eb_logtimemicros \
+-debug -eb_debug \
+-server -eb_server \
+-eb_regtest \
+-eb_relaypriority=false \
+-eb_connect=76.9.199.37 \
+-eb_timeout=15000 \
+-eb_cacert=ssl/root-ca.crt \
+-eb_cert=ssl/client.crt \
+-eb_privkey=ssl/client.key \
+"$@"
+
+
+# -connect=76.9.199.37 \
+# -regtest \
+
+
+# -eb_cacert=ssl/root-ca.crt \
+# -eb_cert=ssl/ec.crt \
+# -eb_privkey=ssl/ec.key \		pass phrase david
+
+# -eb_cacert=ssl/root-ca.crt \
+# -eb_cert=ssl/client.crt \
+# -eb_privkey=ssl/client.key \		pass phrase john
+
+# -eb_rpcallowip=216.209.227.87 -rpcallowip=216.209.227.87 \
+# -eb_rpcallowip=70.26.61.37    -rpcallowip=70.26.61.37 \
+# -eb_rpcallowip=192.81.168.118 -rpcallowip=192.81.168.118 \
+# -eb_rpcallowip=192.81.168.119 -rpcallowip=192.81.168.119 \
+

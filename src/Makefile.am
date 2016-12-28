@@ -1,7 +1,3 @@
-# Copyright (c) 2013-2016 The Bitcoin Core developers
-# Distributed under the MIT software license, see the accompanying
-# file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 DIST_SUBDIRS = secp256k1 univalue
 
 AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS) $(HARDENED_LDFLAGS)
@@ -65,11 +61,11 @@ TESTS =
 BENCHMARKS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += bitcoind
+  bin_PROGRAMS += equibitd
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += bitcoin-cli bitcoin-tx
+  bin_PROGRAMS += bitcoin-cli 
 endif
 
 .PHONY: FORCE check-symbols check-security
@@ -87,6 +83,7 @@ BITCOIN_CORE_H = \
   checkpoints.h \
   checkqueue.h \
   clientversion.h \
+  coincontrol.h \
   coins.h \
   compat.h \
   compat/byteswap.h \
@@ -104,14 +101,13 @@ BITCOIN_CORE_H = \
   keystore.h \
   dbwrapper.h \
   limitedmap.h \
+  main.h \
   memusage.h \
   merkleblock.h \
   miner.h \
   net.h \
-  net_processing.h \
   netaddress.h \
   netbase.h \
-  netmessagemaker.h \
   noui.h \
   policy/fees.h \
   policy/policy.h \
@@ -123,6 +119,56 @@ BITCOIN_CORE_H = \
   rpc/client.h \
   rpc/protocol.h \
   rpc/server.h \
+  edc/json.h \
+  edc/edcaddrdb.h \
+  edc/edcblockencodings.h \
+  edc/edcprotocol.h \
+  edc/message/edcmessage.h \
+  edc/edcnoui.h \
+  edc/edcui_interface.h \
+  edc/edcnetbase.h \
+  edc/rpc/edcprotocol.h \
+  edc/edcbase58.h \
+  edc/consensus/edcconsensus.h \
+  edc/edctorcontrol.h \
+  edc/rpc/edcserver.h \
+  edc/edchttpserver.h \
+  edc/edchttprpc.h \
+  edc/consensus/edcmerkle.h \
+  edc/edcapp.h \
+  edc/edcchainparams.h \
+  edc/edccheckpoints.h \
+  edc/edcbloom.h \
+  edc/edccoins.h \
+  edc/edccompressor.h \
+  edc/edccore_io.h \
+  edc/edccore_memusage.h \
+  edc/wallet/edcdb.h \
+  edc/edcinit.h \
+  edc/edcmain.h \
+  edc/edcmerkleblock.h \
+  edc/edcminer.h \
+  edc/edcnet.h \
+  edc/edcparams.h \
+  edc/edctxmempool.h \
+  edc/policy/edcfees.h \
+  edc/policy/edcpolicy.h \
+  edc/policy/edcrbf.h \
+  edc/wallet/edcwallet.h \
+  edc/wallet/edcwalletdb.h \
+  edc/primitives/edcblock.h \
+  edc/primitives/edctransaction.h \
+  edc/edcundo.h \
+  edc/edcvalidationinterface.h \
+  edc/zmq/edczmqnotificationinterface.h \
+  edc/zmq/edczmqabstractnotifier.h \
+  edc/zmq/edczmqpublishnotifier.h \
+  edc/script/edcsigcache.h \
+  edc/script/edcsign.h \
+  edc/script/edcinterpreter.h \
+  edc/script/edcismine.h \
+  edc/edctxdb.h \
+  edc/edcutil.h \
   rpc/register.h \
   scheduler.h \
   script/sigcache.h \
@@ -133,7 +179,7 @@ BITCOIN_CORE_H = \
   support/allocators/secure.h \
   support/allocators/zeroafterfree.h \
   support/cleanse.h \
-  support/lockedpool.h \
+  support/pagelocker.h \
   sync.h \
   threadsafety.h \
   timedata.h \
@@ -145,10 +191,8 @@ BITCOIN_CORE_H = \
   util.h \
   utilmoneystr.h \
   utiltime.h \
-  validation.h \
   validationinterface.h \
   versionbits.h \
-  wallet/coincontrol.h \
   wallet/crypter.h \
   wallet/db.h \
   wallet/rpcwallet.h \
@@ -166,7 +210,7 @@ obj/build.h: FORCE
 	  $(abs_top_srcdir)
 libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
-# server: shared between bitcoind and bitcoin-qt
+# server: shared between equibitd and bitcoin-qt
 libbitcoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libbitcoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_server_a_SOURCES = \
@@ -180,10 +224,10 @@ libbitcoin_server_a_SOURCES = \
   httpserver.cpp \
   init.cpp \
   dbwrapper.cpp \
+  main.cpp \
   merkleblock.cpp \
   miner.cpp \
   net.cpp \
-  net_processing.cpp \
   noui.cpp \
   policy/fees.cpp \
   policy/policy.cpp \
@@ -195,6 +239,67 @@ libbitcoin_server_a_SOURCES = \
   rpc/net.cpp \
   rpc/rawtransaction.cpp \
   rpc/server.cpp \
+  edc/json.cpp \
+  edc/edcaddrdb.cpp \
+  edc/edcblockencodings.cpp \
+  edc/message/edcmessage.cpp \
+  edc/edcprotocol.cpp \
+  edc/edcnoui.cpp \
+  edc/edcui_interface.cpp \
+  edc/rpc/edcissuer.cpp \
+  edc/rpc/edcwot.cpp \
+  edc/rpc/edcpolling.cpp \
+  edc/rpc/edcproxy.cpp \
+  edc/rpc/edcmessaging.cpp \
+  edc/edcnetbase.cpp \
+  edc/rpc/edcprotocol.cpp \
+  edc/edcbase58.cpp \
+  edc/edctorcontrol.cpp \
+  edc/rpc/edcserver.cpp \
+  edc/edchttpserver.cpp \
+  edc/edchttprpc.cpp \
+  edc/edcrest.cpp \
+  edc/consensus/edcmerkle.cpp \
+  edc/edcapp.cpp \
+  edc/edcchainparams.cpp \
+  edc/edccheckpoints.cpp \
+  edc/edccompressor.cpp \
+  edc/policy/edcrbf.cpp \
+  edc/policy/edcfees.cpp \
+  edc/policy/edcpolicy.cpp \
+  edc/edcvalidationinterface.cpp \
+  edc/edccore_write.cpp \
+  edc/edcnet.cpp \
+  edc/edccore_read.cpp \
+  edc/wallet/edcdb.cpp \
+  edc/wallet/edcrpcwallet.cpp \
+  edc/wallet/edcwallet.cpp \
+  edc/wallet/edcwalletdb.cpp \
+  edc/wallet/edcrpcdump.cpp \
+  edc/edcminer.cpp \
+  edc/rpc/edcrawtransaction.cpp \
+  edc/rpc/edcmining.cpp \
+  edc/rpc/edcblockchain.cpp \
+  edc/rpc/edcmisc.cpp \
+  edc/rpc/edcnet.cpp \
+  edc/primitives/edctransaction.cpp \
+  edc/primitives/edcblock.cpp \
+  edc/edcbitcoin-tx.cpp \
+  edc/edcbloom.cpp \
+  edc/edccoins.cpp \
+  edc/edcinit.cpp \
+  edc/edcmain.cpp \
+  edc/edcmerkleblock.cpp \
+  edc/script/edcbitcoinconsensus.cpp \
+  edc/script/edcsigcache.cpp \
+  edc/script/edcsign.cpp \
+  edc/script/edcinterpreter.cpp \
+  edc/script/edcismine.cpp \
+  edc/edctxmempool.cpp \
+  edc/edcparams.cpp \
+  edc/edctimedata.cpp \
+  edc/edctxdb.cpp \
+  edc/edcutil.cpp \
   script/sigcache.cpp \
   script/ismine.cpp \
   timedata.cpp \
@@ -202,10 +307,14 @@ libbitcoin_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   ui_interface.cpp \
-  validation.cpp \
   validationinterface.cpp \
   versionbits.cpp \
   $(BITCOIN_CORE_H)
+
+# edc/edcui_interface.cpp
+# edc/message/edcrpcmessage.cpp
+# edc/message/edcmessage.cpp
+# edc/message/edcmessagedb.cpp
 
 if ENABLE_ZMQ
 libbitcoin_zmq_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(ZMQ_CFLAGS)
@@ -217,7 +326,7 @@ libbitcoin_zmq_a_SOURCES = \
 endif
 
 
-# wallet: shared between bitcoind and bitcoin-qt, but only linked
+# wallet: shared between equibitd and bitcoin-qt, but only linked
 # when wallet enabled
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -286,7 +395,7 @@ libbitcoin_consensus_a_SOURCES = \
   utilstrencodings.h \
   version.h
 
-# common: shared between bitcoind, and bitcoin-qt and non-server tools
+# common: shared between equibitd, and bitcoin-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_common_a_SOURCES = \
@@ -313,7 +422,7 @@ libbitcoin_common_a_SOURCES = \
 libbitcoin_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_util_a_SOURCES = \
-  support/lockedpool.cpp \
+  support/pagelocker.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
   compat/glibc_sanity.cpp \
@@ -343,17 +452,17 @@ libbitcoin_cli_a_SOURCES = \
 nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# bitcoind binary #
-bitcoind_SOURCES = bitcoind.cpp
-bitcoind_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-bitcoind_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-bitcoind_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# equibitd binary #
+equibitd_SOURCES = bitcoind.cpp
+equibitd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+equibitd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+equibitd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) -Wl,--unresolved-symbols=ignore-all
 
 if TARGET_WINDOWS
-bitcoind_SOURCES += bitcoind-res.rc
+equibitd_SOURCES += bitcoind-res.rc
 endif
 
-bitcoind_LDADD = \
+equibitd_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_COMMON) \
   $(LIBUNIVALUE) \
@@ -366,7 +475,8 @@ bitcoind_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-bitcoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
+
+equibitd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
 
 # bitcoin-cli binary #
 bitcoin_cli_SOURCES = bitcoin-cli.cpp

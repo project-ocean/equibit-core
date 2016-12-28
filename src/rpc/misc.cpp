@@ -6,7 +6,7 @@
 #include "base58.h"
 #include "clientversion.h"
 #include "init.h"
-#include "validation.h"
+#include "main.h"
 #include "net.h"
 #include "netbase.h"
 #include "rpc/server.h"
@@ -39,12 +39,12 @@ using namespace std;
  *
  * Or alternatively, create a specific query method for the information.
  **/
-UniValue getinfo(const JSONRPCRequest& request)
+UniValue getinfo(const UniValue& params, bool fHelp)
 {
-    if (request.fHelp || request.params.size() != 0)
+    if (fHelp || params.size() != 0)
         throw runtime_error(
             "getinfo\n"
-            "\nDEPRECATED. Returns an object containing various state info.\n"
+            "Returns an object containing various state info.\n"
             "\nResult:\n"
             "{\n"
             "  \"version\": xxxxx,           (numeric) the server version\n"
@@ -57,8 +57,12 @@ UniValue getinfo(const JSONRPCRequest& request)
             "  \"proxy\": \"host:port\",     (string, optional) the proxy used by the server\n"
             "  \"difficulty\": xxxxxx,       (numeric) the current difficulty\n"
             "  \"testnet\": true|false,      (boolean) if the server is using testnet or not\n"
-            "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since Unix epoch) of the oldest pre-generated key in the key pool\n"
+            "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
             "  \"keypoolsize\": xxxx,        (numeric) how many new keys are pre-generated\n"
+#ifdef USE_HSM
+            "  \"hsmkeypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated HSM key in the HSM key pool\n"
+            "  \"hsmkeypoolsize\": xxxx,        (numeric) how many new HSM keys are pre-generated\n"
+#endif
             "  \"unlocked_until\": ttt,      (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
             "  \"paytxfee\": x.xxxx,         (numeric) the transaction fee set in " + CURRENCY_UNIT + "/kB\n"
             "  \"relayfee\": x.xxxx,         (numeric) minimum relay fee for non-free transactions in " + CURRENCY_UNIT + "/kB\n"
@@ -93,11 +97,15 @@ UniValue getinfo(const JSONRPCRequest& request)
         obj.push_back(Pair("connections",   (int)g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL)));
     obj.push_back(Pair("proxy",         (proxy.IsValid() ? proxy.proxy.ToStringIPPort() : string())));
     obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
-    obj.push_back(Pair("testnet",       Params().NetworkIDString() == CBaseChainParams::TESTNET));
+    obj.push_back(Pair("testnet",       Params().TestnetToBeDeprecatedFieldRPC()));
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
         obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
         obj.push_back(Pair("keypoolsize",   (int)pwalletMain->GetKeyPoolSize()));
+#ifdef USE_HSM
+        obj.push_back(Pair("hsmkeypoololdest", pwalletMain->GetOldestHSMKeyPoolTime()));
+        obj.push_back(Pair("hsmkeypoolsize",   (int)pwalletMain->GetHSMKeyPoolSize()));
+#endif
     }
     if (pwalletMain && pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
@@ -118,7 +126,12 @@ public:
         UniValue obj(UniValue::VOBJ);
         CPubKey vchPubKey;
         obj.push_back(Pair("isscript", false));
+#ifndef USE_HSM
         if (pwalletMain && pwalletMain->GetPubKey(keyID, vchPubKey)) {
+#else
+        if (pwalletMain && (pwalletMain->GetPubKey(keyID, vchPubKey) ||
+        pwalletMain->GetHSMPubKey(keyID, vchPubKey))) {
+#endif
             obj.push_back(Pair("pubkey", HexStr(vchPubKey)));
             obj.push_back(Pair("iscompressed", vchPubKey.IsCompressed()));
         }
@@ -148,9 +161,9 @@ public:
 };
 #endif
 
-UniValue validateaddress(const JSONRPCRequest& request)
+UniValue validateaddress(const UniValue& params, bool fHelp)
 {
-    if (request.fHelp || request.params.size() != 1)
+    if (fHelp || params.size() != 1)
         throw runtime_error(
             "validateaddress \"bitcoinaddress\"\n"
             "\nReturn information about the given bitcoin address.\n"
@@ -181,7 +194,7 @@ UniValue validateaddress(const JSONRPCRequest& request)
     LOCK(cs_main);
 #endif
 
-    CBitcoinAddress address(request.params[0].get_str());
+    CBitcoinAddress address(params[0].get_str());
     bool isValid = address.IsValid();
 
     UniValue ret(UniValue::VOBJ);
@@ -246,7 +259,12 @@ CScript _createmultisig_redeemScript(const UniValue& params)
                 throw runtime_error(
                     strprintf("%s does not refer to a key",ks));
             CPubKey vchPubKey;
+#ifndef USE_HSM
             if (!pwalletMain->GetPubKey(keyID, vchPubKey))
+#else
+            if (!pwalletMain->GetPubKey(keyID, vchPubKey) &&
+            !pwalletMain->GetHSMPubKey(keyID, vchPubKey))
+#endif
                 throw runtime_error(
                     strprintf("no full public key for address %s",ks));
             if (!vchPubKey.IsFullyValid())
@@ -278,9 +296,9 @@ CScript _createmultisig_redeemScript(const UniValue& params)
     return result;
 }
 
-UniValue createmultisig(const JSONRPCRequest& request)
+UniValue createmultisig(const UniValue& params, bool fHelp)
 {
-    if (request.fHelp || request.params.size() < 2 || request.params.size() > 2)
+    if (fHelp || params.size() < 2 || params.size() > 2)
     {
         string msg = "createmultisig nrequired [\"key\",...]\n"
             "\nCreates a multi-signature address with n signature of m keys required.\n"
@@ -310,7 +328,7 @@ UniValue createmultisig(const JSONRPCRequest& request)
     }
 
     // Construct using pay-to-script-hash:
-    CScript inner = _createmultisig_redeemScript(request.params);
+    CScript inner = _createmultisig_redeemScript(params);
     CScriptID innerID(inner);
     CBitcoinAddress address(innerID);
 
@@ -321,9 +339,9 @@ UniValue createmultisig(const JSONRPCRequest& request)
     return result;
 }
 
-UniValue verifymessage(const JSONRPCRequest& request)
+UniValue verifymessage(const UniValue& params, bool fHelp)
 {
-    if (request.fHelp || request.params.size() != 3)
+    if (fHelp || params.size() != 3)
         throw runtime_error(
             "verifymessage \"bitcoinaddress\" \"signature\" \"message\"\n"
             "\nVerify a signed message\n"
@@ -346,9 +364,9 @@ UniValue verifymessage(const JSONRPCRequest& request)
 
     LOCK(cs_main);
 
-    string strAddress  = request.params[0].get_str();
-    string strSign     = request.params[1].get_str();
-    string strMessage  = request.params[2].get_str();
+    string strAddress  = params[0].get_str();
+    string strSign     = params[1].get_str();
+    string strMessage  = params[2].get_str();
 
     CBitcoinAddress addr(strAddress);
     if (!addr.IsValid())
@@ -375,9 +393,9 @@ UniValue verifymessage(const JSONRPCRequest& request)
     return (pubkey.GetID() == keyID);
 }
 
-UniValue signmessagewithprivkey(const JSONRPCRequest& request)
+UniValue signmessagewithprivkey(const UniValue& params, bool fHelp)
 {
-    if (request.fHelp || request.params.size() != 2)
+    if (fHelp || params.size() != 2)
         throw runtime_error(
             "signmessagewithprivkey \"privkey\" \"message\"\n"
             "\nSign a message with the private key of an address\n"
@@ -395,8 +413,8 @@ UniValue signmessagewithprivkey(const JSONRPCRequest& request)
             + HelpExampleRpc("signmessagewithprivkey", "\"privkey\", \"my message\"")
         );
 
-    string strPrivkey = request.params[0].get_str();
-    string strMessage = request.params[1].get_str();
+    string strPrivkey = params[0].get_str();
+    string strMessage = params[1].get_str();
 
     CBitcoinSecret vchSecret;
     bool fGood = vchSecret.SetString(strPrivkey);
@@ -417,9 +435,9 @@ UniValue signmessagewithprivkey(const JSONRPCRequest& request)
     return EncodeBase64(&vchSig[0], vchSig.size());
 }
 
-UniValue setmocktime(const JSONRPCRequest& request)
+UniValue setmocktime(const UniValue& params, bool fHelp)
 {
-    if (request.fHelp || request.params.size() != 1)
+    if (fHelp || params.size() != 1)
         throw runtime_error(
             "setmocktime timestamp\n"
             "\nSet the local time to given timestamp (-regtest only)\n"
@@ -437,8 +455,8 @@ UniValue setmocktime(const JSONRPCRequest& request)
     // in a long time.
     LOCK(cs_main);
 
-    RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VNUM));
-    SetMockTime(request.params[0].get_int64());
+    RPCTypeCheck(params, boost::assign::list_of(UniValue::VNUM));
+    SetMockTime(params[0].get_int64());
 
     uint64_t t = GetTime();
     if(g_connman) {
@@ -450,53 +468,10 @@ UniValue setmocktime(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-static UniValue RPCLockedMemoryInfo()
-{
-    LockedPool::Stats stats = LockedPoolManager::Instance().stats();
-    UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("used", uint64_t(stats.used)));
-    obj.push_back(Pair("free", uint64_t(stats.free)));
-    obj.push_back(Pair("total", uint64_t(stats.total)));
-    obj.push_back(Pair("locked", uint64_t(stats.locked)));
-    obj.push_back(Pair("chunks_used", uint64_t(stats.chunks_used)));
-    obj.push_back(Pair("chunks_free", uint64_t(stats.chunks_free)));
-    return obj;
-}
-
-UniValue getmemoryinfo(const JSONRPCRequest& request)
-{
-    /* Please, avoid using the word "pool" here in the RPC interface or help,
-     * as users will undoubtedly confuse it with the other "memory pool"
-     */
-    if (request.fHelp || request.params.size() != 0)
-        throw runtime_error(
-            "getmemoryinfo\n"
-            "Returns an object containing information about memory usage.\n"
-            "\nResult:\n"
-            "{\n"
-            "  \"locked\": {               (json object) Information about locked memory manager\n"
-            "    \"used\": xxxxx,          (numeric) Number of bytes used\n"
-            "    \"free\": xxxxx,          (numeric) Number of bytes available in current arenas\n"
-            "    \"total\": xxxxxxx,       (numeric) Total number of bytes managed\n"
-            "    \"locked\": xxxxxx,       (numeric) Amount of bytes that succeeded locking. If this number is smaller than total, locking pages failed at some point and key data could be swapped to disk.\n"
-            "    \"chunks_used\": xxxxx,   (numeric) Number allocated chunks\n"
-            "    \"chunks_free\": xxxxx,   (numeric) Number unused chunks\n"
-            "  }\n"
-            "}\n"
-            "\nExamples:\n"
-            + HelpExampleCli("getmemoryinfo", "")
-            + HelpExampleRpc("getmemoryinfo", "")
-        );
-    UniValue obj(UniValue::VOBJ);
-    obj.push_back(Pair("locked", RPCLockedMemoryInfo()));
-    return obj;
-}
-
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         okSafeMode
   //  --------------------- ------------------------  -----------------------  ----------
     { "control",            "getinfo",                &getinfo,                true  }, /* uses wallet if enabled */
-    { "control",            "getmemoryinfo",          &getmemoryinfo,          true  },
     { "util",               "validateaddress",        &validateaddress,        true  }, /* uses wallet if enabled */
     { "util",               "createmultisig",         &createmultisig,         true  },
     { "util",               "verifymessage",          &verifymessage,          true  },

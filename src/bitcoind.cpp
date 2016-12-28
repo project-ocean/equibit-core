@@ -9,10 +9,11 @@
 
 #include "chainparams.h"
 #include "clientversion.h"
-#include "compat.h"
 #include "rpc/server.h"
 #include "init.h"
+#include "edc/edcinit.h"		// EDC
 #include "noui.h"
+#include "edc/edcnoui.h"		// EDC
 #include "scheduler.h"
 #include "util.h"
 #include "httpserver.h"
@@ -24,6 +25,7 @@
 #include <boost/thread.hpp>
 
 #include <stdio.h>
+#include <termios.h>
 
 /* Introduction text for doxygen: */
 
@@ -41,7 +43,7 @@
  * Use the buttons <code>Namespaces</code>, <code>Classes</code> or <code>Files</code> at the top of the page to start navigating the code.
  */
 
-void WaitForShutdown(boost::thread_group* threadGroup)
+void WaitForShutdown(boost::thread_group* threadGroup, boost::thread_group * edcThreadGroup )
 {
     bool fShutdown = ShutdownRequested();
     // Tell the main threads to shutdown.
@@ -54,6 +56,10 @@ void WaitForShutdown(boost::thread_group* threadGroup)
     {
         Interrupt(*threadGroup);
         threadGroup->join_all();
+// EDC BEGIN
+        edcInterrupt(*edcThreadGroup);
+        edcThreadGroup->join_all();
+// EDC END
     }
 }
 
@@ -64,6 +70,9 @@ void WaitForShutdown(boost::thread_group* threadGroup)
 bool AppInit(int argc, char* argv[])
 {
     boost::thread_group threadGroup;
+// EDC BEGIN
+    boost::thread_group edcThreadGroup;
+// EDC END
     CScheduler scheduler;
 
     bool fRet = false;
@@ -75,11 +84,15 @@ bool AppInit(int argc, char* argv[])
     ParseParameters(argc, argv);
 
     // Process help and version before taking care about datadir
-    if (mapArgs.count("-?") || mapArgs.count("-h") ||  mapArgs.count("-help") || mapArgs.count("-version"))
+// EDC BEGIN
+    if (mapArgs.count("-?") || mapArgs.count("-h") ||  mapArgs.count("-help") || mapArgs.count("-version") || mapArgs.count("-eb_help") || mapArgs.count("-eb_version"))
+// EDC END
     {
         std::string strUsage = strprintf(_("%s Daemon"), _(PACKAGE_NAME)) + " " + _("version") + " " + FormatFullVersion() + "\n";
 
-        if (mapArgs.count("-version"))
+// EDC BEGIN
+        if (mapArgs.count("-version") || mapArgs.count("-eb_version"))
+// EDC END
         {
             strUsage += FormatParagraph(LicenseInfo());
         }
@@ -92,8 +105,13 @@ bool AppInit(int argc, char* argv[])
         }
 
         fprintf(stdout, "%s", strUsage.c_str());
-        return true;
+        return false;
     }
+
+// EDC BEGIN
+	const int MAX_PP = 100;
+	char passPhrase[MAX_PP+1];
+// EDC END
 
     try
     {
@@ -104,7 +122,7 @@ bool AppInit(int argc, char* argv[])
         }
         try
         {
-            ReadConfigFile(GetArg("-conf", BITCOIN_CONF_FILENAME), mapArgs, mapMultiArgs);
+            ReadConfigFile(mapArgs, mapMultiArgs);
         } catch (const std::exception& e) {
             fprintf(stderr,"Error reading configuration file: %s\n", e.what());
             return false;
@@ -126,45 +144,73 @@ bool AppInit(int argc, char* argv[])
         if (fCommandLine)
         {
             fprintf(stderr, "Error: There is no RPC client functionality in bitcoind anymore. Use the bitcoin-cli utility instead.\n");
-            exit(EXIT_FAILURE);
-        }
-        // -server defaults to true for bitcoind but not for the GUI so do this here
-        SoftSetBoolArg("-server", true);
-        // Set this early so that parameter interactions go to console
-        InitLogging();
-        InitParameterInteraction();
-        if (!AppInitBasicSetup())
-        {
-            // InitError will have been called with detailed error, which ends up on console
             exit(1);
         }
-        if (!AppInitParameterInteraction())
-        {
-            // InitError will have been called with detailed error, which ends up on console
-            exit(1);
-        }
-        if (!AppInitSanityChecks())
-        {
-            // InitError will have been called with detailed error, which ends up on console
-            exit(1);
-        }
+
+// EDC BEGIN
+		// If a SSL private key file is specified, then get the pass phrase
+		if( mapArgs.count( "-eb_privkey" ) > 0 )
+		{
+			fputs( "Enter private key pass phrase:", stdout );
+
+			/* Turn echoing off and fail if we can’t. */
+			struct termios old;
+			if (tcgetattr (fileno (stdin), &old) != 0)
+				return -1;
+			struct termios noEcho = old;
+  			noEcho.c_lflag &= ~ECHO;
+
+			if (tcsetattr (fileno (stdin), TCSAFLUSH, &noEcho ) != 0)
+   		 		return -1;
+
+			/* Read the password. */
+			char * ptr = fgets( passPhrase, MAX_PP, stdin);
+
+			/* Restore terminal. */
+			(void) tcsetattr (fileno (stdin), TCSAFLUSH, &old);
+
+			fputc('\n', stdout );
+
+			if( ptr == passPhrase )
+			{
+				// Remove carriage return
+				passPhrase[strlen(passPhrase)-1]=0;
+			}
+			else
+				fputs( "\nNo pass phrase. Secure, intra-node communications "
+					"has been disabled\n", stdout );
+		}
+// EDC END
+
+#ifndef WIN32
         if (GetBoolArg("-daemon", false))
         {
-#if HAVE_DECL_DAEMON
             fprintf(stdout, "Bitcoin server starting\n");
 
             // Daemonize
-            if (daemon(1, 0)) { // don't chdir (1), do close FDs (0)
-                fprintf(stderr, "Error: daemon() failed: %s\n", strerror(errno));
+            pid_t pid = fork();
+            if (pid < 0)
+            {
+                fprintf(stderr, "Error: fork() returned %d errno %d\n", pid, errno);
                 return false;
             }
-#else
-            fprintf(stderr, "Error: -daemon is not supported on this operating system\n");
-            return false;
-#endif // HAVE_DECL_DAEMON
-        }
+            if (pid > 0) // Parent process, pid is child process id
+            {
+                return true;
+            }
+            // Child process falls through to rest of initialization
 
-        fRet = AppInitMain(threadGroup, scheduler);
+            pid_t sid = setsid();
+            if (sid < 0)
+                fprintf(stderr, "Error: setsid() returned %d errno %d\n", sid, errno);
+        }
+#endif
+        SoftSetBoolArg("-server", true);
+
+        // Set this early so that parameter interactions go to console
+        InitLogging();
+        InitParameterInteraction();
+        fRet = AppInit2(threadGroup, scheduler);
     }
     catch (const std::exception& e) {
         PrintExceptionContinue(&e, "AppInit()");
@@ -172,14 +218,36 @@ bool AppInit(int argc, char* argv[])
         PrintExceptionContinue(NULL, "AppInit()");
     }
 
+// EDC BEGIN
+	try
+	{
+		fRet = EdcAppInit( edcThreadGroup, scheduler, passPhrase );
+	}
+	catch( const std::exception & ex )
+	{
+        PrintExceptionContinue(&ex, "EdcAppInit()");
+		fRet = false;
+	}
+	catch( ... )
+	{
+        PrintExceptionContinue( NULL, "EdcAppInit()");
+		fRet = false;
+	}
+	memset( passPhrase, 0, MAX_PP );
+
+// EDC END
+
     if (!fRet)
     {
         Interrupt(threadGroup);
+// EDC BEGIN
+        edcInterrupt(edcThreadGroup);
+// EDC END
         // threadGroup.join_all(); was left out intentionally here, because we didn't re-test all of
         // the startup-failure cases to make sure they don't result in a hang due to some
         // thread-blocking-waiting-for-another-thread-during-startup case
     } else {
-        WaitForShutdown(&threadGroup);
+        WaitForShutdown(&threadGroup, &edcThreadGroup);
     }
     Shutdown();
 
@@ -192,6 +260,9 @@ int main(int argc, char* argv[])
 
     // Connect bitcoind signal handlers
     noui_connect();
+// EDC BEGIN
+    edcnoui_connect();
+// EDC END
 
-    return (AppInit(argc, argv) ? EXIT_SUCCESS : EXIT_FAILURE);
+    return (AppInit(argc, argv) ? 0 : 1);
 }

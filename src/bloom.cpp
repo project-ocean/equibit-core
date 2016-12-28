@@ -34,7 +34,7 @@ CBloomFilter::CBloomFilter(unsigned int nElements, double nFPRate, unsigned int 
      * See https://en.wikipedia.org/wiki/Bloom_filter for an explanation of these formulas
      */
     isFull(false),
-    isEmpty(true),
+    isEmpty(false),
     nHashFuncs(min((unsigned int)(vData.size() * 8 / nElements * LN2), MAX_HASH_FUNCS)),
     nTweak(nTweakIn),
     nFlags(nFlagsIn)
@@ -280,8 +280,8 @@ void CRollingBloomFilter::insert(const std::vector<unsigned char>& vKey)
 
 void CRollingBloomFilter::insert(const uint256& hash)
 {
-    vector<unsigned char> vData(hash.begin(), hash.end());
-    insert(vData);
+    vector<unsigned char> data(hash.begin(), hash.end());
+    insert(data);
 }
 
 bool CRollingBloomFilter::contains(const std::vector<unsigned char>& vKey) const
@@ -300,8 +300,8 @@ bool CRollingBloomFilter::contains(const std::vector<unsigned char>& vKey) const
 
 bool CRollingBloomFilter::contains(const uint256& hash) const
 {
-    vector<unsigned char> vData(hash.begin(), hash.end());
-    return contains(vData);
+    vector<unsigned char> data(hash.begin(), hash.end());
+    return contains(data);
 }
 
 void CRollingBloomFilter::reset()

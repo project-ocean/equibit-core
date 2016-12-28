@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2009-2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,6 +11,34 @@
 #include "primitives/transaction.h"
 #include "script/standard.h"
 #include "uint256.h"
+#ifdef USE_HSM
+#include "edc/edcapp.h"
+#include "wallet/wallet.h"
+#include "util.h"
+#include "Thales/interface.h"
+#include <secp256k1.h>
+
+namespace
+{
+secp256k1_context   * secp256k1_context_verify;
+
+struct Verifier
+{
+    Verifier()
+    {
+        secp256k1_context_verify = secp256k1_context_create(SECP256K1_CONTEXT_VERIFY);
+    }
+    ~Verifier()
+    {
+        secp256k1_context_destroy(secp256k1_context_verify);
+    }
+};
+
+Verifier    verifier;
+
+}
+
+#endif
 
 #include <boost/foreach.hpp>
 
@@ -24,11 +52,42 @@ bool TransactionSignatureCreator::CreateSig(std::vector<unsigned char>& vchSig, 
 {
     CKey key;
     if (!keystore->GetKey(address, key))
-        return false;
+    {
+#ifdef USE_HSM
+        if( GetBoolArg( "-usehsm", true) )
+        {
+            const CWallet * wallet = dynamic_cast<const CWallet *>(keystore);
 
-    // Signing with uncompressed keys is disabled in witness scripts
-    if (sigversion == SIGVERSION_WITNESS_V0 && !key.IsCompressed())
+            if( wallet )
+            {
+                std::string hsmID;
+                if( wallet && wallet->GetHSMKey(address, hsmID))
+                {
+                    uint256 hash = SignatureHash(scriptCode, *txTo, nIn, nHashType, amount, SIGVERSION_BASE);
+					EDCapp & theApp = EDCapp::singleton();
+                    if (!NFast::sign( *theApp.nfHardServer(), *theApp.nfModule(), hsmID, hash.begin(), 256, vchSig))
+                        return false;
+
+                    secp256k1_ecdsa_signature sig;
+                    memcpy( sig.data, vchSig.data(), sizeof(sig.data));
+
+                    secp256k1_ecdsa_signature_normalize( secp256k1_context_verify, &sig, &sig );
+
+                    vchSig.resize(72);
+                    size_t nSigLen = 72;
+
+                    secp256k1_ecdsa_signature_serialize_der( secp256k1_context_verify,
+                        (unsigned char*)&vchSig[0], &nSigLen, &sig);
+                    vchSig.resize(nSigLen);
+                    vchSig.push_back((unsigned char)nHashType);
+
+                    return true;
+                }
+            }
+        }
+#endif
         return false;
+    }
 
     uint256 hash = SignatureHash(scriptCode, *txTo, nIn, nHashType, amount, sigversion);
     if (!key.Sign(hash, vchSig))
@@ -93,7 +152,18 @@ static bool SignStep(const BaseSignatureCreator& creator, const CScript& scriptP
         else
         {
             CPubKey vch;
+#ifndef USE_HSM
             creator.KeyStore().GetPubKey(keyID, vch);
+#else
+            if(!creator.KeyStore().GetPubKey(keyID, vch))
+            {
+                const CWallet * wallet = dynamic_cast<const CWallet *>(&creator.KeyStore());
+                if( wallet )
+                {
+                    wallet->GetHSMPubKey(keyID, vch);
+                }
+            }
+#endif
             ret.push_back(ToByteVector(vch));
         }
         return true;

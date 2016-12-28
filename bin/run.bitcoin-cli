@@ -1,0 +1,21 @@
+#
+# Run the bitcoin client, connecting to the regtest network
+#
+# The other network are:
+#
+# main		The main (production network). This is the default network.
+# testnet	The test network.
+#
+# Use --help get a list of the client options
+#
+# If a server is running, use the RPC 
+#
+#    run.bitcoin-cli help 
+#
+# to get a list of server RPCs
+#
+# Use the parameters -rpcconnect=<ip> -rpcuser=<user> -rpcpassword=<pw>
+#
+# to connect to a remote server.
+#
+./bitcoin-cli -regtest "$@"

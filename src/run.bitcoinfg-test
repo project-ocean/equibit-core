@@ -1,0 +1,1 @@
+./bitcoind -logtimestamps -eb_logtimestamps -logtimemicros -eb_logtimemicros -testnet -eb_testnet -server -eb_server -debug -eb_debug > log

@@ -107,6 +107,7 @@ map<string, vector<string> > mapMultiArgs;
 bool fDebug = false;
 bool fPrintToConsole = false;
 bool fPrintToDebugLog = true;
+bool fServer = false;
 string strMiscWarning;
 bool fLogTimestamps = DEFAULT_LOGTIMESTAMPS;
 bool fLogTimeMicros = DEFAULT_LOGTIMEMICROS;
@@ -258,7 +259,7 @@ bool LogAcceptCategory(const char* category)
  * suppress printing of the timestamp when multiple calls are made that don't
  * end in a newline. Initialize it to true, and hold it, in the calling context.
  */
-static std::string LogTimestampStr(const std::string &str, std::atomic_bool *fStartedNewLine)
+static std::string LogTimestampStr(const std::string &str, bool *fStartedNewLine)
 {
     string strStamped;
 
@@ -285,7 +286,7 @@ static std::string LogTimestampStr(const std::string &str, std::atomic_bool *fSt
 int LogPrintStr(const std::string &str)
 {
     int ret = 0; // Returns total number of characters written
-    static std::atomic_bool fStartedNewLine(true);
+    static bool fStartedNewLine = true;
 
     string strTimestamped = LogTimestampStr(str, &fStartedNewLine);
 
@@ -517,20 +518,19 @@ void ClearDatadirCache()
     pathCachedNetSpecific = boost::filesystem::path();
 }
 
-boost::filesystem::path GetConfigFile(const std::string& confPath)
+boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(confPath);
+    boost::filesystem::path pathConfigFile(GetArg("-conf", BITCOIN_CONF_FILENAME));
     if (!pathConfigFile.is_complete())
         pathConfigFile = GetDataDir(false) / pathConfigFile;
 
     return pathConfigFile;
 }
 
-void ReadConfigFile(const std::string& confPath,
-                    map<string, string>& mapSettingsRet,
+void ReadConfigFile(map<string, string>& mapSettingsRet,
                     map<string, vector<string> >& mapMultiSettingsRet)
 {
-    boost::filesystem::ifstream streamConfig(GetConfigFile(confPath));
+    boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
         return; // No bitcoin.conf file is OK
 
@@ -704,13 +704,13 @@ void ShrinkDebugFile()
         // Restart the file with some of the end
         std::vector <char> vch(200000,0);
         fseek(file, -((long)vch.size()), SEEK_END);
-        int nBytes = fread(vch.data(), 1, vch.size(), file);
+        int nBytes = fread(begin_ptr(vch), 1, vch.size(), file);
         fclose(file);
 
         file = fopen(pathLog.string().c_str(), "w");
         if (file)
         {
-            fwrite(vch.data(), 1, nBytes, file);
+            fwrite(begin_ptr(vch), 1, nBytes, file);
             fclose(file);
         }
     }

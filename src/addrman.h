@@ -58,7 +58,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(*(CAddress*)this);
         READWRITE(source);
         READWRITE(nLastSuccess);
@@ -211,9 +211,6 @@ protected:
     //! secret key to randomize bucket select with
     uint256 nKey;
 
-    //! Source of random numbers for randomization in inner loops
-    FastRandomContext insecure_rand;
-
     //! Find an entry.
     CAddrInfo* Find(const CNetAddr& addr, int *pnId = NULL);
 
@@ -293,7 +290,7 @@ public:
      * very little in common.
      */
     template<typename Stream>
-    void Serialize(Stream &s) const
+    void Serialize(Stream &s, int nType, int nVersionDummy) const
     {
         LOCK(cs);
 
@@ -343,7 +340,7 @@ public:
     }
 
     template<typename Stream>
-    void Unserialize(Stream& s)
+    void Unserialize(Stream& s, int nType, int nVersionDummy)
     {
         LOCK(cs);
 
@@ -448,6 +445,11 @@ public:
         Check();
     }
 
+    unsigned int GetSerializeSize(int nType, int nVersion) const
+    {
+        return (CSizeComputer(nType, nVersion) << *this).size();
+    }
+
     void Clear()
     {
         std::vector<int>().swap(vRandom);
@@ -482,7 +484,6 @@ public:
     //! Return the number of (unique) addresses in all tables.
     size_t size() const
     {
-        LOCK(cs); // TODO: Cache this in an atomic to avoid this overhead
         return vRandom.size();
     }
 
@@ -502,11 +503,13 @@ public:
     //! Add a single address.
     bool Add(const CAddress &addr, const CNetAddr& source, int64_t nTimePenalty = 0)
     {
-        LOCK(cs);
         bool fRet = false;
-        Check();
-        fRet |= Add_(addr, source, nTimePenalty);
-        Check();
+        {
+            LOCK(cs);
+            Check();
+            fRet |= Add_(addr, source, nTimePenalty);
+            Check();
+        }
         if (fRet)
             LogPrint("addrman", "Added %s from %s: %i tried, %i new\n", addr.ToStringIPPort(), source.ToString(), nTried, nNew);
         return fRet;
@@ -515,12 +518,14 @@ public:
     //! Add multiple addresses.
     bool Add(const std::vector<CAddress> &vAddr, const CNetAddr& source, int64_t nTimePenalty = 0)
     {
-        LOCK(cs);
         int nAdd = 0;
-        Check();
-        for (std::vector<CAddress>::const_iterator it = vAddr.begin(); it != vAddr.end(); it++)
-            nAdd += Add_(*it, source, nTimePenalty) ? 1 : 0;
-        Check();
+        {
+            LOCK(cs);
+            Check();
+            for (std::vector<CAddress>::const_iterator it = vAddr.begin(); it != vAddr.end(); it++)
+                nAdd += Add_(*it, source, nTimePenalty) ? 1 : 0;
+            Check();
+        }
         if (nAdd)
             LogPrint("addrman", "Added %i addresses from %s: %i tried, %i new\n", nAdd, source.ToString(), nTried, nNew);
         return nAdd > 0;
@@ -529,19 +534,23 @@ public:
     //! Mark an entry as accessible.
     void Good(const CService &addr, int64_t nTime = GetAdjustedTime())
     {
-        LOCK(cs);
-        Check();
-        Good_(addr, nTime);
-        Check();
+        {
+            LOCK(cs);
+            Check();
+            Good_(addr, nTime);
+            Check();
+        }
     }
 
     //! Mark an entry as connection attempted to.
     void Attempt(const CService &addr, bool fCountFailure, int64_t nTime = GetAdjustedTime())
     {
-        LOCK(cs);
-        Check();
-        Attempt_(addr, fCountFailure, nTime);
-        Check();
+        {
+            LOCK(cs);
+            Check();
+            Attempt_(addr, fCountFailure, nTime);
+            Check();
+        }
     }
 
     /**
@@ -575,10 +584,12 @@ public:
     //! Mark an entry as currently-connected-to.
     void Connected(const CService &addr, int64_t nTime = GetAdjustedTime())
     {
-        LOCK(cs);
-        Check();
-        Connected_(addr, nTime);
-        Check();
+        {
+            LOCK(cs);
+            Check();
+            Connected_(addr, nTime);
+            Check();
+        }
     }
 
     void SetServices(const CService &addr, ServiceFlags nServices)

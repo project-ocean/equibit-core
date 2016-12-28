@@ -63,9 +63,9 @@ private:
 
 #include "intro.moc"
 
-FreespaceChecker::FreespaceChecker(Intro *_intro)
+FreespaceChecker::FreespaceChecker(Intro *intro)
 {
-    this->intro = _intro;
+    this->intro = intro;
 }
 
 void FreespaceChecker::check()

@@ -14,14 +14,14 @@ class CTxMemPool;
 // Dumb helper to handle CTransaction compression at serialize-time
 struct TransactionCompressor {
 private:
-    CTransactionRef& tx;
+    CTransaction& tx;
 public:
-    TransactionCompressor(CTransactionRef& txIn) : tx(txIn) {}
+    TransactionCompressor(CTransaction& txIn) : tx(txIn) {}
 
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(tx); //TODO: Compress tx encoding
     }
 };
@@ -35,7 +35,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(blockhash);
         uint64_t indexes_size = (uint64_t)indexes.size();
         READWRITE(COMPACTSIZE(indexes_size));
@@ -72,7 +72,7 @@ class BlockTransactions {
 public:
     // A BlockTransactions message
     uint256 blockhash;
-    std::vector<CTransactionRef> txn;
+    std::vector<CTransaction> txn;
 
     BlockTransactions() {}
     BlockTransactions(const BlockTransactionsRequest& req) :
@@ -81,7 +81,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(blockhash);
         uint64_t txn_size = (uint64_t)txn.size();
         READWRITE(COMPACTSIZE(txn_size));
@@ -104,12 +104,12 @@ struct PrefilledTransaction {
     // Used as an offset since last prefilled tx in CBlockHeaderAndShortTxIDs,
     // as a proper transaction-in-block-index in PartiallyDownloadedBlock
     uint16_t index;
-    CTransactionRef tx;
+    CTransaction tx;
 
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         uint64_t idx = index;
         READWRITE(COMPACTSIZE(idx));
         if (idx > std::numeric_limits<uint16_t>::max())
@@ -124,8 +124,6 @@ typedef enum ReadStatus_t
     READ_STATUS_OK,
     READ_STATUS_INVALID, // Invalid object, peer is sending bogus crap
     READ_STATUS_FAILED, // Failed to process object
-    READ_STATUS_CHECKBLOCK_FAILED, // Used only by FillBlock to indicate a
-                                   // failure in CheckBlock.
 } ReadStatus;
 
 class CBlockHeaderAndShortTxIDs {
@@ -148,7 +146,7 @@ public:
     // Dummy for deserialization
     CBlockHeaderAndShortTxIDs() {}
 
-    CBlockHeaderAndShortTxIDs(const CBlock& block, bool fUseWTXID);
+    CBlockHeaderAndShortTxIDs(const CBlock& block);
 
     uint64_t GetShortID(const uint256& txhash) const;
 
@@ -157,7 +155,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(header);
         READWRITE(nonce);
 
@@ -193,7 +191,7 @@ public:
 
 class PartiallyDownloadedBlock {
 protected:
-    std::vector<CTransactionRef> txn_available;
+    std::vector<std::shared_ptr<const CTransaction> > txn_available;
     size_t prefilled_count = 0, mempool_count = 0;
     CTxMemPool* pool;
 public:
@@ -202,7 +200,7 @@ public:
 
     ReadStatus InitData(const CBlockHeaderAndShortTxIDs& cmpctblock);
     bool IsTxAvailable(size_t index) const;
-    ReadStatus FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing) const;
+    ReadStatus FillBlock(CBlock& block, const std::vector<CTransaction>& vtx_missing) const;
 };
 
 #endif

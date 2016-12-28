@@ -1,0 +1,313 @@
+
+------------------------------------------------------
+0. System Initialization:
+------------------------------------------------------
+o Ubuntu 16.0.4 or higher
+o Install the following packages (using apt-get)
+
+	build-essential 
+	libtool 
+	autotools-dev 
+	automake 
+	pkg-config 
+	libssl-dev 
+	libevent-dev 
+	bsdmainutils
+	libboost-all-dev
+
+------------------------------------------------------
+1. Get source from github:
+------------------------------------------------------
+
+cd
+mkdir edc
+cd edc
+git clone https://github.com/Equibit/EDC-core.git
+
+
+The root directory of the installation is $(HOME)/edc/EDC-core.
+------------------------------------------------------
+2. Get berkleydb 4.8
+------------------------------------------------------
+
+cd
+mkdir -p bitcoin/db4/
+
+wget 'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'
+tar -xzvf db-4.8.30.NC.tar.gz
+cd db-4.8.30.NC/build_unix/
+../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$HOME/bitcoin/db4/
+make install
+
+------------------------------------------------------
+3. Get latest openssl
+------------------------------------------------------
+
+The Equibit build requires Openssl with a version of 1.1.x or higher because lower versions do not
+support Elliptic Curve Algorithms.
+
+1) Use the following list of commands to install openssl:
+-------------------------------------------------------------------------
+#compile and install newest version of openssl in Ubuntu 14.04 LTS
+cd
+sudo DEBIAN_FRONTEND=noninteractive apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get --yes --force-yes install checkinstall build-essential
+sudo DEBIAN_FRONTEND=noninteractive apt-get --yes --force-yes build-dep openssl
+sudo rm -rf ~/openssl
+git clone https://github.com/openssl/openssl.git
+cd openssl
+sudo ./config
+sudo make
+sudo make test
+sudo checkinstall
+sudo rm -rf ~/openssl
+sudo mv /usr/bin/c_rehash /usr/bin/c_rehashBACKUP
+sudo mv /usr/bin/openssl /usr/bin/opensslBACKUP
+sudo ln -s /usr/local/bin/c_rehash /usr/bin/c_rehash
+sudo ln -s /usr/local/bin/openssl /usr/bin/openssl
+openssl version
+apt-cache show openssl
+-------------------------------------------------------------------------
+
+2) Edit /etc/ld.so.conf (as root), adding the line
+
+/usr/local/lib
+
+3) Run the utility ldconfig to load the new setting
+
+------------------------------------------------------
+4. Install Thales software (HSM)
+------------------------------------------------------
+
+1) Create /etc/nfast.conf with the entry:
+
+	NFAST_CREATEDEVNFAST=1
+
+2) Mount iso file to /media/iso
+
+	sudo mount -o loop PATH/file.iso /media/iso
+
+3) Extra all tar files from the mounted file:
+
+	for all files found by find /media/iso -name '*.tar'
+
+		tar xf FILE
+
+	Files will be extracted to /opt/nfast
+
+4) cd /opt/nfast/driver
+   ./configure
+   make
+
+5) cd /opt/nfast/sbin
+   sudo ./install
+
+6. Add /opt/nfast/bin to the PATH environment variable
+
+Use the nfast command enquiry to verify that the system is operational. 
+
+------------------------------------------------------
+5. Enable HSM build (HSM)
+------------------------------------------------------
+Change the line in configure.ac from
+
+     CPPFLAGS="$CPPFLAGS"
+
+to
+
+     CPPFLAGS="$CPPFLAGS -DUSE_HSM"
+
+------------------------------------------------------
+6. Build the Thales HSM interface shared library (HSM)
+------------------------------------------------------
+In ./src/Thales, run make
+
+--------------------------------------------------------
+7. Run the rebuild script to configure and run the build
+--------------------------------------------------------
+from the root directory, run the rebuild script
+
+NOTE: If your build does not include HSM, then make 
+sure the configure.ac file does not assign -DUSE_HSM
+to the CPPFLAGS variable.
+
+------------------------------------------------------
+8. Link bitcoind to the Thales interface library (HSM)
+------------------------------------------------------
+from the ./src directory, run the script ./build
+
+------------------------------------------------------
+9. Configure nShield Connect (HSM)
+------------------------------------------------------
+VLAN Default Gateway:	77.77.77.1
+VLAN Network: 			77.77.77.0/24
+Host IPs:				77.77.77.11	 NAT'd to 76.9.199.37
+						77.77.77.12  NAT'd to 76.9.199.38
+HSM IP:					77.77.77.13  NAT'd to 76.9.199.39
+Default Public Gateway:	76.9.199.34
+
+
+Step 1:  For the new HSM’s received, they will need to be assigned an IP via menu 1-1-1-1 .
+
+Step 2: Next from your RFS:
+        Run anonkneti [HSM IP]
+            Anonkneti returns ESN and KNETI Hash
+        Run rfs-setup --force [HSM IP] [ESN] [KNETI Hash]
+ 
+ESN:		C005-BFDF-E0FA
+KNETI Hash:	2f70.9c7f.294f.653c.8131.fd64.bf97.46be.8c09.8e62
+
+
+Step 3: Then, run menu 1-1-3 on the front panel of the HSM to setup the IP address of the RFS.
+ 
+Step 4: Make sure that the HSM uploaded its config files to the RFS under directory:
+        /opt/nfast/kmdata/hsm-[ESN]/config/config
+ 
+Step 5: Whitelist the IP address of each client that needs to connect to the HSM. This can be done 
+        via menu 1-1-4 (Client Config). This menu will prompt you to insert the IP address of each 
+		client and also specify if they are a privileged or un-privileged connection.
+ 
+Step 6: Next, enroll the new HSM’s from each client:
+        Run nethsmenroll [HSM IP]
+ 
+Step 7: Finally, initialize the Security World for each HSM (this will require the ACS quorum).
+        If the RFS is on the same existing Security World as your clients, then you can navigate 
+        to front panel menu 3-2-2 (Load Security World). Otherwise select 3-2-1 to initialize a 
+        New Security World.  
+
+		Alternatively , you can run the following command from a privileged client connection to 
+		program your module with an existing Security World:
+
+            Run new-world -l -m[Module Number from Enquiry]
+
+            Or initialize a New Security World:
+
+            Run new-world -i -m[Module Number from Enquiry]
+
+
+Optional: 
+
+	Ensure link speed is set to auto:
+	System > System Configuration > Network config > Set up interface #1 > Set link speed for #1
+
+	Set Default gateway:
+	System > System Configuration > Network config > Set default gateway > IPv4 Gateway
+
+------------------------------------------------------
+10. Enable ECC (HSM)
+------------------------------------------------------
+
+1) Exec
+
+sudo /opt/nfast/bin/fet
+
+The first line after the heading should list the ESN and YES/NO for each feature.
+
+2) Select 1 to read from smart card. Insert card into slot and press Enter.
+
+
+------------------------------------------------------
+11. Create Security World (HSM)
+------------------------------------------------------
+
+Create
+
+new-world 	--initialize \
+			--cipher-suite=DLf1024s160mRijndael \
+			--module=1 \
+			--acs-quorum=1/3
+
+new-world 	--initialize --cipher-suite=DLf1024s160mRijndael --module=1 --acs-quorum=1/>3
+
+
+Use nfkminfo to show the status of the Security World.
+
+Copy to HSM:
+
+nethsmadmin --module=1 --update-world
+
+------------------------------------------------------
+12. Write nShield Operator Card Set (HSM)
+------------------------------------------------------
+
+/opt/nfast/bin/createocs -m MODULE|--module=MODULE -Q|--ocs-quorum=K/N
+-N|--name=NAME [-M|--name-cards]
+[[-p|--persist]|[-P|--no-persist]] [[-R|--no-pp-recovery]|--pp-recovery]
+[-q|--remotely-readable] [-T|--timeout=TIME] [-e|--erase]
+
+
+/opt/nfast/bin/createocs --module=1 --ocs-quorum=K/N --name=EDC
+
+use 
+
+nfkninfo --cardset-list
+
+to list created OCSs
+
+------------------------------------------------------
+13. Re-cycle hardserver (HSM)
+------------------------------------------------------
+
+/etc/init.d/nc_hardserver stop
+/etc/init.d/nc_hardserver start
+enquiry
+
+------------------------------------------------------
+14. Set the RPC password (HSM)
+------------------------------------------------------
+
+Set the RPC password.
+
+1) In ~/.bitcoin/bitcoin.conf. Add a line of the form
+
+rpcpassword=<some-password>
+
+to the file.
+
+2) In ~/.equibit/equibit.conf. Add a line of the form
+
+eb_rpcpassword=<some-password>
+
+to the file. 
+
+<some-password> must be same value in both files.
+
+------------------------------------------------------
+15. Run server / client
+------------------------------------------------------
+Run the install script
+
+~/edc/EDC-core/bin/install
+
+NOTE: If HSM is not used, then comment out lines following
+the echo "Build Thales interface shared library" line.
+
+
+Use the scripts in ./bin to run the server / client.
+
+run.bitcoind		Server script
+run.bitcoin-cli		Bitcoin RPC Client script
+run.equibit-clie 	Equibit RPC Client script
+
+NOTE: If HSM is not used, then add the command line option
+-daemon to the options listed in run.bitcoind.
+----------------------------------------------------------------------------------------------------
+Other Thales utilities:
+----------------------------------------------------------------------------------------------------
+
+/opt/nfast/bin/nfdiag - Generates Thales configuration file. Enter 
+n/a when prompted during processing.
+
+/opt/nfast/bin/nfkminfo --name-list		Outputs list of generated keys
+
+----------------------------------------------------------------------------------------------------
+Equinix Contacts:
+----------------------------------------------------------------------------------------------------
+
+Nicole Mumford:	647.504.9949
+Michael Lee:	416.826.5482
+
+----------------------------------------------------------------------------------------------------
+Thales Contact:
+----------------------------------------------------------------------------------------------------
+Damian Rodriguez(Product Support Engineer):		1-954-888-6261

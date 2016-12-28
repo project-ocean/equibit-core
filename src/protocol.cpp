@@ -79,7 +79,7 @@ CMessageHeader::CMessageHeader(const MessageStartChars& pchMessageStartIn)
     memcpy(pchMessageStart, pchMessageStartIn, MESSAGE_START_SIZE);
     memset(pchCommand, 0, sizeof(pchCommand));
     nMessageSize = -1;
-    memset(pchChecksum, 0, CHECKSUM_SIZE);
+    nChecksum = 0;
 }
 
 CMessageHeader::CMessageHeader(const MessageStartChars& pchMessageStartIn, const char* pszCommand, unsigned int nMessageSizeIn)
@@ -88,7 +88,7 @@ CMessageHeader::CMessageHeader(const MessageStartChars& pchMessageStartIn, const
     memset(pchCommand, 0, sizeof(pchCommand));
     strncpy(pchCommand, pszCommand, COMMAND_SIZE);
     nMessageSize = nMessageSizeIn;
-    memset(pchChecksum, 0, CHECKSUM_SIZE);
+    nChecksum = 0;
 }
 
 std::string CMessageHeader::GetCommand() const
@@ -181,11 +181,7 @@ std::string CInv::GetCommand() const
 
 std::string CInv::ToString() const
 {
-    try {
-        return strprintf("%s %s", GetCommand(), hash.ToString());
-    } catch(const std::out_of_range &) {
-        return strprintf("0x%08x %s", type, hash.ToString());
-    }
+    return strprintf("%s %s", GetCommand(), hash.ToString());
 }
 
 const std::vector<std::string> &getAllNetMessageTypes()

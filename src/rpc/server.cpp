@@ -147,8 +147,6 @@ uint256 ParseHashV(const UniValue& v, string strName)
         strHex = v.get_str();
     if (!IsHex(strHex)) // Note: IsHex("") is false
         throw JSONRPCError(RPC_INVALID_PARAMETER, strName+" must be hexadecimal string (not '"+strHex+"')");
-    if (64 != strHex.length())
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("%s must be of length %d (not %d)", strName, 64, strHex.length()));
     uint256 result;
     result.SetHex(strHex);
     return result;
@@ -197,11 +195,10 @@ std::string CRPCTable::help(const std::string& strCommand) const
             continue;
         try
         {
-            JSONRPCRequest jreq;
-            jreq.fHelp = true;
+            UniValue params;
             rpcfn_type pfn = pcmd->actor;
             if (setDone.insert(pfn).second)
-                (*pfn)(jreq);
+                (*pfn)(params, true);
         }
         catch (const std::exception& e)
         {
@@ -231,9 +228,9 @@ std::string CRPCTable::help(const std::string& strCommand) const
     return strRet;
 }
 
-UniValue help(const JSONRPCRequest& jsonRequest)
+UniValue help(const UniValue& params, bool fHelp)
 {
-    if (jsonRequest.fHelp || jsonRequest.params.size() > 1)
+    if (fHelp || params.size() > 1)
         throw runtime_error(
             "help ( \"command\" )\n"
             "\nList all commands, or get help for a specified command.\n"
@@ -244,17 +241,17 @@ UniValue help(const JSONRPCRequest& jsonRequest)
         );
 
     string strCommand;
-    if (jsonRequest.params.size() > 0)
-        strCommand = jsonRequest.params[0].get_str();
+    if (params.size() > 0)
+        strCommand = params[0].get_str();
 
     return tableRPC.help(strCommand);
 }
 
 
-UniValue stop(const JSONRPCRequest& jsonRequest)
+UniValue stop(const UniValue& params, bool fHelp)
 {
     // Accept the deprecated and ignored 'detach' boolean argument
-    if (jsonRequest.fHelp || jsonRequest.params.size() > 1)
+    if (fHelp || params.size() > 1)
         throw runtime_error(
             "stop\n"
             "\nStop Bitcoin server.");
@@ -357,7 +354,7 @@ bool RPCIsInWarmup(std::string *outStatus)
     return fRPCInWarmup;
 }
 
-void JSONRPCRequest::parse(const UniValue& valRequest)
+void JSONRequest::parse(const UniValue& valRequest)
 {
     // Parse request
     if (!valRequest.isObject())
@@ -391,11 +388,11 @@ static UniValue JSONRPCExecOne(const UniValue& req)
 {
     UniValue rpc_result(UniValue::VOBJ);
 
-    JSONRPCRequest jreq;
+    JSONRequest jreq;
     try {
         jreq.parse(req);
 
-        UniValue result = tableRPC.execute(jreq);
+        UniValue result = tableRPC.execute(jreq.strMethod, jreq.params);
         rpc_result = JSONRPCReplyObj(result, NullUniValue, jreq.id);
     }
     catch (const UniValue& objError)
@@ -420,7 +417,7 @@ std::string JSONRPCExecBatch(const UniValue& vReq)
     return ret.write() + "\n";
 }
 
-UniValue CRPCTable::execute(const JSONRPCRequest &request) const
+UniValue CRPCTable::execute(const std::string &strMethod, const UniValue &params) const
 {
     // Return immediately if in warmup
     {
@@ -430,7 +427,7 @@ UniValue CRPCTable::execute(const JSONRPCRequest &request) const
     }
 
     // Find method
-    const CRPCCommand *pcmd = tableRPC[request.strMethod];
+    const CRPCCommand *pcmd = tableRPC[strMethod];
     if (!pcmd)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found");
 
@@ -439,7 +436,7 @@ UniValue CRPCTable::execute(const JSONRPCRequest &request) const
     try
     {
         // Execute
-        return pcmd->actor(request);
+        return pcmd->actor(params, false);
     }
     catch (const std::exception& e)
     {
@@ -495,14 +492,6 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
     deadlineTimers.erase(name);
     LogPrint("rpc", "queue run of timer %s in %i seconds (using %s)\n", name, nSeconds, timerInterface->Name());
     deadlineTimers.emplace(name, std::unique_ptr<RPCTimerBase>(timerInterface->NewTimer(func, nSeconds*1000)));
-}
-
-int RPCSerializationFlags()
-{
-    int flag = 0;
-    if (GetArg("-rpcserialversion", DEFAULT_RPC_SERIALIZE_VERSION) == 0)
-        flag |= SERIALIZE_TRANSACTION_NO_WITNESS;
-    return flag;
 }
 
 CRPCTable tableRPC;

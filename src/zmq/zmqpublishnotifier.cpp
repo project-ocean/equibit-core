@@ -3,11 +3,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "chainparams.h"
-#include "streams.h"
 #include "zmqpublishnotifier.h"
-#include "validation.h"
+#include "main.h"
 #include "util.h"
-#include "rpc/server.h"
 
 static std::multimap<std::string, CZMQAbstractPublishNotifier*> mapPublishNotifiers;
 
@@ -167,7 +165,7 @@ bool CZMQPublishRawBlockNotifier::NotifyBlock(const CBlockIndex *pindex)
     LogPrint("zmq", "zmq: Publish rawblock %s\n", pindex->GetBlockHash().GetHex());
 
     const Consensus::Params& consensusParams = Params().GetConsensus();
-    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION | RPCSerializationFlags());
+    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     {
         LOCK(cs_main);
         CBlock block;
@@ -187,7 +185,7 @@ bool CZMQPublishRawTransactionNotifier::NotifyTransaction(const CTransaction &tr
 {
     uint256 hash = transaction.GetHash();
     LogPrint("zmq", "zmq: Publish rawtx %s\n", hash.GetHex());
-    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION | RPCSerializationFlags());
+    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
     ss << transaction;
     return SendMessage(MSG_RAWTX, &(*ss.begin()), ss.size());
 }

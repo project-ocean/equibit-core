@@ -245,7 +245,6 @@ private:
 #endif
     int returnValue;
     const PlatformStyle *platformStyle;
-    std::unique_ptr<QWidget> shutdownWindow;
 
     void startThread();
 };
@@ -268,22 +267,7 @@ void BitcoinCore::initialize()
     try
     {
         qDebug() << __func__ << ": Running AppInit2 in thread";
-        if (!AppInitBasicSetup())
-        {
-            Q_EMIT initializeResult(false);
-            return;
-        }
-        if (!AppInitParameterInteraction())
-        {
-            Q_EMIT initializeResult(false);
-            return;
-        }
-        if (!AppInitSanityChecks())
-        {
-            Q_EMIT initializeResult(false);
-            return;
-        }
-        int rv = AppInitMain(threadGroup, scheduler);
+        int rv = AppInit2(threadGroup, scheduler);
         Q_EMIT initializeResult(rv);
     } catch (const std::exception& e) {
         handleRunawayException(&e);
@@ -381,8 +365,9 @@ void BitcoinApplication::createWindow(const NetworkStyle *networkStyle)
 void BitcoinApplication::createSplashScreen(const NetworkStyle *networkStyle)
 {
     SplashScreen *splash = new SplashScreen(0, networkStyle);
-    // We don't hold a direct pointer to the splash screen after creation, but the splash
-    // screen will take care of deleting itself when slotFinish happens.
+    // We don't hold a direct pointer to the splash screen after creation, so use
+    // Qt::WA_DeleteOnClose to make sure that the window will be deleted eventually.
+    splash->setAttribute(Qt::WA_DeleteOnClose);
     splash->show();
     connect(this, SIGNAL(splashFinished(QWidget*)), splash, SLOT(slotFinish(QWidget*)));
     connect(this, SIGNAL(requestedShutdown()), splash, SLOT(close()));
@@ -424,11 +409,6 @@ void BitcoinApplication::requestInitialize()
 
 void BitcoinApplication::requestShutdown()
 {
-    // Show a simple window indicating shutdown status
-    // Do this first as some of the steps may take some time below,
-    // for example the RPC console may still be executing a command.
-    shutdownWindow.reset(ShutdownWindow::showShutdownWindow(window));
-
     qDebug() << __func__ << ": Requesting shutdown";
     startThread();
     window->hide();
@@ -442,6 +422,9 @@ void BitcoinApplication::requestShutdown()
 #endif
     delete clientModel;
     clientModel = 0;
+
+    // Show a simple window indicating shutdown status
+    ShutdownWindow::showShutdownWindow(window);
 
     // Request shutdown from core thread
     Q_EMIT requestedShutdown();
@@ -513,7 +496,7 @@ void BitcoinApplication::shutdownResult(int retval)
 void BitcoinApplication::handleRunawayException(const QString &message)
 {
     QMessageBox::critical(0, "Runaway exception", BitcoinGUI::tr("A fatal error occurred. Bitcoin can no longer continue safely and will quit.") + QString("\n\n") + message);
-    ::exit(EXIT_FAILURE);
+    ::exit(1);
 }
 
 WId BitcoinApplication::getMainWinId() const
@@ -590,13 +573,13 @@ int main(int argc, char *argv[])
     {
         HelpMessageDialog help(NULL, mapArgs.count("-version"));
         help.showOrPrint();
-        return EXIT_SUCCESS;
+        return 1;
     }
 
     /// 5. Now that settings and translations are available, ask user for data directory
     // User language is set up: pick a data directory
     if (!Intro::pickDataDirectory())
-        return EXIT_SUCCESS;
+        return 0;
 
     /// 6. Determine availability of data directory and parse bitcoin.conf
     /// - Do not call GetDataDir(true) before this step finishes
@@ -604,14 +587,14 @@ int main(int argc, char *argv[])
     {
         QMessageBox::critical(0, QObject::tr(PACKAGE_NAME),
                               QObject::tr("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(mapArgs["-datadir"])));
-        return EXIT_FAILURE;
+        return 1;
     }
     try {
-        ReadConfigFile(GetArg("-conf", BITCOIN_CONF_FILENAME), mapArgs, mapMultiArgs);
+        ReadConfigFile(mapArgs, mapMultiArgs);
     } catch (const std::exception& e) {
         QMessageBox::critical(0, QObject::tr(PACKAGE_NAME),
                               QObject::tr("Error: Cannot parse configuration file: %1. Only use key=value syntax.").arg(e.what()));
-        return EXIT_FAILURE;
+        return false;
     }
 
     /// 7. Determine network (and switch to network specific options)
@@ -625,7 +608,7 @@ int main(int argc, char *argv[])
         SelectParams(ChainNameFromCommandLine());
     } catch(std::exception &e) {
         QMessageBox::critical(0, QObject::tr(PACKAGE_NAME), QObject::tr("Error: %1").arg(e.what()));
-        return EXIT_FAILURE;
+        return 1;
     }
 #ifdef ENABLE_WALLET
     // Parse URIs on command line -- this can affect Params()
@@ -647,7 +630,7 @@ int main(int argc, char *argv[])
     // - Do this after creating app and setting up translations, so errors are
     // translated properly.
     if (PaymentServer::ipcSendCommandLine())
-        exit(EXIT_SUCCESS);
+        exit(0);
 
     // Start up the payment server early, too, so impatient users that click on
     // bitcoin: links repeatedly have their payment requests routed to this process:

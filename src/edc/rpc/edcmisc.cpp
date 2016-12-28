@@ -1,0 +1,527 @@
+// Copyright (c) 2010 Satoshi Nakamoto
+// Copyright (c) 2009-2015 The Bitcoin Core developers
+// Copyright (c) 2016 Equibit Development Corporation
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+#include "edc/edcbase58.h"
+#include "clientversion.h"
+#include "edc/edcinit.h"
+#include "edc/edcmain.h"
+#include "edc/edcnet.h"
+#include "edc/edcnetbase.h"
+#include "edc/rpc/edcserver.h"
+#include "edc/script/edcscript.h"
+#include "timedata.h"
+#include "edc/edcutil.h"
+#include "utilstrencodings.h"
+#ifdef ENABLE_WALLET
+#include "edc/wallet/edcwallet.h"
+#include "edc/wallet/edcwalletdb.h"
+#endif
+#include "edc/edcapp.h"
+#include "edc/edcchainparams.h"
+#include "edc/buildversion.h"
+
+#include <stdint.h>
+
+#include <boost/assign/list_of.hpp>
+
+#include <univalue.h>
+
+using namespace std;
+
+
+int64_t edcGetTimeOffset();
+
+
+/**
+ * @note Do not add or change anything in the information returned by this
+ * method. `getinfo` exists for backwards-compatibility only. It combines
+ * information from wildly different sources in the program, which is a mess,
+ * and is thus planned to be deprecated eventually.
+ *
+ * Based on the source of the information, new information should be added to:
+ * - `getblockchaininfo`,
+ * - `getnetworkinfo` or
+ * - `getwalletinfo`
+ *
+ * Or alternatively, create a specific query method for the information.
+ **/
+UniValue edcgetinfo(const UniValue& params, bool fHelp)
+{
+	EDCapp & theApp = EDCapp::singleton();
+
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "eb_getinfo\n"
+            "Returns an object containing various state info.\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"builddate\": xxxx,          (string) the date of the build\n"
+            "  \"version\": xxxxx,           (numeric) the server version\n"
+            "  \"protocolversion\": xxxxx,   (numeric) the protocol version\n"
+            "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
+            "  \"balance\": xxxxxxx,         (numeric) the total equibit balance of the wallet\n"
+            "  \"blocks\": xxxxxx,           (numeric) the current number of blocks processed in the server\n"
+            "  \"timeoffset\": xxxxx,        (numeric) the time offset\n"
+            "  \"connections\": xxxxx,       (numeric) the number of connections\n"
+            "  \"proxy\": \"host:port\",     (string, optional) the proxy used by the server\n"
+            "  \"difficulty\": xxxxxx,       (numeric) the current difficulty\n"
+            "  \"testnet\": true|false,      (boolean) if the server is using testnet or not\n"
+            "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
+            "  \"keypoolsize\": xxxx,        (numeric) how many new keys are pre-generated\n"
+#ifdef USE_HSM
+            "  \"hsmkeypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated HSM key in the HSM key pool\n"
+            "  \"hsmkeypoolsize\": xxxx,        (numeric) how many new HSM keys are pre-generated\n"
+#endif
+            "  \"unlocked_until\": ttt,      (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
+            "  \"paytxfee\": x.xxxx,         (numeric) the transaction fee set in " + CURRENCY_UNIT + "/kB\n"
+            "  \"relayfee\": x.xxxx,         (numeric) minimum relay fee for non-free transactions in " + CURRENCY_UNIT + "/kB\n"
+            "  \"errors\": \"...\"           (string) any error messages\n"
+            "}\n"
+            "\nExamples:\n"
+            + HelpExampleCli("eb_getinfo", "")
+            + HelpExampleRpc("eb_getinfo", "")
+        );
+
+#ifdef ENABLE_WALLET
+    LOCK2(EDC_cs_main, theApp.walletMain() ? &theApp.walletMain()->cs_wallet : NULL);
+#else
+    LOCK(EDC_cs_main);
+#endif
+
+    proxyType proxy;
+    edcGetProxy(NET_IPV4, proxy);
+
+    UniValue obj(UniValue::VOBJ);
+	obj.push_back(Pair("builddate", BUILD_DATE));
+    obj.push_back(Pair("version", CLIENT_VERSION));
+    obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
+#ifdef ENABLE_WALLET
+    if (theApp.walletMain()) 
+	{
+        obj.push_back(Pair("walletversion", theApp.walletMain()->GetVersion()));
+        obj.push_back(Pair("balance",       ValueFromAmount(theApp.walletMain()->GetBalance())));
+    }
+#endif
+    obj.push_back(Pair("blocks",        (int)theApp.chainActive().Height()));
+    obj.push_back(Pair("timeoffset",    edcGetTimeOffset()));
+    if(theApp.connman())
+        obj.push_back(Pair("connections",   (int)theApp.connman()->GetNodeCount(CEDCConnman::CONNECTIONS_ALL)));
+    obj.push_back(Pair("proxy",         (proxy.IsValid() ? proxy.proxy.ToStringIPPort() : string())));
+    obj.push_back(Pair("difficulty",    (double)edcGetDifficulty()));
+    obj.push_back(Pair("testnet",       edcParams().TestnetToBeDeprecatedFieldRPC()));
+#ifdef ENABLE_WALLET
+    if (theApp.walletMain()) 
+	{
+        obj.push_back(Pair("keypoololdest", theApp.walletMain()->GetOldestKeyPoolTime()));
+        obj.push_back(Pair("keypoolsize",   (int)theApp.walletMain()->GetKeyPoolSize()));
+#ifdef USE_HSM
+        obj.push_back(Pair("hsmkeypoololdest", theApp.walletMain()->GetOldestHSMKeyPoolTime()));
+        obj.push_back(Pair("hsmkeypoolsize",   (int)theApp.walletMain()->GetHSMKeyPoolSize()));
+#endif
+    }
+    if (theApp.walletMain() && theApp.walletMain()->IsCrypted())
+        obj.push_back(Pair("unlocked_until", theApp.walletUnlockTime() ));
+    obj.push_back(Pair("paytxfee",      ValueFromAmount(theApp.payTxFee().GetFeePerK())));
+#endif
+    obj.push_back(Pair("relayfee",      ValueFromAmount(theApp.minRelayTxFee().GetFeePerK())));
+    obj.push_back(Pair("errors",        edcGetWarnings("statusbar")));
+    return obj;
+}
+
+#ifdef ENABLE_WALLET
+class DescribeAddressVisitor : public boost::static_visitor<UniValue>
+{
+public:
+    UniValue operator()(const CNoDestination &dest) const { return UniValue(UniValue::VOBJ); }
+
+    UniValue operator()(const CKeyID &keyID) const 
+	{
+		EDCapp & theApp = EDCapp::singleton();
+
+        UniValue obj(UniValue::VOBJ);
+        CPubKey vchPubKey;
+        obj.push_back(Pair("isscript", false));
+
+#ifndef USE_HSM
+        if (theApp.walletMain() && theApp.walletMain()->GetPubKey(keyID, vchPubKey)) 
+#else
+        if (theApp.walletMain() && 
+		(theApp.walletMain()->GetPubKey(keyID, vchPubKey) || 
+		theApp.walletMain()->GetHSMPubKey(keyID, vchPubKey))) 
+#endif
+		{
+            obj.push_back(Pair("pubkey", HexStr(vchPubKey)));
+            obj.push_back(Pair("iscompressed", vchPubKey.IsCompressed()));
+        }
+        return obj;
+    }
+
+    UniValue operator()(const CScriptID &scriptID) const 
+	{
+		EDCapp & theApp = EDCapp::singleton();
+
+        UniValue obj(UniValue::VOBJ);
+        CScript subscript;
+        obj.push_back(Pair("isscript", true));
+        if (theApp.walletMain() && theApp.walletMain()->GetCScript(scriptID, subscript)) 
+		{
+            std::vector<CTxDestination> addresses;
+            txnouttype whichType;
+            int nRequired;
+            ExtractDestinations(subscript, whichType, addresses, nRequired);
+            obj.push_back(Pair("script", GetTxnOutputType(whichType)));
+            obj.push_back(Pair("hex", HexStr(subscript.begin(), subscript.end())));
+            UniValue a(UniValue::VARR);
+            BOOST_FOREACH(const CTxDestination& addr, addresses)
+                a.push_back(CEDCBitcoinAddress(addr).ToString());
+            obj.push_back(Pair("addresses", a));
+            if (whichType == TX_MULTISIG)
+                obj.push_back(Pair("sigsrequired", nRequired));
+        }
+        return obj;
+    }
+};
+#endif
+
+UniValue edcvalidateaddress(const UniValue& params, bool fHelp)
+{
+	EDCapp & theApp = EDCapp::singleton();
+
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "eb_validateaddress \"equibitaddress\"\n"
+            "\nReturn information about the given equibit address.\n"
+            "\nArguments:\n"
+            "1. \"equibitaddress\"     (string, required) The equibit address to validate\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"isvalid\" : true|false,       (boolean) If the address is valid or not. If not, this is the only property returned.\n"
+            "  \"address\" : \"equibitaddress\", (string) The equibit address validated\n"
+            "  \"scriptPubKey\" : \"hex\",       (string) The hex encoded scriptPubKey generated by the address\n"
+            "  \"ismine\" : true|false,        (boolean) If the address is yours or not\n"
+            "  \"iswatchonly\" : true|false,   (boolean) If the address is watchonly\n"
+            "  \"isscript\" : true|false,      (boolean) If the key is a script\n"
+            "  \"pubkey\" : \"publickeyhex\",    (string) The hex value of the raw public key\n"
+            "  \"iscompressed\" : true|false,  (boolean) If the address is compressed\n"
+            "  \"account\" : \"account\"         (string) DEPRECATED. The account associated with the address, \"\" is the default account\n"
+            "  \"hdkeypath\" : \"keypath\"       (string, optional) The HD keypath if the key is HD and available\n"
+            "  \"hdmasterkeyid\" : \"<hash160>\" (string, optional) The Hash160 of the HD master pubkey\n"
+            "}\n"
+            "\nExamples:\n"
+            + HelpExampleCli("eb_validateaddress", "\"1PSSGeFHDnKNxiEyFrD1wcEaHr9hrQDDWc\"")
+            + HelpExampleRpc("eb_validateaddress", "\"1PSSGeFHDnKNxiEyFrD1wcEaHr9hrQDDWc\"")
+        );
+
+#ifdef ENABLE_WALLET
+    LOCK2(EDC_cs_main, theApp.walletMain() ? &theApp.walletMain()->cs_wallet : NULL);
+#else
+    LOCK(EDC_cs_main);
+#endif
+
+    CEDCBitcoinAddress address(params[0].get_str());
+    bool isValid = address.IsValid();
+
+    UniValue ret(UniValue::VOBJ);
+    ret.push_back(Pair("isvalid", isValid));
+    if (isValid)
+    {
+        CTxDestination dest = address.Get();
+        string currentAddress = address.ToString();
+        ret.push_back(Pair("address", currentAddress));
+
+        CScript scriptPubKey = GetScriptForDestination(dest);
+        ret.push_back(Pair("scriptPubKey", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
+
+#ifdef ENABLE_WALLET
+        isminetype mine = theApp.walletMain() ? edcIsMine(*theApp.walletMain(), dest) : ISMINE_NO;
+        ret.push_back(Pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
+        ret.push_back(Pair("iswatchonly", (mine & ISMINE_WATCH_ONLY) ? true: false));
+        UniValue detail = boost::apply_visitor(DescribeAddressVisitor(), dest);
+
+        ret.pushKVs(detail);
+        if (theApp.walletMain() && theApp.walletMain()->mapAddressBook.count(dest))
+            ret.push_back(Pair("account", theApp.walletMain()->mapAddressBook[dest].name));
+
+        CKeyID keyID;
+        if (theApp.walletMain() && address.GetKeyID(keyID) && 
+			theApp.walletMain()->mapKeyMetadata.count(keyID) && 
+			!theApp.walletMain()->mapKeyMetadata[keyID].hdKeypath.empty())
+        {
+            ret.push_back(Pair("hdkeypath", 
+				theApp.walletMain()->mapKeyMetadata[keyID].hdKeypath));
+            ret.push_back(Pair("hdmasterkeyid", 
+				theApp.walletMain()->mapKeyMetadata[keyID].hdMasterKeyID.GetHex()));
+        }
+#endif
+    }
+    return ret;
+}
+
+/**
+ * Used by addmultisigaddress / createmultisig:
+ */
+CScript edc_createmultisig_redeemScript(const UniValue& params)
+{
+	EDCapp & theApp = EDCapp::singleton();
+
+    int nRequired = params[0].get_int();
+    const UniValue& keys = params[1].get_array();
+
+    // Gather public keys
+    if (nRequired < 1)
+        throw runtime_error("a multisignature address must require at least one key to redeem");
+    if ((int)keys.size() < nRequired)
+        throw runtime_error(
+            strprintf("not enough keys supplied "
+                      "(got %u keys, but need at least %d to redeem)", keys.size(), nRequired));
+    if (keys.size() > 16)
+        throw runtime_error("Number of addresses involved in the multisignature address creation > 16\nReduce the number");
+    std::vector<CPubKey> pubkeys;
+    pubkeys.resize(keys.size());
+    for (unsigned int i = 0; i < keys.size(); i++)
+    {
+        const std::string& ks = keys[i].get_str();
+#ifdef ENABLE_WALLET
+        // Case 1: Equibit address and we have full public key:
+        CEDCBitcoinAddress address(ks);
+        if (theApp.walletMain() && address.IsValid())
+        {
+            CKeyID keyID;
+            if (!address.GetKeyID(keyID))
+                throw runtime_error(
+                    strprintf("%s does not refer to a key",ks));
+            CPubKey vchPubKey;
+#ifndef USE_HSM
+            if (!theApp.walletMain()->GetPubKey(keyID, vchPubKey))
+#else
+            if (!theApp.walletMain()->GetPubKey(keyID, vchPubKey) &&
+            !theApp.walletMain()->GetHSMPubKey(keyID, vchPubKey))
+#endif
+                throw runtime_error(
+                    strprintf("no full public key for address %s",ks));
+            if (!vchPubKey.IsFullyValid())
+                throw runtime_error(" Invalid public key: "+ks);
+            pubkeys[i] = vchPubKey;
+        }
+
+        // Case 2: hex public key
+        else
+#endif
+        if (IsHex(ks))
+        {
+            CPubKey vchPubKey(ParseHex(ks));
+            if (!vchPubKey.IsFullyValid())
+                throw runtime_error(" Invalid public key: "+ks);
+            pubkeys[i] = vchPubKey;
+        }
+        else
+        {
+            throw runtime_error(" Invalid public key: "+ks);
+        }
+    }
+    CScript result = GetScriptForMultisig(nRequired, pubkeys);
+
+    if (result.size() > EDC_MAX_SCRIPT_ELEMENT_SIZE)
+        throw runtime_error(
+                strprintf("redeemScript exceeds size limit: %d > %d", result.size(), EDC_MAX_SCRIPT_ELEMENT_SIZE));
+
+    return result;
+}
+
+UniValue edccreatemultisig(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() < 2 || params.size() > 2)
+    {
+        string msg = "eb_createmultisig nrequired [\"key\",...]\n"
+            "\nCreates a multi-signature address with n signature of m keys required.\n"
+            "It returns a json object with the address and redeemScript.\n"
+
+            "\nArguments:\n"
+            "1. nrequired      (numeric, required) The number of required signatures out of the n keys or addresses.\n"
+            "2. \"keys\"       (string, required) A json array of keys which are equibit addresses or hex-encoded public keys\n"
+            "     [\n"
+            "       \"key\"    (string) equibit address or hex-encoded public key\n"
+            "       ,...\n"
+            "     ]\n"
+
+            "\nResult:\n"
+            "{\n"
+            "  \"address\":\"multisigaddress\",  (string) The value of the new multisig address.\n"
+            "  \"redeemScript\":\"script\"       (string) The string value of the hex-encoded redemption script.\n"
+            "}\n"
+
+            "\nExamples:\n"
+            "\nCreate a multisig address from 2 addresses\n"
+            + HelpExampleCli("eb_createmultisig", "2 \"[\\\"16sSauSf5pF2UkUwvKGq4qjNRzBZYqgEL5\\\",\\\"171sgjn4YtPu27adkKGrdDwzRTxnRkBfKV\\\"]\"") +
+            "\nAs a json rpc call\n"
+            + HelpExampleRpc("eb_createmultisig", "2, \"[\\\"16sSauSf5pF2UkUwvKGq4qjNRzBZYqgEL5\\\",\\\"171sgjn4YtPu27adkKGrdDwzRTxnRkBfKV\\\"]\"")
+        ;
+        throw runtime_error(msg);
+    }
+
+    // Construct using pay-to-script-hash:
+    CScript inner = edc_createmultisig_redeemScript(params);
+    CScriptID innerID(inner);
+    CEDCBitcoinAddress address(innerID);
+
+    UniValue result(UniValue::VOBJ);
+    result.push_back(Pair("address", address.ToString()));
+    result.push_back(Pair("redeemScript", HexStr(inner.begin(), inner.end())));
+
+    return result;
+}
+
+UniValue edcverifymessage(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 3)
+        throw runtime_error(
+            "eb_verifymessage \"equibitaddress\" \"signature\" \"message\"\n"
+            "\nVerify a signed message\n"
+            "\nArguments:\n"
+            "1. \"equibitaddress\"  (string, required) The equibit address to use for the signature.\n"
+            "2. \"signature\"       (string, required) The signature provided by the signer in base 64 encoding (see signmessage).\n"
+            "3. \"message\"         (string, required) The message that was signed.\n"
+            "\nResult:\n"
+            "true|false   (boolean) If the signature is verified or not.\n"
+            "\nExamples:\n"
+            "\nUnlock the wallet for 30 seconds\n"
+            + HelpExampleCli("walletpassphrase", "\"mypassphrase\" 30") +
+            "\nCreate the signature\n"
+            + HelpExampleCli("eb_signmessage", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" \"my message\"") +
+            "\nVerify the signature\n"
+            + HelpExampleCli("eb_verifymessage", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" \"signature\" \"my message\"") +
+            "\nAs json rpc\n"
+            + HelpExampleRpc("eb_verifymessage", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\", \"signature\", \"my message\"")
+        );
+
+    LOCK(EDC_cs_main);
+
+    string strAddress  = params[0].get_str();
+    string strSign     = params[1].get_str();
+    string strMessage  = params[2].get_str();
+
+    CEDCBitcoinAddress addr(strAddress);
+    if (!addr.IsValid())
+        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
+
+    CKeyID keyID;
+    if (!addr.GetKeyID(keyID))
+        throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
+
+    bool fInvalid = false;
+    vector<unsigned char> vchSig = DecodeBase64(strSign.c_str(), &fInvalid);
+
+    if (fInvalid)
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Malformed base64 encoding");
+
+    CHashWriter ss(SER_GETHASH, 0);
+    ss << edcstrMessageMagic;
+    ss << strMessage;
+
+    CPubKey pubkey;
+    if (!pubkey.RecoverCompact(ss.GetHash(), vchSig))
+        return false;
+
+    return (pubkey.GetID() == keyID);
+}
+
+UniValue edcsignmessagewithprivkey(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 2)
+        throw runtime_error(
+            "eb_signmessagewithprivkey \"privkey\" \"message\"\n"
+            "\nSign a message with the private key of an address\n"
+            "\nArguments:\n"
+            "1. \"privkey\"         (string, required) The private key to sign the message with.\n"
+            "2. \"message\"         (string, required) The message to create a signature of.\n"
+            "\nResult:\n"
+            "\"signature\"          (string) The signature of the message encoded in base 64\n"
+            "\nExamples:\n"
+            "\nCreate the signature\n"
+            + HelpExampleCli("eb_signmessagewithprivkey", "\"privkey\" \"my message\"") +
+            "\nVerify the signature\n"
+            + HelpExampleCli("eb_verifymessage", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" \"signature\" \"my message\"") +
+            "\nAs json rpc\n"
+            + HelpExampleRpc("eb_signmessagewithprivkey", "\"privkey\", \"my message\"")
+        );
+
+    string strPrivkey = params[0].get_str();
+    string strMessage = params[1].get_str();
+
+    CEDCBitcoinSecret vchSecret;
+    bool fGood = vchSecret.SetString(strPrivkey);
+    if (!fGood)
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
+    CKey key = vchSecret.GetKey();
+    if (!key.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Private key outside allowed range");
+
+    CHashWriter ss(SER_GETHASH, 0);
+    ss << edcstrMessageMagic;
+    ss << strMessage;
+
+    vector<unsigned char> vchSig;
+    if (!key.SignCompact(ss.GetHash(), vchSig))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
+
+    return EncodeBase64(&vchSig[0], vchSig.size());
+}
+
+UniValue edcsetmocktime(const UniValue& params, bool fHelp)
+{
+	EDCapp & theApp = EDCapp::singleton();
+
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "eb_setmocktime timestamp\n"
+            "\nSet the local time to given timestamp (-eb_regtest only)\n"
+            "\nArguments:\n"
+            "1. timestamp  (integer, required) Unix seconds-since-epoch timestamp\n"
+            "   Pass 0 to go back to using the system time."
+        );
+
+    if (!edcParams().MineBlocksOnDemand())
+        throw runtime_error("eb_setmocktime for regression testing (-eb_regtest mode) only");
+
+    // vNodesCS is locked and node send/receive times are updated
+    // atomically with the time change to prevent peers from being
+    // disconnected because we think we haven't communicated with them
+    // in a long time.
+    LOCK(EDC_cs_main);
+
+    RPCTypeCheck(params, boost::assign::list_of(UniValue::VNUM));
+    SetMockTime(params[0].get_int64());
+
+    uint64_t t = GetTime();
+    if(theApp.connman()) 
+	{
+        theApp.connman()->ForEachNode([t](CEDCNode* pnode) 
+		{
+            pnode->nLastSend = pnode->nLastRecv = t;
+        });
+	}
+
+    return NullUniValue;
+}
+
+static const CRPCCommand edcCommands[] =
+{ //  category              name                      actor (function)         okSafeMode
+  //  --------------------- ------------------------  -----------------------  ----------
+    { "control",            "eb_getinfo",                &edcgetinfo,                true  }, /* uses wallet if enabled */
+    { "util",               "eb_validateaddress",        &edcvalidateaddress,        true  }, /* uses wallet if enabled */
+    { "util",               "eb_createmultisig",         &edccreatemultisig,         true  },
+    { "util",               "eb_verifymessage",          &edcverifymessage,          true  },
+    { "util",               "eb_signmessagewithprivkey", &edcsignmessagewithprivkey, true  },
+
+    /* Not shown in help */
+    { "hidden",             "eb_setmocktime",            &edcsetmocktime,            true  },
+};
+
+void edcRegisterMiscRPCCommands( CEDCRPCTable & t)
+{
+    for (unsigned int vcidx = 0; vcidx < ARRAYLEN(edcCommands); vcidx++)
+        t.appendCommand(edcCommands[vcidx].name, &edcCommands[vcidx]);
+}

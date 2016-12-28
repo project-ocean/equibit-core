@@ -13,7 +13,7 @@
 #include "guiutil.h"
 #include "optionsmodel.h"
 
-#include "validation.h" // for DEFAULT_SCRIPTCHECK_THREADS and MAX_SCRIPTCHECK_THREADS
+#include "main.h" // for DEFAULT_SCRIPTCHECK_THREADS and MAX_SCRIPTCHECK_THREADS
 #include "netbase.h"
 #include "txdb.h" // for -dbcache defaults
 
@@ -135,22 +135,22 @@ OptionsDialog::~OptionsDialog()
     delete ui;
 }
 
-void OptionsDialog::setModel(OptionsModel *_model)
+void OptionsDialog::setModel(OptionsModel *model)
 {
-    this->model = _model;
+    this->model = model;
 
-    if(_model)
+    if(model)
     {
         /* check if client restart is needed and show persistent message */
-        if (_model->isRestartRequired())
+        if (model->isRestartRequired())
             showRestartWarning(true);
 
-        QString strLabel = _model->getOverriddenByCommandLine();
+        QString strLabel = model->getOverriddenByCommandLine();
         if (strLabel.isEmpty())
             strLabel = tr("none");
         ui->overriddenByCommandLineLabel->setText(strLabel);
 
-        mapper->setModel(_model);
+        mapper->setModel(model);
         setMapper();
         mapper->toFirst();
 

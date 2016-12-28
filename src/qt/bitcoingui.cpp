@@ -12,7 +12,6 @@
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "guiutil.h"
-#include "modaloverlay.h"
 #include "networkstyle.h"
 #include "notificator.h"
 #include "openuridialog.h"
@@ -46,6 +45,7 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QProgressBar>
 #include <QProgressDialog>
 #include <QSettings>
 #include <QShortcut>
@@ -73,11 +73,9 @@ const std::string BitcoinGUI::DEFAULT_UIPLATFORM =
 #endif
         ;
 
-/** Display name for default wallet name. Uses tilde to avoid name
- * collisions in the future with additional wallets */
 const QString BitcoinGUI::DEFAULT_WALLET = "~Default";
 
-BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *networkStyle, QWidget *parent) :
+BitcoinGUI::BitcoinGUI(const PlatformStyle *platformStyle, const NetworkStyle *networkStyle, QWidget *parent) :
     QMainWindow(parent),
     enableWallet(false),
     clientModel(0),
@@ -85,7 +83,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     unitDisplayControl(0),
     labelWalletEncryptionIcon(0),
     labelWalletHDStatusIcon(0),
-    connectionsControl(0),
+    labelConnectionsIcon(0),
     labelBlocksIcon(0),
     progressBarLabel(0),
     progressBar(0),
@@ -117,10 +115,9 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     notificator(0),
     rpcConsole(0),
     helpMessageDialog(0),
-    modalOverlay(0),
     prevBlocks(0),
     spinnerFrame(0),
-    platformStyle(_platformStyle)
+    platformStyle(platformStyle)
 {
     GUIUtil::restoreWindowGeometry("nWindow", QSize(850, 550), this);
 
@@ -149,13 +146,13 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     setUnifiedTitleAndToolBarOnMac(true);
 #endif
 
-    rpcConsole = new RPCConsole(_platformStyle, 0);
+    rpcConsole = new RPCConsole(platformStyle, 0);
     helpMessageDialog = new HelpMessageDialog(this, false);
 #ifdef ENABLE_WALLET
     if(enableWallet)
     {
         /** Create wallet frame and make it the central widget */
-        walletFrame = new WalletFrame(_platformStyle, this);
+        walletFrame = new WalletFrame(platformStyle, this);
         setCentralWidget(walletFrame);
     } else
 #endif // ENABLE_WALLET
@@ -198,8 +195,8 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     unitDisplayControl = new UnitDisplayStatusBarControl(platformStyle);
     labelWalletEncryptionIcon = new QLabel();
     labelWalletHDStatusIcon = new QLabel();
-    connectionsControl = new GUIUtil::ClickableLabel();
-    labelBlocksIcon = new GUIUtil::ClickableLabel();
+    labelConnectionsIcon = new QLabel();
+    labelBlocksIcon = new QLabel();
     if(enableWallet)
     {
         frameBlocksLayout->addStretch();
@@ -209,7 +206,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
         frameBlocksLayout->addWidget(labelWalletHDStatusIcon);
     }
     frameBlocksLayout->addStretch();
-    frameBlocksLayout->addWidget(connectionsControl);
+    frameBlocksLayout->addWidget(labelConnectionsIcon);
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelBlocksIcon);
     frameBlocksLayout->addStretch();
@@ -242,17 +239,6 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
 
     // Subscribe to notifications from core
     subscribeToCoreSignals();
-
-    connect(connectionsControl, SIGNAL(clicked(QPoint)), this, SLOT(toggleNetworkActive()));
-
-    modalOverlay = new ModalOverlay(this->centralWidget());
-#ifdef ENABLE_WALLET
-    if(enableWallet) {
-        connect(walletFrame, SIGNAL(requestedSyncWarningInfo()), this, SLOT(showModalOverlay()));
-        connect(labelBlocksIcon, SIGNAL(clicked(QPoint)), this, SLOT(showModalOverlay()));
-        connect(progressBar, SIGNAL(clicked(QPoint)), this, SLOT(showModalOverlay()));
-    }
-#endif
 }
 
 BitcoinGUI::~BitcoinGUI()
@@ -463,39 +449,38 @@ void BitcoinGUI::createToolBars()
     }
 }
 
-void BitcoinGUI::setClientModel(ClientModel *_clientModel)
+void BitcoinGUI::setClientModel(ClientModel *clientModel)
 {
-    this->clientModel = _clientModel;
-    if(_clientModel)
+    this->clientModel = clientModel;
+    if(clientModel)
     {
         // Create system tray menu (or setup the dock menu) that late to prevent users from calling actions,
         // while the client has not yet fully loaded
         createTrayIconMenu();
 
         // Keep up to date with client
-        updateNetworkState();
-        connect(_clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
-        connect(_clientModel, SIGNAL(networkActiveChanged(bool)), this, SLOT(setNetworkActive(bool)));
+        setNumConnections(clientModel->getNumConnections());
+        connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
 
-        setNumBlocks(_clientModel->getNumBlocks(), _clientModel->getLastBlockDate(), _clientModel->getVerificationProgress(NULL), false);
-        connect(_clientModel, SIGNAL(numBlocksChanged(int,QDateTime,double,bool)), this, SLOT(setNumBlocks(int,QDateTime,double,bool)));
+        setNumBlocks(clientModel->getNumBlocks(), clientModel->getLastBlockDate(), clientModel->getVerificationProgress(NULL), false);
+        connect(clientModel, SIGNAL(numBlocksChanged(int,QDateTime,double,bool)), this, SLOT(setNumBlocks(int,QDateTime,double,bool)));
 
         // Receive and report messages from client model
-        connect(_clientModel, SIGNAL(message(QString,QString,unsigned int)), this, SLOT(message(QString,QString,unsigned int)));
+        connect(clientModel, SIGNAL(message(QString,QString,unsigned int)), this, SLOT(message(QString,QString,unsigned int)));
 
         // Show progress dialog
-        connect(_clientModel, SIGNAL(showProgress(QString,int)), this, SLOT(showProgress(QString,int)));
+        connect(clientModel, SIGNAL(showProgress(QString,int)), this, SLOT(showProgress(QString,int)));
 
-        rpcConsole->setClientModel(_clientModel);
+        rpcConsole->setClientModel(clientModel);
 #ifdef ENABLE_WALLET
         if(walletFrame)
         {
-            walletFrame->setClientModel(_clientModel);
+            walletFrame->setClientModel(clientModel);
         }
 #endif // ENABLE_WALLET
-        unitDisplayControl->setOptionsModel(_clientModel->getOptionsModel());
+        unitDisplayControl->setOptionsModel(clientModel->getOptionsModel());
         
-        OptionsModel* optionsModel = _clientModel->getOptionsModel();
+        OptionsModel* optionsModel = clientModel->getOptionsModel();
         if(optionsModel)
         {
             // be aware of the tray icon disable state change reported by the OptionsModel object.
@@ -504,8 +489,6 @@ void BitcoinGUI::setClientModel(ClientModel *_clientModel)
             // initialize the disable state of the tray icon with the current value in the model.
             setTrayIconVisible(optionsModel->getHideTrayIcon());
         }
-
-        modalOverlay->setKnownBestHeight(clientModel->getHeaderTipHeight(), QDateTime::fromTime_t(clientModel->getHeaderTipTime()));
     } else {
         // Disable possibility to show main window via action
         toggleHideAction->setEnabled(false);
@@ -514,12 +497,6 @@ void BitcoinGUI::setClientModel(ClientModel *_clientModel)
             // Disable context menu on tray icon
             trayIconMenu->clear();
         }
-        // Propagate cleared model to child objects
-        rpcConsole->setClientModel(nullptr);
-#ifdef ENABLE_WALLET
-        walletFrame->setClientModel(nullptr);
-#endif // ENABLE_WALLET
-        unitDisplayControl->setOptionsModel(nullptr);
     }
 }
 
@@ -709,9 +686,8 @@ void BitcoinGUI::gotoVerifyMessageTab(QString addr)
 }
 #endif // ENABLE_WALLET
 
-void BitcoinGUI::updateNetworkState()
+void BitcoinGUI::setNumConnections(int count)
 {
-    int count = clientModel->getNumConnections();
     QString icon;
     switch(count)
     {
@@ -721,43 +697,13 @@ void BitcoinGUI::updateNetworkState()
     case 7: case 8: case 9: icon = ":/icons/connect_3"; break;
     default: icon = ":/icons/connect_4"; break;
     }
-
-    QString tooltip;
-
-    if (clientModel->getNetworkActive()) {
-        tooltip = tr("%n active connection(s) to Bitcoin network", "", count) + QString(".<br>") + tr("Click to disable network activity.");
-    } else {
-        tooltip = tr("Network activity disabled.") + QString("<br>") + tr("Click to enable network activity again.");
-        icon = ":/icons/network_disabled";
-    }
-
-    // Don't word-wrap this (fixed-width) tooltip
-    tooltip = QString("<nobr>") + tooltip + QString("</nobr>");
-    connectionsControl->setToolTip(tooltip);
-
-    connectionsControl->setPixmap(platformStyle->SingleColorIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-}
-
-void BitcoinGUI::setNumConnections(int count)
-{
-    updateNetworkState();
-}
-
-void BitcoinGUI::setNetworkActive(bool networkActive)
-{
-    updateNetworkState();
+    labelConnectionsIcon->setPixmap(platformStyle->SingleColorIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Bitcoin network", "", count));
 }
 
 void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, bool header)
 {
-    if (modalOverlay)
-    {
-        if (header)
-            modalOverlay->setKnownBestHeight(count, blockDate);
-        else
-            modalOverlay->tipUpdate(count, blockDate, nVerificationProgress);
-    }
-    if (!clientModel)
+    if(!clientModel)
         return;
 
     // Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbelled text)
@@ -806,10 +752,7 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
 
 #ifdef ENABLE_WALLET
         if(walletFrame)
-        {
             walletFrame->showOutOfSyncWarning(false);
-            modalOverlay->showHide(true, true);
-        }
 #endif // ENABLE_WALLET
 
         progressBarLabel->setVisible(false);
@@ -817,7 +760,30 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
     }
     else
     {
-        QString timeBehindText = GUIUtil::formateNiceTimeOffset(secs);
+        // Represent time from last generated block in human readable text
+        QString timeBehindText;
+        const int HOUR_IN_SECONDS = 60*60;
+        const int DAY_IN_SECONDS = 24*60*60;
+        const int WEEK_IN_SECONDS = 7*24*60*60;
+        const int YEAR_IN_SECONDS = 31556952; // Average length of year in Gregorian calendar
+        if(secs < 2*DAY_IN_SECONDS)
+        {
+            timeBehindText = tr("%n hour(s)","",secs/HOUR_IN_SECONDS);
+        }
+        else if(secs < 2*WEEK_IN_SECONDS)
+        {
+            timeBehindText = tr("%n day(s)","",secs/DAY_IN_SECONDS);
+        }
+        else if(secs < YEAR_IN_SECONDS)
+        {
+            timeBehindText = tr("%n week(s)","",secs/WEEK_IN_SECONDS);
+        }
+        else
+        {
+            qint64 years = secs / YEAR_IN_SECONDS;
+            qint64 remainder = secs % YEAR_IN_SECONDS;
+            timeBehindText = tr("%1 and %2").arg(tr("%n year(s)", "", years)).arg(tr("%n week(s)","", remainder/WEEK_IN_SECONDS));
+        }
 
         progressBarLabel->setVisible(true);
         progressBar->setFormat(tr("%1 behind").arg(timeBehindText));
@@ -837,10 +803,7 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
 
 #ifdef ENABLE_WALLET
         if(walletFrame)
-        {
             walletFrame->showOutOfSyncWarning(true);
-            modalOverlay->showHide();
-        }
 #endif // ENABLE_WALLET
 
         tooltip += QString("<br>");
@@ -1136,12 +1099,6 @@ void BitcoinGUI::setTrayIconVisible(bool fHideTrayIcon)
     }
 }
 
-void BitcoinGUI::showModalOverlay()
-{
-    if (modalOverlay && (progressBar->isVisible() || modalOverlay->isLayerVisible()))
-        modalOverlay->toggleVisibility();
-}
-
 static bool ThreadSafeMessageBox(BitcoinGUI *gui, const std::string& message, const std::string& caption, unsigned int style)
 {
     bool modal = (style & CClientUIInterface::MODAL);
@@ -1173,13 +1130,6 @@ void BitcoinGUI::unsubscribeFromCoreSignals()
     uiInterface.ThreadSafeQuestion.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _3, _4));
 }
 
-void BitcoinGUI::toggleNetworkActive()
-{
-    if (clientModel) {
-        clientModel->setNetworkActive(!clientModel->getNetworkActive());
-    }
-}
-
 UnitDisplayStatusBarControl::UnitDisplayStatusBarControl(const PlatformStyle *platformStyle) :
     optionsModel(0),
     menu(0)
@@ -1207,7 +1157,7 @@ void UnitDisplayStatusBarControl::mousePressEvent(QMouseEvent *event)
 /** Creates context menu, its actions, and wires up all the relevant signals for mouse events. */
 void UnitDisplayStatusBarControl::createContextMenu()
 {
-    menu = new QMenu(this);
+    menu = new QMenu();
     Q_FOREACH(BitcoinUnits::Unit u, BitcoinUnits::availableUnits())
     {
         QAction *menuAction = new QAction(QString(BitcoinUnits::name(u)), this);
@@ -1218,17 +1168,17 @@ void UnitDisplayStatusBarControl::createContextMenu()
 }
 
 /** Lets the control know about the Options Model (and its signals) */
-void UnitDisplayStatusBarControl::setOptionsModel(OptionsModel *_optionsModel)
+void UnitDisplayStatusBarControl::setOptionsModel(OptionsModel *optionsModel)
 {
-    if (_optionsModel)
+    if (optionsModel)
     {
-        this->optionsModel = _optionsModel;
+        this->optionsModel = optionsModel;
 
         // be aware of a display unit change reported by the OptionsModel object.
-        connect(_optionsModel,SIGNAL(displayUnitChanged(int)),this,SLOT(updateDisplayUnit(int)));
+        connect(optionsModel,SIGNAL(displayUnitChanged(int)),this,SLOT(updateDisplayUnit(int)));
 
         // initialize the display units label with the current value in the model.
-        updateDisplayUnit(_optionsModel->getDisplayUnit());
+        updateDisplayUnit(optionsModel->getDisplayUnit());
     }
 }
 

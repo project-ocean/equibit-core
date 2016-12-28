@@ -1,0 +1,15 @@
+./bitcoind \
+-logtimestamps -eb_logtimestamps \
+-logtimemicros -eb_logtimemicros \
+-regtest -eb_regtest \
+-server -eb_server \
+-debug -eb_debug \
+-eb_relaypriority=false \
+-eb_cacert=/home/david/EDC/root-ca/root-ca.crt \
+-eb_cert=/home/david/EDC/root-ca/client.crt \
+-eb_privkey=/home/david/EDC/root-ca/client.key \
+-eb_connect=192.168.0.202 -connect=192.168.0.202 \
+-eb_usehsm
+"$@"
+
+# -daemon \

@@ -1,0 +1,33 @@
+If the equibitd is run with -eb_usehsm=true, then it cannot be run as a daemon. It must be connected
+to the terminal at startup to receive the pass phrase. After startup, if there is a need to close
+the terminal, then do the following first:
+
+1) Start equibitd using ./run.equibitd
+
+2) Ctrl-Z 
+   Stops the process.
+   Note the job number. The terminal typically displays
+
+   [1]+  Stopped                 ./run.equibitd
+
+   1 is the job number.
+
+3) bg <equibitd-job#>
+
+   For example, bg 1.
+
+   After this command is executed press Enter several times. If the line
+
+   [1]+  Stopped                 ./run.equibitd
+
+   is displayed, repeat the bg command. When
+
+   [1]+ ./run.equibitd &
+
+   is displayed, the process is running in the background.
+
+5) disown -h
+   Prevents process from being killed when terminal is closed.
+
+After successfully executing the steps listed above, one can close the terminal without causing the
+server to receive a signal and shut down.

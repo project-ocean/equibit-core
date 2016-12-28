@@ -1,0 +1,1 @@
+./bitcoind -regtest -server -debug -eb_debug -eb_regtest -eb_server "$@"

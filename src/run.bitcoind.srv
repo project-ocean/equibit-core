@@ -1,0 +1,17 @@
+./bitcoind \
+-daemon \
+-logtimestamps -eb_logtimestamps \
+-logtimemicros -eb_logtimemicros \
+-regtest -eb_regtest \
+-server -eb_server \
+-debug -eb_debug \
+-eb_relaypriority=false \
+-eb_cacert=/home/david/edc/EDC-core/sample/openssl/root-ca.crt \
+-eb_cert=/home/david/edc/EDC-core/sample/openssl/ec.crt \
+-eb_privkey=/home/david/edc/EDC-core/sample/openssl/ec.key \
+-eb_rpcallowip=192.168.0.201  -rpcallowip=192.168.0.201 \
+-eb_rpcallowip=216.209.227.87 -rpcallowip=216.209.227.87 \
+-eb_rpcallowip=70.26.61.37    -rpcallowip=70.26.61.37 \
+-eb_rpcallowip=192.81.168.118 -rpcallowip=192.81.168.118 \
+-eb_rpcallowip=192.81.168.119 -rpcallowip=192.81.168.119 \
+"$@"

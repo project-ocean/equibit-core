@@ -22,11 +22,17 @@ public:
 
     const std::string& DataDir() const { return strDataDir; }
     int RPCPort() const { return nRPCPort; }
+// EDC BEGIN
+    int edcRPCPort() const { return edcnRPCPort; }
+// EDC END
 
 protected:
     CBaseChainParams() {}
 
     int nRPCPort;
+// EDC BEGIN
+    int edcnRPCPort;
+// EDC END
     std::string strDataDir;
 };
 

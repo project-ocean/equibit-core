@@ -1,0 +1,1 @@
+./bitcoin-cli -regtest -rpcport=18331 "$@"

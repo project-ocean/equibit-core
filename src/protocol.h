@@ -18,6 +18,8 @@
 #include <stdint.h>
 #include <string>
 
+#define MESSAGE_START_SIZE 4
+
 /** Message header.
  * (4) message start.
  * (12) command.
@@ -27,16 +29,6 @@
 class CMessageHeader
 {
 public:
-    enum {
-        MESSAGE_START_SIZE = 4,
-        COMMAND_SIZE = 12,
-        MESSAGE_SIZE_SIZE = 4,
-        CHECKSUM_SIZE = 4,
-
-        MESSAGE_SIZE_OFFSET = MESSAGE_START_SIZE + COMMAND_SIZE,
-        CHECKSUM_OFFSET = MESSAGE_SIZE_OFFSET + MESSAGE_SIZE_SIZE,
-        HEADER_SIZE = MESSAGE_START_SIZE + COMMAND_SIZE + MESSAGE_SIZE_SIZE + CHECKSUM_SIZE
-    };
     typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
 
     CMessageHeader(const MessageStartChars& pchMessageStartIn);
@@ -48,18 +40,29 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
         READWRITE(FLATDATA(pchMessageStart));
         READWRITE(FLATDATA(pchCommand));
         READWRITE(nMessageSize);
-        READWRITE(FLATDATA(pchChecksum));
+        READWRITE(nChecksum);
     }
 
+    // TODO: make private (improves encapsulation)
+public:
+    enum {
+        COMMAND_SIZE = 12,
+        MESSAGE_SIZE_SIZE = sizeof(int),
+        CHECKSUM_SIZE = sizeof(int),
+
+        MESSAGE_SIZE_OFFSET = MESSAGE_START_SIZE + COMMAND_SIZE,
+        CHECKSUM_OFFSET = MESSAGE_SIZE_OFFSET + MESSAGE_SIZE_SIZE,
+        HEADER_SIZE = MESSAGE_START_SIZE + COMMAND_SIZE + MESSAGE_SIZE_SIZE + CHECKSUM_SIZE
+    };
     char pchMessageStart[MESSAGE_START_SIZE];
     char pchCommand[COMMAND_SIZE];
-    uint32_t nMessageSize;
-    uint8_t pchChecksum[CHECKSUM_SIZE];
+    unsigned int nMessageSize;
+    unsigned int nChecksum;
 };
 
 /**
@@ -261,7 +264,7 @@ enum ServiceFlags : uint64_t {
     // Bitcoin Core nodes used to support this by default, without advertising this bit,
     // but no longer do as of protocol version 70011 (= NO_BLOOM_VERSION)
     NODE_BLOOM = (1 << 2),
-    // NODE_WITNESS indicates that a node can be asked for blocks and transactions including
+    // Indicates that a node can be asked for blocks and transactions including
     // witness data.
     NODE_WITNESS = (1 << 3),
     // NODE_XTHIN means the node supports Xtreme Thinblocks
@@ -289,15 +292,14 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
         if (ser_action.ForRead())
             Init();
-        int nVersion = s.GetVersion();
-        if (s.GetType() & SER_DISK)
+        if (nType & SER_DISK)
             READWRITE(nVersion);
-        if ((s.GetType() & SER_DISK) ||
-            (nVersion >= CADDR_TIME_VERSION && !(s.GetType() & SER_GETHASH)))
+        if ((nType & SER_DISK) ||
+            (nVersion >= CADDR_TIME_VERSION && !(nType & SER_GETHASH)))
             READWRITE(nTime);
         uint64_t nServicesInt = nServices;
         READWRITE(nServicesInt);
@@ -313,24 +315,20 @@ public:
     unsigned int nTime;
 };
 
-/** getdata message type flags */
+/** getdata message types */
 const uint32_t MSG_WITNESS_FLAG = 1 << 30;
 const uint32_t MSG_TYPE_MASK    = 0xffffffff >> 2;
-
-/** getdata / inv message types.
- * These numbers are defined by the protocol. When adding a new value, be sure
- * to mention it in the respective BIP.
- */
 enum GetDataMsg
 {
     UNDEFINED = 0,
-    MSG_TX = 1,
-    MSG_BLOCK = 2,
+    MSG_TX,
+    MSG_BLOCK,
+    MSG_TYPE_MAX = MSG_BLOCK,
     // The following can only occur in getdata. Invs always use TX or BLOCK.
-    MSG_FILTERED_BLOCK = 3,  //!< Defined in BIP37
-    MSG_CMPCT_BLOCK = 4,     //!< Defined in BIP152
-    MSG_WITNESS_BLOCK = MSG_BLOCK | MSG_WITNESS_FLAG, //!< Defined in BIP144
-    MSG_WITNESS_TX = MSG_TX | MSG_WITNESS_FLAG,       //!< Defined in BIP144
+    MSG_FILTERED_BLOCK,
+    MSG_CMPCT_BLOCK,
+    MSG_WITNESS_BLOCK = MSG_BLOCK | MSG_WITNESS_FLAG,
+    MSG_WITNESS_TX = MSG_TX | MSG_WITNESS_FLAG,
     MSG_FILTERED_WITNESS_BLOCK = MSG_FILTERED_BLOCK | MSG_WITNESS_FLAG,
 };
 
@@ -344,7 +342,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
         READWRITE(type);
         READWRITE(hash);

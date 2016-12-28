@@ -1,0 +1,6 @@
+./autogen.sh
+#export BDB_PREFIX=~/bitcoin/db4
+#./configure CPPFLAGS="-I${BDB_PREFIX}/include/" LDFLAGS="-L${BDB_PREFIX}/lib/ -L/usr/local/lib" --with-gui=no --disable-tests
+./configure LDFLAGS="-L/usr/local/lib" --disable-tests --with-gui=no --with-incompatible-bdb
+make -j8
+

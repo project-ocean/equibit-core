@@ -4,12 +4,12 @@
 
 #include <vector>
 #include "prevector.h"
+#include "random.h"
 
 #include "serialize.h"
 #include "streams.h"
 
 #include "test/test_bitcoin.h"
-#include "test/test_random.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -27,7 +27,8 @@ class prevector_tester {
 
     typedef typename pretype::size_type Size;
     bool passed = true;
-    FastRandomContext rand_cache;
+    uint32_t insecure_rand_Rz_cache;
+    uint32_t insecure_rand_Rw_cache;
 
 
     template <typename A, typename B>
@@ -170,14 +171,15 @@ public:
         test();
     }
     ~prevector_tester() {
-        BOOST_CHECK_MESSAGE(passed, "insecure_rand_Rz: "
-                << rand_cache.Rz
+        BOOST_CHECK_MESSAGE(passed, "insecure_rand_Rz: " 
+                << insecure_rand_Rz_cache 
                 << ", insecure_rand_Rw: "
-                << rand_cache.Rw);
+                << insecure_rand_Rw_cache);
     }
     prevector_tester() {
         seed_insecure_rand();
-        rand_cache = insecure_rand_ctx;
+        insecure_rand_Rz_cache = insecure_rand_Rz;
+        insecure_rand_Rw_cache = insecure_rand_Rw;
     }
 };
 

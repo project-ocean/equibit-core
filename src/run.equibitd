@@ -1,0 +1,11 @@
+./equibitd \
+-daemon \
+-eb_usehsm=false \
+-logtimestamps -eb_logtimestamps \
+-logtimemicros -eb_logtimemicros \
+-regtest -eb_regtest \
+-server -eb_server \
+-debug -eb_debug \
+-eb_relaypriority=false \
+-eb_connect=192.168.0.202 -connect=192.168.0.202 \
+"$@"

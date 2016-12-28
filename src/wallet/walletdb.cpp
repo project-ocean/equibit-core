@@ -7,7 +7,7 @@
 
 #include "base58.h"
 #include "consensus/validation.h"
-#include "validation.h" // For CheckTransaction
+#include "main.h" // For CheckTransaction
 #include "protocol.h"
 #include "serialize.h"
 #include "sync.h"
@@ -23,6 +23,14 @@
 using namespace std;
 
 static uint64_t nAccountingEntryNumber = 0;
+
+namespace
+{
+#ifdef USE_HSM
+const std::string HSM_KEY           = "HSM_key";    // HSM_KEY:pubkey/HSM-ID
+const std::string HSM_POOL          = "HSM_pool";   // HSM_POOL:number/keypool
+#endif
+}
 
 //
 // CWalletDB
@@ -82,6 +90,22 @@ bool CWalletDB::WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, c
 
     return Write(std::make_pair(std::string("key"), vchPubKey), std::make_pair(vchPrivKey, Hash(vchKey.begin(), vchKey.end())), false);
 }
+
+#ifdef USE_HSM
+bool CWalletDB::WriteHSMKey(
+     const CPubKey & vchPubKey,
+ const std::string & hsmID,
+const CKeyMetadata & keyMeta
+)
+{
+    nWalletDBUpdated++;
+
+    if (!Write(std::make_pair(std::string("keymeta"), vchPubKey), keyMeta, false))
+        return false;
+
+    return Write(std::make_pair(HSM_KEY, vchPubKey), hsmID, false);
+}
+#endif
 
 bool CWalletDB::WriteCryptedKey(const CPubKey& vchPubKey,
                                 const std::vector<unsigned char>& vchCryptedSecret,
@@ -170,6 +194,25 @@ bool CWalletDB::ErasePool(int64_t nPool)
     return Erase(std::make_pair(std::string("pool"), nPool));
 }
 
+#ifdef USE_HSM
+bool CWalletDB::ReadHSMPool(int64_t nPool, CKeyPool& keypool)
+{
+    return Read(std::make_pair(HSM_POOL, nPool), keypool);
+}
+
+bool CWalletDB::WriteHSMPool(int64_t nPool, const CKeyPool& keypool)
+{
+    nWalletDBUpdated++;
+    return Write(std::make_pair(HSM_POOL, nPool), keypool);
+}
+
+bool CWalletDB::EraseHSMPool(int64_t nPool)
+{
+    nWalletDBUpdated++;
+    return Erase(std::make_pair(HSM_POOL, nPool));
+}
+#endif
+
 bool CWalletDB::WriteMinVersion(int nVersion)
 {
     return Write(std::string("minversion"), nVersion);
@@ -249,6 +292,82 @@ void CWalletDB::ListAccountCreditDebit(const string& strAccount, list<CAccountin
     }
 
     pcursor->close();
+}
+
+DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
+{
+    LOCK(pwallet->cs_wallet);
+    // Old wallets didn't have any defined order for transactions
+    // Probably a bad idea to change the output of this
+
+    // First: get all CWalletTx and CAccountingEntry into a sorted-by-time multimap.
+    typedef pair<CWalletTx*, CAccountingEntry*> TxPair;
+    typedef multimap<int64_t, TxPair > TxItems;
+    TxItems txByTime;
+
+    for (map<uint256, CWalletTx>::iterator it = pwallet->mapWallet.begin(); it != pwallet->mapWallet.end(); ++it)
+    {
+        CWalletTx* wtx = &((*it).second);
+        txByTime.insert(make_pair(wtx->nTimeReceived, TxPair(wtx, (CAccountingEntry*)0)));
+    }
+    list<CAccountingEntry> acentries;
+    ListAccountCreditDebit("", acentries);
+    BOOST_FOREACH(CAccountingEntry& entry, acentries)
+    {
+        txByTime.insert(make_pair(entry.nTime, TxPair((CWalletTx*)0, &entry)));
+    }
+
+    int64_t& nOrderPosNext = pwallet->nOrderPosNext;
+    nOrderPosNext = 0;
+    std::vector<int64_t> nOrderPosOffsets;
+    for (TxItems::iterator it = txByTime.begin(); it != txByTime.end(); ++it)
+    {
+        CWalletTx *const pwtx = (*it).second.first;
+        CAccountingEntry *const pacentry = (*it).second.second;
+        int64_t& nOrderPos = (pwtx != 0) ? pwtx->nOrderPos : pacentry->nOrderPos;
+
+        if (nOrderPos == -1)
+        {
+            nOrderPos = nOrderPosNext++;
+            nOrderPosOffsets.push_back(nOrderPos);
+
+            if (pwtx)
+            {
+                if (!WriteTx(*pwtx))
+                    return DB_LOAD_FAIL;
+            }
+            else
+                if (!WriteAccountingEntry(pacentry->nEntryNo, *pacentry))
+                    return DB_LOAD_FAIL;
+        }
+        else
+        {
+            int64_t nOrderPosOff = 0;
+            BOOST_FOREACH(const int64_t& nOffsetStart, nOrderPosOffsets)
+            {
+                if (nOrderPos >= nOffsetStart)
+                    ++nOrderPosOff;
+            }
+            nOrderPos += nOrderPosOff;
+            nOrderPosNext = std::max(nOrderPosNext, nOrderPos + 1);
+
+            if (!nOrderPosOff)
+                continue;
+
+            // Since we're changing the order, write it back
+            if (pwtx)
+            {
+                if (!WriteTx(*pwtx))
+                    return DB_LOAD_FAIL;
+            }
+            else
+                if (!WriteAccountingEntry(pacentry->nEntryNo, *pacentry))
+                    return DB_LOAD_FAIL;
+        }
+    }
+    WriteOrderPosNext(nOrderPosNext);
+
+    return DB_LOAD_OK;
 }
 
 class CWalletScanState {
@@ -526,6 +645,42 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 return false;
             }
         }
+#ifdef USE_HSM
+        else if( strType == HSM_POOL )
+        {
+            int64_t nIndex;
+            ssKey >> nIndex;
+            CKeyPool keypool;
+            ssValue >> keypool;
+            pwallet->setHSMKeyPool.insert(nIndex);
+
+            // If no metadata exists yet, create a default with the pool key's
+            // creation time. Note that this may be overwritten by actually
+            // stored metadata for that key later, which is fine.
+            CKeyID keyid = keypool.vchPubKey.GetID();
+            if (pwallet->mapKeyMetadata.count(keyid) == 0)
+                pwallet->mapKeyMetadata[keyid] = CKeyMetadata(keypool.nTime);
+        }
+        else if( strType == HSM_KEY )
+        {
+            CPubKey pubKey;
+            ssKey >> pubKey;
+            if (!pubKey.IsValid())
+            {
+                strErr = "Error reading wallet database: CPubKey corrupt";
+                return false;
+            }
+
+            std::string hsmID;
+            ssValue >> hsmID;
+
+            if(!pwallet->AddHSMKey( pubKey, hsmID ))
+            {
+                strErr = "Error reading wallet database: Add HSM Key failed";
+                return false;
+            }
+        }
+#endif
     } catch (...)
     {
         return false;
@@ -536,7 +691,11 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
 static bool IsKeyType(string strType)
 {
     return (strType== "key" || strType == "wkey" ||
-            strType == "mkey" || strType == "ckey");
+            strType == "mkey" || strType == "ckey"
+#ifdef USE_HSM
+            || strType == HSM_KEY
+#endif
+);
 }
 
 DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
@@ -635,7 +794,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
         WriteVersion(CLIENT_VERSION);
 
     if (wss.fAnyUnordered)
-        result = pwallet->ReorderTransactions();
+        result = ReorderTransactions(pwallet);
 
     pwallet->laccentries.clear();
     ListAccountCreditDebit("*", pwallet->laccentries);

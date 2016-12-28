@@ -36,6 +36,7 @@ public:
 
     //! Support for BIP 0013 : see https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki
     virtual bool AddCScript(const CScript& redeemScript) =0;
+//    virtual bool edcAddCScript(const CScript& redeemScript) =0; // EDC
     virtual bool HaveCScript(const CScriptID &hash) const =0;
     virtual bool GetCScript(const CScriptID &hash, CScript& redeemScriptOut) const =0;
 
@@ -99,6 +100,7 @@ public:
         return false;
     }
     virtual bool AddCScript(const CScript& redeemScript);
+//    virtual bool edcAddCScript(const CScript& redeemScript); // EDC
     virtual bool HaveCScript(const CScriptID &hash) const;
     virtual bool GetCScript(const CScriptID &hash, CScript& redeemScriptOut) const;
 

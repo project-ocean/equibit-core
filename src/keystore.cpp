@@ -9,6 +9,7 @@
 #include "pubkey.h"
 #include "util.h"
 
+
 #include <boost/foreach.hpp>
 
 bool CKeyStore::AddKey(const CKey &key) {
@@ -47,6 +48,20 @@ bool CBasicKeyStore::AddCScript(const CScript& redeemScript)
     mapScripts[CScriptID(redeemScript)] = redeemScript;
     return true;
 }
+
+#if 0
+// This cannot be added until test link issue is resolved
+bool CBasicKeyStore::edcAddCScript(const CScript& redeemScript)
+{
+    if (redeemScript.size() > MAX_SCRIPT_ELEMENT_SIZE)
+        return edcError("CBasicKeyStore::edcAddCScript(): redeemScripts > %i "
+			"bytes are invalid", MAX_SCRIPT_ELEMENT_SIZE);
+
+    LOCK(cs_KeyStore);
+    mapScripts[CScriptID(redeemScript)] = redeemScript;
+    return true;
+}
+#endif
 
 bool CBasicKeyStore::HaveCScript(const CScriptID& hash) const
 {
