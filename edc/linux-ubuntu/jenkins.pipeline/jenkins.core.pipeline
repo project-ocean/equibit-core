@@ -1,0 +1,34 @@
+pipeline
+{
+    agent any
+
+    environment
+    {
+        BERKLEY_DB="${HOME}/equibit/source/thirdparty/db4"
+    }
+
+    stages
+    {
+        stage('Autogen')
+        {
+            steps
+            {
+                sh './autogen.sh'
+            }
+        }
+        stage('Configure')
+        {
+            steps
+            {
+                sh './configure CPPFLAGS="-I${BERKLEY_DB}/include/" LDFLAGS="-L${BERKLEY_DB}/lib/ -L/usr/local/lib" --with-gui=no --disable-tests'
+            }
+        }
+        stage('Make')
+        {
+            steps
+            {
+                sh 'make'
+            }
+        }
+    }
+}
