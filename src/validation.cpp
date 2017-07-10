@@ -48,7 +48,7 @@
 
 #if defined(NDEBUG)
 #ifndef WIN32
-# error "Bitcoin cannot be compiled without assertions."
+# error "Equibit cannot be compiled without assertions."
 #endif
 #endif
 
@@ -1680,7 +1680,7 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
 static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void ThreadScriptCheck() {
-    RenameThread("bitcoin-scriptch");
+    RenameThread("equibit-scriptch");
     scriptcheckqueue.Thread();
 }
 
