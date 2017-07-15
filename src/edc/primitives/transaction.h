@@ -6,6 +6,7 @@
 
 #include "uint256.h"
 #include "serialize.h"
+#include "univalue/include/univalue.h"
 
 
 enum class Currency : uint32_t
@@ -26,6 +27,10 @@ public:
 public:
 
     EquibitTxOut() = default;
+
+public:
+
+    UniValue to_json() const;
 
 public:
 
