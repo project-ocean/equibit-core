@@ -10,6 +10,7 @@
 #include "script/script.h"
 #include "serialize.h"
 #include "uint256.h"
+#include "edc/primitives/transaction.h"
 
 static const int SERIALIZE_TRANSACTION_NO_WITNESS = 0x40000000;
 
@@ -134,6 +135,7 @@ class CTxOut
 public:
     CAmount nValue;
     CScript scriptPubKey;
+    EquibitTxOut m_equibit;
 
     CTxOut()
     {
@@ -148,6 +150,8 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action) {
         READWRITE(nValue);
         READWRITE(*(CScriptBase*)(&scriptPubKey));
+
+        m_equibit.SerializationOp(s, ser_action);
     }
 
     void SetNull()
