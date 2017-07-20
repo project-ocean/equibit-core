@@ -103,6 +103,7 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry)
         UniValue o(UniValue::VOBJ);
         ScriptPubKeyToJSON(txout.scriptPubKey, o, true);
         out.push_back(Pair("scriptPubKey", o));
+        out.push_back(Pair("equibit", txout.m_equibit.to_json()));
         vout.push_back(out);
     }
     entry.push_back(Pair("vout", vout));
