@@ -2507,6 +2507,7 @@ UniValue listunspent(const JSONRPCRequest& request)
         entry.push_back(Pair("confirmations", out.nDepth));
         entry.push_back(Pair("spendable", out.fSpendable));
         entry.push_back(Pair("solvable", out.fSolvable));
+        entry.push_back(Pair("equibit", out.tx->tx->vout[out.i].m_equibit.to_json()));
         results.push_back(entry);
     }
 
