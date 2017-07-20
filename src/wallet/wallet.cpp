@@ -1493,7 +1493,7 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived,
             address = CNoDestination();
         }
 
-        COutputEntry output = {address, txout.nValue, (int)i};
+        COutputEntry output = {address, txout.nValue, (int)i, txout.m_equibit};
 
         // If we are debited by the transaction, add the output as a "sent" entry
         if (nDebit > 0)
