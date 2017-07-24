@@ -126,6 +126,7 @@ BITCOIN_CORE_H = \
   rpc/protocol.h \
   rpc/server.h \
   rpc/register.h \
+  edc/wallet/issuer.h \
   scheduler.h \
   script/sigcache.h \
   script/sign.h \
@@ -227,6 +228,7 @@ endif
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_wallet_a_SOURCES = \
+  edc/wallet/issuer.cpp \
   edc/wallet/wallet.cpp \
   edc/wallet/walletdb.cpp \
   wallet/crypter.cpp \
