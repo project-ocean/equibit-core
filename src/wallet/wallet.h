@@ -76,6 +76,7 @@ extern const char * DEFAULT_WALLET_DAT;
 
 class CBlockIndex;
 class CCoinControl;
+class CBitcoinAddress;
 class COutput;
 class CReserveKey;
 class CScript;
@@ -716,6 +717,9 @@ public:
      * populate vCoins with vector of available COutputs.
      */
     void AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed=true, const CCoinControl *coinControl = NULL, bool fIncludeZeroValue=false) const;
+
+    //! populate vCoins with vector of available COutputs authorized by issuer
+    void AvailableCoins(std::vector<COutput>& vCoins, CBitcoinAddress& issuer, unsigned wot_level, bool fOnlyConfirmed = true, const CCoinControl* coinControl = NULL, bool fIncludeZeroValue = false) const;
 
     /**
      * Shuffle and select coins until nTargetValue is reached while avoiding
