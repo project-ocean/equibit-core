@@ -22,6 +22,7 @@ static const bool DEFAULT_FLUSHWALLET = true;
 class CAccount;
 class CAccountingEntry;
 struct CBlockLocator;
+class CIssuer;
 class CKeyPool;
 class CMasterKey;
 class CScript;
@@ -158,6 +159,9 @@ public:
     bool ReadAccount(const std::string& strAccount, CAccount& account);
     bool WriteAccount(const std::string& strAccount, const CAccount& account);
 
+    bool ReadIssuer(const std::string& strIssuer, CIssuer& issuer);
+    bool WriteIssuer(const std::string& strIssuer, const CIssuer& issuer);
+
     /// Write destination data key,value tuple to database
     bool WriteDestData(const std::string &address, const std::string &key, const std::string &value);
     /// Erase destination data tuple from wallet database
@@ -175,6 +179,8 @@ public:
 
     //! write the hdchain model (external chain child index counter)
     bool WriteHDChain(const CHDChain& chain);
+
+    void ListIssuers(std::vector<std::pair<std::string, CIssuer>>& out);
 
     static void IncrementUpdateCounter();
     static unsigned int GetUpdateCounter();

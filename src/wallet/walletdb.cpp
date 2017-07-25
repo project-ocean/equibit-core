@@ -26,7 +26,7 @@ using namespace std;
 
 static uint64_t nAccountingEntryNumber = 0;
 
-static std::atomic<unsigned int> nWalletDBUpdateCounter;
+std::atomic<unsigned int> nWalletDBUpdateCounter;
 
 //
 // CWalletDB
