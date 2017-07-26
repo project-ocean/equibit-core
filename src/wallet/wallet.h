@@ -821,6 +821,7 @@ public:
                            std::string& strFailReason, const CCoinControl *coinControl = NULL, bool sign = true);
 
     bool create_issuing_transaction(const CIssuer&, const std::string payload, const std::vector<CRecipient>&, CWalletTx&, CReserveKey&, CAmount& nFeeRet, int& nChangePosInOut, std::string& strFailReason);
+    bool create_blanking_transaction(const CIssuer&, const std::vector<CRecipient>&, CWalletTx&, CReserveKey&, bool feeFromBlank, CAmount& nFeeRet, int& nChangePosInOut, std::string& strFailReason);
 
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, CConnman* connman, CValidationState& state);
 
