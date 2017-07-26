@@ -819,6 +819,9 @@ public:
      */
     bool CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, int& nChangePosInOut,
                            std::string& strFailReason, const CCoinControl *coinControl = NULL, bool sign = true);
+
+    bool create_issuing_transaction(const CIssuer&, const std::string payload, const std::vector<CRecipient>&, CWalletTx&, CReserveKey&, CAmount& nFeeRet, int& nChangePosInOut, std::string& strFailReason);
+
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, CConnman* connman, CValidationState& state);
 
     void ListAccountCreditDebit(const std::string& strAccount, std::list<CAccountingEntry>& entries);
