@@ -240,6 +240,11 @@ extern const char *GETBLOCKTXN;
  * @since protocol version 70014 as described by BIP 152
  */
 extern const char *BLOCKTXN;
+/**
+ * The User messages are directed at end users. Examples include all forms
+ * of corporate actions and responses.
+ */
+extern const char *USER;
 };
 
 /* Get a vector of all valid message types (see above) */
