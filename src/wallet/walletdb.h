@@ -28,6 +28,7 @@ class CMasterKey;
 class CScript;
 class CWallet;
 class CWalletTx;
+class CUserMessage;
 class uint160;
 class uint256;
 
@@ -182,11 +183,55 @@ public:
 
     void ListIssuers(std::vector<std::pair<std::string, CIssuer>>& out);
 
+    bool WriteUserMsg(const CUserMessage*);
+    bool EraseUserMsg(const CUserMessage*);
+
+    void GetMessage(const uint256 &, CUserMessage*& msg);
+    void DeleteMessage(const uint256 &);
+
+    void GetMessages(
+        time_t from,
+        time_t to,
+        const std::set<std::string>& assets,
+        const std::set<std::string>& types,
+        const std::set<std::string>& senders,
+        const std::set<std::string>& receivers,
+        std::vector<CUserMessage *>& out
+    );
+
+    void DeleteMessages(
+        time_t from,
+        time_t to,
+        const std::set<std::string>& assets,
+        const std::set<std::string>& types,
+        const std::set<std::string>& senders,
+        const std::set<std::string>& receivers);
+
     static void IncrementUpdateCounter();
     static unsigned int GetUpdateCounter();
 private:
     CWalletDB(const CWalletDB&);
     void operator=(const CWalletDB&);
+
+    void GetMessages(
+        const std::string& types,
+        Dbc * cursor,
+        time_t from,
+        time_t to,
+        const std::set<std::string>& assets,
+        const std::set<std::string>& senders,
+        const std::set<std::string>& receivers,
+        std::vector<CUserMessage *>& out
+    );
+
+    void DeleteMessages(
+        const std::string& types,
+        time_t from,
+        time_t to,
+        const std::set<std::string>& assets,
+        const std::set<std::string>& senders,
+        const std::set<std::string>& receivers
+    );
 };
 
 void ThreadFlushWalletDB();

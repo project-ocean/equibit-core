@@ -2514,6 +2514,157 @@ UniValue listunspent(const JSONRPCRequest& request)
     return results;
 }
 
+namespace
+{
+
+bool getPubKey(
+    CPubKey& pubkey,        // OUT
+    CBitcoinAddress& addr,  // IN
+    CWallet& wallet)        // IN
+{
+#ifndef ENABLE_WALLET
+    return false;
+#endif
+
+    CKeyID keyID;
+    if (!addr.GetKeyID(keyID)) return false;
+
+    CPubKey vchPubKey;
+    if (!wallet.GetPubKey(keyID, pubkey)) return false;
+
+    if (!pubkey.IsFullyValid()) return false;
+
+    return true;
+}
+
+}
+
+UniValue trustedsend(const JSONRPCRequest& request)
+{
+    if (!EnsureWalletIsAvailable(request.fHelp)) return NullUniValue;
+
+    // trustedsend seller buyer issuer amount wot-level (min-confirm comment )
+    //
+    // level 0 No trust checking is done
+    // level 1 trust chain from issuer to buyer of length of up to 2
+    // level 2 trust chain from issuer to buyer
+    // level 3 Issuer and buyer must both sign the transaction
+    //
+    if (request.fHelp || request.params.size() < 5 || request.params.size() > 7)
+        throw runtime_error(
+            "trustedsend \"seller\" \"buyer\" \"issuer\" amount wot-level ( min-confirm \"comment\" )\n"
+            "\nMoves equibits authorized equibits from seller account to buyer account.\n"
+            "The wot-level parameter determines what level of trust is used as follows:\n\n"
+            "1 Trust chain from issuer to buyer of length of up to 2\n"
+            "2 Trust chain from issuer to buyer\n"
+            "3 Either the buyer or seller must be the issuer\n"
+            "\nArguments:\n"
+            "1. \"seller\"     (string, required)  address of the seller.\n"
+            "2. \"buyer\"      (string, required)  address of the buyer.\n"
+            "3. \"issuer\"     (string, required)  address of the equibit issuer.\n"
+            "4. amount         (numeric, required) amount of equibit to move.\n"
+            "5. wot-level      (numeric, required) WoT security level.\n"
+            "6. minconf        (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
+            "7. \"comment\"    (string, optional) An optional comment, stored in the wallet only.\n"
+            "\nResult:\n"
+            "\"transactionid\" (string) The transaction id.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("trustedsend", "\"123bed..decf0de0\" \"1459d..fea0397c\" \"129dce865ce..987cdef\" 10.0 1 \"happy birthday!\"") +
+            "\nAs a json rpc call\n"
+            + HelpExampleRpc("trustedsend", "\"1cd90s..decf0de0\", \"1459d..fea0397c\", \"129dce865ce..987cdef\" 80.50, 1, \"happy birthday!\"")
+        );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
+    CBitcoinAddress seller(request.params[0].get_str());
+    if (!seller.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit seller address");
+
+    CBitcoinAddress buyer(request.params[1].get_str());
+    if (!buyer.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit buyer address");
+
+    CBitcoinAddress issuer(request.params[2].get_str());
+    if (!buyer.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit issuer address");
+
+    // Amount
+    CAmount nAmount = AmountFromValue(request.params[3]);
+    if (nAmount <= 0)
+        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
+
+    int wotlvl = static_cast<int>(AmountFromValue(request.params[4]));
+    if (wotlvl < 0 || wotlvl > 3)
+        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid WoT level value. It must be between 0 and 3");
+
+    int mincnf = (request.params.size() > 5) ? request.params[5].get_int() : 1;
+    if (mincnf < 1)
+        throw JSONRPCError(RPC_TYPE_ERROR,
+                           "Invalid minimum confirmation value. It must be greater than 1");
+
+    string  comment = (request.params.size() > 6) ? request.params[6].get_str() : "";
+
+    // Wallet comments
+    CWalletTx wtx;
+
+    if (comment.size() > 0) wtx.mapValue["comment"] = comment;
+
+    EnsureWalletIsUnlocked();
+
+    if (pwalletMain->GetBroadcastTransactions() && !g_connman)
+        throw JSONRPCError(RPC_CLIENT_P2P_DISABLED,
+                           "Error: Peer-to-peer functionality missing or disabled");
+
+    if (wotlvl > 0)
+    {
+        CPubKey epubkey;
+        CPubKey bpubkey;
+        CPubKey spubkey;
+
+        if (getPubKey(epubkey, issuer, *pwalletMain))
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No public key corresponds to issuer address ");
+
+        if (getPubKey(bpubkey, buyer, *pwalletMain))
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No public key corresponds to buyer address ");
+
+        if (getPubKey(spubkey, seller, *pwalletMain))
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No public key corresponds to seller address ");
+
+        if (pwalletMain->WoTchainExists(epubkey, bpubkey, spubkey, wotlvl))
+            throw JSONRPCError(RPC_TYPE_ERROR, "No trust chain could be found to buyer");
+
+        // If the WoT level is 3, then the issuer must be either the buyer or the seller
+        if (wotlvl == 3 && (epubkey != bpubkey) && (epubkey != spubkey))
+            throw JSONRPCError(RPC_TYPE_ERROR, "The issuer must be the buyer or seller in WoT level 3 transactions");
+    }
+
+    // Parse Equibit address
+    CScript scriptPubKey = GetScriptForDestination(buyer.Get());
+
+    // Create and send the transaction
+    CReserveKey reservekey(pwalletMain);
+    CAmount nFeeRequired;
+    std::string strError;
+    vector<CRecipient> vecSend;
+    int nChangePosRet = -1;
+    CRecipient recipient = { scriptPubKey, nAmount, false };
+
+    vecSend.push_back(recipient);
+
+    if (!pwalletMain->CreateTrustedTransaction(issuer, wotlvl, vecSend, wtx, reservekey, nFeeRequired, nChangePosRet, strError))
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    }
+
+    CValidationState state;
+    if (!pwalletMain->CommitTransaction(wtx, reservekey, g_connman.get(), state))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might "
+                           "happen if some of the coins in your wallet were already spent, such as if you used "
+                           "a copy of the wallet and coins were spent in the copy but not marked as spent here.");
+
+    return wtx.GetHash().GetHex();
+}
+
 UniValue fundrawtransaction(const JSONRPCRequest& request)
 {
     if (!EnsureWalletIsAvailable(request.fHelp))
@@ -3046,6 +3197,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "walletlock",               &walletlock,               true,   {} },
     { "wallet",             "walletpassphrasechange",   &walletpassphrasechange,   true,   {"oldpassphrase","newpassphrase"} },
     { "wallet",             "walletpassphrase",         &walletpassphrase,         true,   {"passphrase","timeout"} },
+    { "wallet",             "trustedsend",              &trustedsend,              true  },
     { "wallet",             "removeprunedfunds",        &removeprunedfunds,        true,   {"txid"} },
 };
 
