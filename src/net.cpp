@@ -21,6 +21,8 @@
 #include "scheduler.h"
 #include "ui_interface.h"
 #include "utilstrencodings.h"
+#include "edc/message/edcmessage.h"
+#include "wallet/wallet.h"
 
 #ifdef WIN32
 #include <string.h>
@@ -2514,6 +2516,28 @@ bool CConnman::DisconnectNode(NodeId id)
         }
     }
     return false;
+}
+
+void CConnman::RelayUserMessage(CUserMessage* um, bool secure)
+{
+    pwalletMain->AddMessage(um);
+
+    LOCK(cs_vNodes);
+
+    if (secure)
+    {
+        BOOST_FOREACH(CNode* pnode, vNodes)
+        {
+            pnode->PushUserMessage(um);
+        }
+    }
+    else
+    {
+        BOOST_FOREACH(CNode* pnode, vNodes)
+        {
+            pnode->PushUserMessage(um);
+        }
+    }
 }
 
 void CConnman::RecordBytesRecv(uint64_t bytes)

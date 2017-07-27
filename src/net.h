@@ -39,6 +39,7 @@
 class CAddrMan;
 class CScheduler;
 class CNode;
+class CUserMessage;
 
 namespace boost {
     class thread_group;
@@ -211,6 +212,7 @@ public:
     void AddNewAddresses(const std::vector<CAddress>& vAddr, const CAddress& addrFrom, int64_t nTimePenalty = 0);
     std::vector<CAddress> GetAddresses();
     void AddressCurrentlyConnected(const CService& addr);
+    void RelayUserMessage(CUserMessage* um, bool secure);
 
     // Denial-of-service detection/prevention
     // The idea is to detect peers that are behaving
@@ -680,6 +682,9 @@ public:
     CAmount lastSentFeeFilter;
     int64_t nextSendTimeFeeFilter;
 
+    CCriticalSection cs_userMessage;
+    std::vector<CUserMessage *> vUserMessages;
+
     CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const std::string &addrNameIn = "", bool fInboundIn = false);
     ~CNode();
 
@@ -790,6 +795,12 @@ public:
         }
     }
 
+    void PushUserMessage(CUserMessage* um)
+    {
+        LOCK(cs_userMessage);
+        vUserMessages.push_back(um);
+    }
+
     void PushBlockHash(const uint256 &hash)
     {
         LOCK(cs_inventory);
@@ -815,6 +826,10 @@ public:
 
 
 
+
+class CUserMessage;
+
+void RelayUserMessage(CUserMessage*, bool);
 
 /** Return a timestamp in the future (in microseconds) for exponentially distributed events. */
 int64_t PoissonNextSend(int64_t nNow, int average_interval_seconds);
