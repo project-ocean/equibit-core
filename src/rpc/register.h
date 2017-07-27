@@ -21,6 +21,10 @@ void RegisterMiningRPCCommands(CRPCTable &tableRPC);
 void RegisterRawTransactionRPCCommands(CRPCTable &tableRPC);
 
 void RegisterIssuerRPCCommands(CRPCTable&);
+void RegisterMessagingRPCCommands(CRPCTable&);
+void RegisterWoTRPCCommands(CRPCTable&);
+void RegisterPollingRPCCommands(CRPCTable&);
+void RegisterProxyRPCCommands(CRPCTable&);
 
 static inline void RegisterAllCoreRPCCommands(CRPCTable &t)
 {
@@ -30,6 +34,10 @@ static inline void RegisterAllCoreRPCCommands(CRPCTable &t)
     RegisterMiningRPCCommands(t);
     RegisterRawTransactionRPCCommands(t);
     RegisterIssuerRPCCommands(t);
+    RegisterMessagingRPCCommands(t);
+    RegisterWoTRPCCommands(t);
+    RegisterPollingRPCCommands(t);
+    RegisterProxyRPCCommands(t);
 }
 
 #endif
