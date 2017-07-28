@@ -4358,6 +4358,7 @@ bool CWallet::CreateTrustedTransaction(
             // Get the minimum WoT level and issuer pubkey of the input coins
             auto tx = setCoins.begin()->first;
             auto offset = setCoins.begin()->second;
+#if 0
             const auto & sampleCoin = tx->tx->vout[offset];
 
             unsigned wot = sampleCoin.wotMinLevel;
@@ -4372,6 +4373,7 @@ bool CWallet::CreateTrustedTransaction(
                 vout.issuerAddr = issuerAddr;
                 vout.issuerPubKey = issuerPubKey;
             }
+#endif
 
             // nValueIn assigned value of coins selected
             // setCoins is the set of coins selected
@@ -4424,7 +4426,11 @@ bool CWallet::CreateTrustedTransaction(
                     scriptChange = GetScriptForDestination(vchPubKey.GetID());
                 }
 
+#if 0
                 CTxOut newTxOut(nChange, wot, issuerPubKey, issuerAddr, scriptChange);
+#else
+                CTxOut newTxOut(nChange, scriptChange);
+#endif
 
                 // We do not move dust-change to fees, because the sender would end up paying more than requested.
                 // This would be against the purpose of the all-inclusive feature.
