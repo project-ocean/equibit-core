@@ -44,4 +44,6 @@ public:
 
         m_payment_currency = static_cast<Currency>(currency);
     }
+
+    friend bool operator == (const EquibitTxOut&, const EquibitTxOut&);
 };

@@ -205,6 +205,7 @@ public:
     friend bool operator==(const CTxOut& a, const CTxOut& b)
     {
         return (a.nValue       == b.nValue &&
+                a.m_equibit    == b.m_equibit && 
                 a.scriptPubKey == b.scriptPubKey);
     }
 

@@ -16,3 +16,11 @@ UniValue EquibitTxOut::to_json() const
 
     return json;
 }
+
+bool operator == (const EquibitTxOut& a, const EquibitTxOut& b)
+{
+    return
+        a.m_payment_currency == b.m_payment_currency &&
+        a.m_payment_tx_id == b.m_payment_tx_id &&
+        a.m_payload == b.m_payload;
+}
