@@ -27,6 +27,7 @@ public:
 public:
 
     EquibitTxOut() = default;
+    EquibitTxOut(const EquibitTxOut&) = default;
 
 public:
 

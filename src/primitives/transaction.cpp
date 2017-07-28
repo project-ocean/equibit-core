@@ -49,6 +49,12 @@ CTxOut::CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn)
     scriptPubKey = scriptPubKeyIn;
 }
 
+CTxOut::CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn, const EquibitTxOut &equibit) :
+    CTxOut(nValueIn, scriptPubKeyIn)
+{
+    m_equibit = equibit;
+}
+
 std::string CTxOut::ToString() const
 {
     return strprintf("CTxOut(nValue=%d.%08d, scriptPubKey=%s)", nValue / COIN, nValue % COIN, HexStr(scriptPubKey).substr(0, 30));
