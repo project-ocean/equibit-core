@@ -1182,7 +1182,7 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 
     LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
     if (nScriptCheckThreads) {
-        for (int i=0; i<nScriptCheckThreads-1; i++)
+        for (int i=0; i < nScriptCheckThreads; i++)
             threadGroup.create_thread(&ThreadScriptCheck);
     }
 
