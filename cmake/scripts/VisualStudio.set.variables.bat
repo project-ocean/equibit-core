@@ -1,0 +1,46 @@
+REM This batch file sets variables for Visual Studio
+
+REM Visual Studio versions
+call :_2015_x64
+IF "%VISUAL_STUDIO_VERSION%" == "2015" IF "%PLATFORM%" == "x86" call :_2015_x86
+IF "%VISUAL_STUDIO_VERSION%" == "2013" call :_2013_x64
+IF "%VISUAL_STUDIO_VERSION%" == "2013" IF "%PLATFORM%" == "x86" call :_2013_x86
+
+
+REM PowerShell
+SET POWERSHELL=powershell.exe
+
+exit /b
+
+
+:_2013_x64
+SET VISUAL_STUDIO_BOOST=msvc-12.0
+SET VISUAL_STUDIO_QT=win32-msvc2013
+SET VISUAL_STUDIO_CMAKE=Visual Studio 12 2013 Win64
+SET VISUAL_STUDIO_PLATFORM=amd64
+SET VISUAL_STUDIO=C:\Program Files (x86)\Microsoft Visual Studio 12.0
+exit /b
+
+:_2013_x86
+SET VISUAL_STUDIO_BOOST=msvc-12.0
+SET VISUAL_STUDIO_QT=win32-msvc2013
+SET VISUAL_STUDIO_CMAKE=Visual Studio 12 2013
+SET VISUAL_STUDIO_PLATFORM=x86
+SET VISUAL_STUDIO=C:\Program Files (x86)\Microsoft Visual Studio 12.0
+exit /b
+
+:_2015_x64
+SET VISUAL_STUDIO_BOOST=msvc-14.0
+SET VISUAL_STUDIO_QT=win32-msvc2015
+SET VISUAL_STUDIO_CMAKE=Visual Studio 14 2015 Win64
+SET VISUAL_STUDIO_PLATFORM=amd64
+SET VISUAL_STUDIO=C:\Program Files (x86)\Microsoft Visual Studio 14.0
+exit /b
+
+:_2015_x86
+SET VISUAL_STUDIO_BOOST=msvc-14.0
+SET VISUAL_STUDIO_QT=win32-msvc2015
+SET VISUAL_STUDIO_CMAKE=Visual Studio 14 2015
+SET VISUAL_STUDIO_PLATFORM=x86
+SET VISUAL_STUDIO=C:\Program Files (x86)\Microsoft Visual Studio 14.0
+exit /b
