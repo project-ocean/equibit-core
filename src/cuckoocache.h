@@ -217,6 +217,9 @@ private:
      */
     inline std::array<uint32_t, 8> compute_hashes(const Element& e) const
     {
+#ifdef _MSC_VER
+#define template
+#endif
         return {{hash_function.template operator()<0>(e) & hash_mask,
                  hash_function.template operator()<1>(e) & hash_mask,
                  hash_function.template operator()<2>(e) & hash_mask,
@@ -225,6 +228,9 @@ private:
                  hash_function.template operator()<5>(e) & hash_mask,
                  hash_function.template operator()<6>(e) & hash_mask,
                  hash_function.template operator()<7>(e) & hash_mask}};
+#ifdef _MSC_VER
+#undef template
+#endif
     }
 
     /* end
