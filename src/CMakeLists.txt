@@ -214,6 +214,7 @@ set (crypto_libbitcoin_crypto_a_SOURCES
     edc/sha3/KeccakSponge-common.h
     edc/sha3/KeccakSpongeWidth1600.cpp
     edc/sha3/KeccakSpongeWidth1600.h
+    edc/sha3/sha3.h
     edc/sha3/SimpleFIPS202.cpp
     edc/sha3/SimpleFIPS202.h
     edc/sha3/SnP-Relaned.h
