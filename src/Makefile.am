@@ -254,7 +254,23 @@ crypto_libbitcoin_crypto_a_SOURCES = \
   crypto/sha256.cpp \
   crypto/sha256.h \
   crypto/sha512.cpp \
-  crypto/sha512.h
+  crypto/sha512.h \
+  edc/sha3/align.h \
+  edc/sha3/brg_endian.h \
+  edc/sha3/KeccakHash.cpp \
+  edc/sha3/KeccakHash.h \
+  edc/sha3/KeccakP-1600-64.macros \
+  edc/sha3/KeccakP-1600-opt64.cpp \
+  edc/sha3/KeccakP-1600-opt64-config.h \
+  edc/sha3/KeccakP-1600-SnP.h \
+  edc/sha3/KeccakP-1600-unrolling.macros \
+  edc/sha3/KeccakSponge.inc \
+  edc/sha3/KeccakSponge-common.h \
+  edc/sha3/KeccakSpongeWidth1600.cpp \
+  edc/sha3/KeccakSpongeWidth1600.h \
+  edc/sha3/SimpleFIPS202.cpp \
+  edc/sha3/SimpleFIPS202.h \
+  edc/sha3/SnP-Relaned.h
 
 # consensus: shared between all executables that validate any consensus rules.
 libbitcoin_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
