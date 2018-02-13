@@ -525,6 +525,7 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
 
     if (IsArgSet("-datadir")) {
         path = fs::system_complete(GetArg("-datadir", ""));
+        fs::create_directories(path);
         if (!fs::is_directory(path)) {
             path = "";
             return path;
