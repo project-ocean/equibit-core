@@ -33,7 +33,9 @@
 #include <boost/thread.hpp>
 
 #if defined(NDEBUG)
+#ifndef WIN32
 # error "Bitcoin cannot be compiled without assertions."
+#endif
 #endif
 
 std::atomic<int64_t> nTimeBestReceived(0); // Used only to inform the wallet of when we last received a block

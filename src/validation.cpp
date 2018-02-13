@@ -47,7 +47,9 @@
 #include <boost/thread.hpp>
 
 #if defined(NDEBUG)
+#ifndef WIN32
 # error "Bitcoin cannot be compiled without assertions."
+#endif
 #endif
 
 /**
