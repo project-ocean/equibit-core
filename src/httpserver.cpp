@@ -175,6 +175,8 @@ static struct event_base* eventBase = 0;
 struct evhttp* eventHTTP = 0;
 //! List of subnets to allow RPC connections from
 static std::vector<CSubNet> rpc_allow_subnets;
+//! A flag to allow all RPC connections from all IPs
+static bool rpc_allow_any_ip = false;
 //! Work queue for handling longer requests off the event loop thread
 static WorkQueue<HTTPClosure>* workQueue = 0;
 //! Handlers for (sub)paths
@@ -187,6 +189,9 @@ static bool ClientAllowed(const CNetAddr& netaddr)
 {
     if (!netaddr.IsValid())
         return false;
+
+    if (rpc_allow_any_ip) return true;
+
     for(const CSubNet& subnet : rpc_allow_subnets)
         if (subnet.Match(netaddr))
             return true;
@@ -221,6 +226,11 @@ static bool InitHTTPAllowList()
     for (const CSubNet& subnet : rpc_allow_subnets)
         strAllowed += subnet.ToString() + " ";
     LogPrint("http", "Allowing HTTP connections from: %s\n", strAllowed);
+
+    rpc_allow_any_ip = mapMultiArgs.count("-rpcallowanyip") ? true : false;
+
+    if (rpc_allow_any_ip) LogPrint("http", "WARNING: Allowed RPC connections from any IP\n");
+
     return true;
 }
 
