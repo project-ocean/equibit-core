@@ -331,7 +331,7 @@ add_library (${TARGET_NAME} STATIC ${libbitcoin_cli_a_SOURCES})
 install (TARGETS ${TARGET_NAME} ARCHIVE DESTINATION lib)
 tuneup_target(${TARGET_NAME})
 
-set (TARGET_NAME bitcoin_server)
+set (TARGET_NAME equibit_server)
 add_executable(${TARGET_NAME} ${equibitd_SOURCES})
 install (TARGETS ${TARGET_NAME} RUNTIME DESTINATION bin)
 tuneup_target(${TARGET_NAME})
@@ -355,7 +355,7 @@ target_link_libraries (${TARGET_NAME}
     libsecp256k1
     )
 
-set (TARGET_NAME bitcoin_client)
+set (TARGET_NAME equibit_client)
 add_executable(${TARGET_NAME} ${bitcoin_cli_SOURCES})
 install (TARGETS ${TARGET_NAME} RUNTIME DESTINATION bin)
 tuneup_target(${TARGET_NAME})
