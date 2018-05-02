@@ -9,7 +9,7 @@
 #include "validation.h"
 #include "consensus/validation.h"
 #include "net.h"
-#include "../utilstrencodings.h"
+#include "utilstrencodings.h"
 #include "edc/wallet/issuer.h"
 #include "wallet/wallet.h"
 #include "utilmoneystr.h"
