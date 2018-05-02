@@ -61,7 +61,7 @@ bool EDCapp::initSSL(
     SSL_load_error_strings();
 
     /* Create a SSL_METHOD structure (choose a SSL/TLS protocol version) */
-    const SSL_METHOD * meth = TLS_method();
+    const SSL_METHOD * meth = nullptr; //TLS_method();
 
     /* Create a SSL_CTX structure */
     sslCtx_ = SSL_CTX_new(meth);
