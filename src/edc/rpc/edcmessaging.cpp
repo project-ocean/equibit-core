@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <vector>
 #include "rpc/server.h"
-#include "../utilstrencodings.h"
+#include "utilstrencodings.h"
 #include "edc/message/edcmessage.h"
 #include "net.h"
 #include "base58.h"
