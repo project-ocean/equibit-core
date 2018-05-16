@@ -26,18 +26,18 @@ VOLUME ["/home/equibit/.equibit"]
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
-RUN echo "Publishing Core Binaries"
-   git clone https://Equibit:f41c78627c23717323d6dc2a83fe9193b09b13f7@github.com/Equibit/CoreBinaries.git && \
-   cd CoreBinaries && \
-   mkdir -p ${EQUIBIT_ENV}/${EQUIBIT_VERSION} && \
-   cp /opt/equibit-${EQUIBIT_VERSION}/equibit-cli ${EQUIBIT_ENV}/${EQUIBIT_VERSION} && \
-   cp /opt/equibit-${EQUIBIT_VERSION}/equibitd ${EQUIBIT_ENV}/${EQUIBIT_VERSION} && \
-   git config --global user.name "Harmeek Jhutty" && \
-   git config --global user.email "hjhutty@coderise.io" && \
-   git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/equibit-cli && \
-   git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/equibitd && \
-   git commit -m "Committed Equibit Binaries ${EQUIBIT_ENV}/${EQUIBIT_VERSION}" && \
-   git push origin master
+RUN echo "Publishing Core Binaries" && \
+    git clone https://Equibit:f41c78627c23717323d6dc2a83fe9193b09b13f7@github.com/Equibit/CoreBinaries.git && \
+    cd CoreBinaries && \
+    mkdir -p ${EQUIBIT_ENV}/${EQUIBIT_VERSION} && \
+    cp /opt/equibit-${EQUIBIT_VERSION}/equibit-cli ${EQUIBIT_ENV}/${EQUIBIT_VERSION} && \
+    cp /opt/equibit-${EQUIBIT_VERSION}/equibitd ${EQUIBIT_ENV}/${EQUIBIT_VERSION} && \
+    git config --global user.name "Harmeek Jhutty" && \
+    git config --global user.email "hjhutty@coderise.io" && \
+    git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/equibit-cli && \
+    git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/equibitd && \
+    git commit -m "Committed Equibit Binaries ${EQUIBIT_ENV}/${EQUIBIT_VERSION}" && \
+    git push origin master
 
 ENTRYPOINT ["/entrypoint.sh"]
 
