@@ -2,8 +2,9 @@ FROM registry.ng.bluemix.net/equibit/equibit-ubuntu:16.04
 
 MAINTAINER Harmeek Jhutty <hjhutty@coderise.io> (@coderiseio)
 
-ENV EQUIBIT_VERSION=0.14.3
-ENV EQUIBIT_FOLDER_VERSION=0.14.3
+ENV EQUIBIT_ENV=dev
+ENV EQUIBIT_VERSION=0.1
+ENV EQUIBIT_FOLDER_VERSION=0.1
 ENV EQUIBIT_DATA=/home/equibit/.equibit \
     PATH=/opt/equibit-${EQUIBIT_FOLDER_VERSION}/:$PATH
 
@@ -20,10 +21,23 @@ RUN cd /root/equibit/source/equibit-core/edc/linux-ubuntu/build.scripts/ && \
     chmod +x /opt/equibit-${EQUIBIT_VERSION}/equibit-cli && \
     chmod +x /opt/equibit-${EQUIBIT_VERSION}/equibitd    && \
     ls -ltr /opt/equibit-${EQUIBIT_VERSION}/
-
+ 
 VOLUME ["/home/equibit/.equibit"]
 
 COPY docker-entrypoint.sh /entrypoint.sh
+
+RUN echo "Publishing Core Binaries"
+   git clone https://Equibit:f41c78627c23717323d6dc2a83fe9193b09b13f7@github.com/Equibit/CoreBinaries.git && \
+   cd CoreBinaries && \
+   mkdir -p ${EQUIBIT_ENV}/${EQUIBIT_VERSION} && \
+   cp /opt/equibit-${EQUIBIT_VERSION}/equibit-cli ${EQUIBIT_ENV}/${EQUIBIT_VERSION} && \
+   cp /opt/equibit-${EQUIBIT_VERSION}/equibitd ${EQUIBIT_ENV}/${EQUIBIT_VERSION} && \
+   git config --global user.name "Harmeek Jhutty" && \
+   git config --global user.email "hjhutty@coderise.io" && \
+   git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/equibit-cli && \
+   git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/equibitd && \
+   git commit -m "Committed Equibit Binaries ${EQUIBIT_ENV}/${EQUIBIT_VERSION}" && \
+   git push origin master
 
 ENTRYPOINT ["/entrypoint.sh"]
 
