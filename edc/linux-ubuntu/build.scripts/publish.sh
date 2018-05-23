@@ -24,7 +24,7 @@ echo "Publishing Core Binaries"
 git clone https://Equibit:f41c78627c23717323d6dc2a83fe9193b09b13f7@github.com/Equibit/CoreBinaries.git
 cd CoreBinaries
 
-mkdir -p ${EQUIBIT_ENV}/${EQUIBIT_VERSION}
+mkdir -p ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}/
 cp /opt/equibit-${EQUIBIT_VERSION}/equibit-cli ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}/
 cp /opt/equibit-${EQUIBIT_VERSION}/equibitd ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}/
 
