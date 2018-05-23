@@ -1,4 +1,4 @@
-#!/bin/#!/usr/bin/env bash
+#!/bin/bash
 
 export EQUIBIT_ENV=dev
 export EQUIBIT_VERSION=0.1
