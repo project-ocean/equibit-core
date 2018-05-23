@@ -26,8 +26,8 @@ VOLUME ["/home/equibit/.equibit"]
 COPY docker-entrypoint.sh /entrypoint.sh
 
 RUN cd /root/equibit/source/equibit-core/edc/linux-ubuntu/build.scripts/ && \
-    chmod +x ./publish.sh && \
-    ./publish.sh
+    chmod +x /root/equibit/source/equibit-core/edc/linux-ubuntu/build.scripts/publish.sh && \
+    /root/equibit/source/equibit-core/edc/linux-ubuntu/build.scripts/publish.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
