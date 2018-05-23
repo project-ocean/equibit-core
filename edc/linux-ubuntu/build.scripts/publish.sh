@@ -2,6 +2,7 @@
 
 export EQUIBIT_ENV=dev
 export EQUIBIT_VERSION=0.1
+export BUILD_TIMESTAMP=$(date +%Y%m%d%H%M%S)
 
 echo -e "Checking for Equibit daemon"
 if [ -f /opt/equibit-${EQUIBIT_VERSION}/equibitd ]; then
@@ -24,13 +25,12 @@ git clone https://Equibit:f41c78627c23717323d6dc2a83fe9193b09b13f7@github.com/Eq
 cd CoreBinaries
 
 mkdir -p ${EQUIBIT_ENV}/${EQUIBIT_VERSION}
-cp /opt/equibit-${EQUIBIT_VERSION}/equibit-cli ${EQUIBIT_ENV}/${EQUIBIT_VERSION}
-cp /opt/equibit-${EQUIBIT_VERSION}/equibitd ${EQUIBIT_ENV}/${EQUIBIT_VERSION}
+cp /opt/equibit-${EQUIBIT_VERSION}/equibit-cli ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}
+cp /opt/equibit-${EQUIBIT_VERSION}/equibitd ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}
 
 git config --global user.name "Harmeek Jhutty"
 git config --global user.email "hjhutty@coderise.io"
 
-git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/equibit-cli
-git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/equibitd
-git commit -m "Committed Equibit Binaries ${EQUIBIT_ENV}/${EQUIBIT_VERSION}"
+git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}
+git commit -m "Committed Equibit Binaries ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}"
 git push origin master
