@@ -745,6 +745,11 @@ UniValue submitblock(const JSONRPCRequest& request)
 
     std::shared_ptr<CBlock> blockptr = std::make_shared<CBlock>();
     CBlock& block = *blockptr;
+
+#ifdef EQUIBIT_LOG
+    LogPrintf("The block recieved is: %s ", request.params[0].get_str);
+#endif 
+
     if (!DecodeHexBlk(block, request.params[0].get_str()))
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Block decode failed");
 

@@ -48,12 +48,13 @@ CTxOut::CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn)
     nValue = nValueIn;
     scriptPubKey = scriptPubKeyIn;
 }
-
+#ifdef EQUIBIT_TX_TYPE
 CTxOut::CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn, const EquibitTxOut &equibit) :
     CTxOut(nValueIn, scriptPubKeyIn)
 {
     m_equibit = equibit;
 }
+#endif 
 
 std::string CTxOut::ToString() const
 {

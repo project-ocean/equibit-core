@@ -10,7 +10,9 @@
 #include "script/script.h"
 #include "serialize.h"
 #include "uint256.h"
+#ifdef EQUIBIT_TX_TYPE
 #include "edc/primitives/transaction.h"
+#endif
 
 static const int SERIALIZE_TRANSACTION_NO_WITNESS = 0x40000000;
 
@@ -135,7 +137,9 @@ class CTxOut
 public:
     CAmount nValue;
     CScript scriptPubKey;
+#ifdef EQUIBIT_TX_TYPE
     EquibitTxOut m_equibit;
+#endif
 
     CTxOut()
     {
@@ -143,16 +147,19 @@ public:
     }
 
     CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn);
+#ifdef EQUIBIT_TX_TYPE
     CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn, const EquibitTxOut&);
-
+#endif
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action) {
         READWRITE(nValue);
         READWRITE(*(CScriptBase*)(&scriptPubKey));
-
+#ifdef EQUIBIT_TX_TYPE
         m_equibit.SerializationOp(s, ser_action);
+#endif
+
     }
 
     void SetNull()
@@ -206,7 +213,9 @@ public:
     friend bool operator==(const CTxOut& a, const CTxOut& b)
     {
         return (a.nValue       == b.nValue &&
+#ifdef EQUIBIT_TX_TYPE
                 a.m_equibit    == b.m_equibit && 
+#endif
                 a.scriptPubKey == b.scriptPubKey);
     }
 

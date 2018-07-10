@@ -123,8 +123,12 @@ bool DecodeHexTx(CMutableTransaction& tx, const std::string& strHexTx, bool fTry
 
 bool DecodeHexBlk(CBlock& block, const std::string& strHexBlk)
 {
-    if (!IsHex(strHexBlk))
+    if (!IsHex(strHexBlk)) {
+		#ifdef EQUIBIT_LOG
+		LogPrintf("ERROR: The block received is not in Hex!");
+		#endif 
         return false;
+	}
 
     std::vector<unsigned char> blockData(ParseHex(strHexBlk));
     CDataStream ssBlock(blockData, SER_NETWORK, PROTOCOL_VERSION);
@@ -132,6 +136,9 @@ bool DecodeHexBlk(CBlock& block, const std::string& strHexBlk)
         ssBlock >> block;
     }
     catch (const std::exception&) {
+		#ifdef EQUIBIT_LOG
+				LogPrintf("ERROR: Cannot deserialize the block received!");
+		#endif 
         return false;
     }
 
