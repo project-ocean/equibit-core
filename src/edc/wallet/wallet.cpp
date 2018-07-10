@@ -175,8 +175,9 @@ bool CWallet::create_issuing_transaction(
                 {
                     CTxOut txout(recipient.nAmount, recipient.scriptPubKey);
 
+#ifdef EQUIBIT_TX_TYPE
                     txout.m_equibit.m_payload = payload;
-
+#endif
                     if (recipient.fSubtractFeeFromAmount)
                     {
                         txout.nValue -= nFeeRet / nSubtractFeeFromAmount; // Subtract fee equally from each selected recipient

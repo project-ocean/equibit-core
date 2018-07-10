@@ -1375,7 +1375,10 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
             MaybePushAddress(entry, s.destination);
             entry.push_back(Pair("category", "send"));
             entry.push_back(Pair("amount", ValueFromAmount(-s.amount)));
+#ifdef EQUIBIT_TX_TYPE
             entry.push_back(Pair("equibit", s.m_equibit.to_json()));
+#endif 
+
             if (pwalletMain->mapAddressBook.count(s.destination))
                 entry.push_back(Pair("label", pwalletMain->mapAddressBook[s.destination].name));
             entry.push_back(Pair("vout", s.vout));
@@ -2507,7 +2510,9 @@ UniValue listunspent(const JSONRPCRequest& request)
         entry.push_back(Pair("confirmations", out.nDepth));
         entry.push_back(Pair("spendable", out.fSpendable));
         entry.push_back(Pair("solvable", out.fSolvable));
+#ifdef EQUIBIT_TX_TYPE
         entry.push_back(Pair("equibit", out.tx->tx->vout[out.i].m_equibit.to_json()));
+#endif
         results.push_back(entry);
     }
 

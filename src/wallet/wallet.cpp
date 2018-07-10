@@ -1497,7 +1497,12 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived,
             address = CNoDestination();
         }
 
+	
+#ifdef EQUIBIT_TX_TYPE
         COutputEntry output = {address, txout.nValue, (int)i, txout.m_equibit};
+#else
+        COutputEntry output = {address, txout.nValue, (int)i};
+#endif
 
         // If we are debited by the transaction, add the output as a "sent" entry
         if (nDebit > 0)

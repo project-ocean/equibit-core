@@ -84,7 +84,17 @@ bool AppInit(int argc, char* argv[])
 
     // Process help and version before taking care about datadir
     if (IsArgSet("-?") || IsArgSet("-h") || IsArgSet("-help") || IsArgSet("-version")) {
-        std::string strUsage = strprintf(_("%s Daemon"), _(PACKAGE_NAME)) + " " + _("version") + " " + FormatFullVersion() + "\n";
+
+ 	std::string strUsage = "Equibit Core v 0.1.1 \n";
+
+	#ifdef EQUIBIT_TX_TYPE
+		strUsage += "Equibit transaction feature is enabled \n";
+	#endif
+	#ifdef EQUIBIT_LOG
+		strUsage += "Equibit log feature is enabled \n";
+	#endif
+
+        strUsage += strprintf(_("%s Daemon"), _(PACKAGE_NAME)) + " " + _("version") + " " + FormatFullVersion() + "\n";
 
         if (IsArgSet("-version")) {
             strUsage += FormatParagraph(LicenseInfo());

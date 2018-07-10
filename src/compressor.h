@@ -115,8 +115,10 @@ public:
         }
         CScriptCompressor cscript(REF(txout.scriptPubKey));
         READWRITE(cscript);
-
+#ifdef EQUIBIT_TX_TYPE
         txout.m_equibit.SerializationOp(s, ser_action);
+#endif
+
     }
 };
 

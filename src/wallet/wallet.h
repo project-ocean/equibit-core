@@ -170,7 +170,10 @@ struct COutputEntry
     CTxDestination destination;
     CAmount amount;
     int vout;
+#ifdef EQUIBIT_TX_TYPE
     EquibitTxOut m_equibit;
+#endif
+
 };
 
 /** A transaction with a merkle branch linking it to the block chain. */
