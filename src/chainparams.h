@@ -97,6 +97,15 @@ protected:
     ChainTxData chainTxData;
 };
 
+
+#ifdef EQUIBIT_MAKE_GENESIS 
+/**
+* Calculate Nonce for a given Genesis block 
+*/
+void findNonceForGenesisBlock(const CBlock & block);
+#endif
+
+
 /**
  * Return the currently selected parameters. This won't change after app
  * startup, except for unit tests.

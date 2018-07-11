@@ -16,6 +16,24 @@
 
 #include "chainparamsseeds.h"
 
+#include "pow.h"
+
+
+#ifdef EQUIBIT_MAKE_GENESIS
+// Find the nonce for a given Genesis block 
+void findNonceForGenesisBlock(const CBlock & block) {
+	CBlock &b =  const_cast<CBlock&>(block);
+	LogPrintf("Finding Nonce for Genesis Block... \n");
+	while (!CheckProofOfWork(b.GetHash(), b.nBits, Params().GetConsensus())) {
+	        ++b.nNonce;
+	}
+	// Founda valid nonce, print them out!
+        LogPrintf(" The nonce is %08X, block hash: %s ", b.nNonce, b.GetHash().ToString().c_str());
+	LogPrintf("%s", b.ToString().c_str());
+}
+#endif
+
+
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
     CMutableTransaction txNew;
@@ -114,10 +132,30 @@ public:
         nDefaultPort = 8330;
         nPruneAfterHeight = 100000;
 
-        genesis = CreateGenesisBlock(1231006505, 1260323810, 0x1d00ffff, 1, 50 * COIN);
+	// old timestamp and nonce
+        // genesis = CreateGenesisBlock(1231006505, 1260323810, 0x1d00ffff, 1, 50 * COIN);
+
+	// new timestamp and nonce
+	// TODO: must change the timestamp for the Equibit mainnet
+	genesis = CreateGenesisBlock(1531367750, 3026140537, 0x1d00ffff, 1, 50 * COIN);
+
         consensus.hashGenesisBlock = genesis.GetHash();
-//        assert(consensus.hashGenesisBlock == uint256S("0x0000000049ce12a2a7e596d4f14de88d96f9c34779df8fe66338dd19b12536f0"));
-//        assert(genesis.hashMerkleRoot == uint256S("0xe7d71d6faccc831ca1243929d3f98f47d844ea86e3a087200d81302cd6b8b983"));
+
+
+
+	// original value: 0x0000000049ce12a2a7e596d4f14de88d96f9c34779df8fe66338dd19b12536f0
+	// TODO: commenting the asserts temporarly until a new genesis block is generated
+	#ifndef EQUIBIT_MAKE_GENESIS 
+	assert(consensus.hashGenesisBlock == uint256S("0x000000009901e9f74e39e1ed5b562a339250a2535e18f2f036ab1f397d13e17e"));
+	#endif
+
+	// Note: the genesis block merkle root previously used is: uint256S("0xe7d71d6faccc831ca1243929d3f98f47d844ea86e3a087200d81302cd6b8b983"));
+	// The assertion should not be checked if a new genesis is being created
+	#ifndef EQUIBIT_MAKE_GENESIS
+	assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
+	#endif
+
+
 
         // Note that of those with the service bits flag, most only support a subset of possible options
         vSeeds.push_back(CDNSSeedData("bitcoin.sipa.be", "seed.bitcoin.sipa.be", true)); // Pieter Wuille, only supports x1, x5, x9, and xd
@@ -179,9 +217,14 @@ public:
         consensus.BIP34Hash = uint256S("0x0000000023b3a96d3484e5abb3755c413e7d41500f8e2a5c3f0dd01299cd8ef8");
         consensus.BIP65Height = 581885; // 00000000007f6655f22f98e72ed80d8b06dc761d5da09df0fa1dc4be4f861eb6
         consensus.BIP66Height = 330776; // 000000002104c8c45e99a8853285a3b592602a3ccde2b832481da85e9e4ba182
-        // the original value for the below figure is 00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-	consensus.powLimit = uint256S("0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
+        
+	// the original value for the below figure is 00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+       	// TODO: a smaller powLimit may approve certain blocks 
+	// consensus.powLimit = uint256S("0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+	// Upperbound for target
+	 consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+
+	consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 10 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
@@ -201,43 +244,76 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1462060800; // May 1st 2016
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1493596800; // May 1st 2017
 
-        // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000001f057509eba81aed91");
 
+	// Minimum amount of chainwork required by client before it will consider itself synced
+        // The best chain should have at least this much work.
+	// TODO: changing the minimum work to just: 0x00 may approve certain blocks (experimental) 
+           consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000001f057509eba81aed91");
+        // consensus.nMinimumChainWork = uint256S("0x00");
+
+	// Disable signature checks on block (and blocks ancestors) with the given hash
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x00000000000128796ee387cf110ccb9d2f36cffaf7f73079c995377c65ac0dcc"); //1079274
 
-        pchMessageStart[0] = 0x0b;
+	// TODO: provide description. Should we change?
+	// default value: 0x0b, 0x11, 0x09, 0x07 = 11, 11, 09, 07   
+        pchMessageStart[0] = 0x0b;  
         pchMessageStart[1] = 0x11;
         pchMessageStart[2] = 0x09;
         pchMessageStart[3] = 0x07;
         nDefaultPort = 18330;
         nPruneAfterHeight = 1000;
 
-    //    genesis = CreateGenesisBlock(1296688602, 1889085270, 0x1d00ffff, 1, 50 * COIN);
-        genesis = CreateGenesisBlock(1531279915, 1889085123, 0x1d00ffff, 1, 50 * COIN);
-		
-		#ifdef EQUIBIT_LOG
-		  LogPrintf("hashGenesisBlock: %ld \n hashMerkleRoot: %ld \n", consensus.hashGenesisBlock, genesis.hashMerkleRoot);
-		#endif
 
+        // old values for timestamp and nonce
+	//genesis = CreateGenesisBlock(1296688602, 1889085270, 0x1d00ffff, 1, 50 * COIN);
+
+	// Current nonce, timestamp and nBits(nBits used by Bitcoin  block #0 as well) are provided here to create the genesis block 
+	// the nBits value may also be lower than 0x1d00ffff. It could be 0x1dffffff. Needs verification.
+
+	/* Latest generated Genesis:
+	CBlock(
+	hash=000000009901e9f74e39e1ed5b562a339250a2535e18f2f036ab1f397d13e17e, 
+	ver=0x00000001, 
+	hashPrevBlock=0000000000000000000000000000000000000000000000000000000000000000, 
+	hashMerkleRoot=4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b, 
+	nTime=1531367750, 
+	nBits=1d00ffff, n
+	Nonce=3026140537, vtx=1)
+	CTransaction(hash=4a5e1e4baa, ver=1, vin.size=1, vout.size=1, nLockTime=0)
+	CTxIn(COutPoint(0000000000, 4294967295), coinbase 04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73)
+	*/
+
+	genesis = CreateGenesisBlock(1531367750, 3026140537, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
 
 #ifdef EQUIBIT_LOG
-	printf("TEST GENESIS HASH: %s\n",consensus.hashGenesisBlock.ToString().c_str());
-	printf("TEST MERKLE ROOT: %s\n",genesis.hashMerkleRoot.ToString().c_str());
+	LogPrintf("Genesis Hash value: %s\n",consensus.hashGenesisBlock.ToString().c_str());
+	LogPrintf("Merkle Root value: %s\n",genesis.hashMerkleRoot.ToString().c_str());
 #endif
 
-        assert(consensus.hashGenesisBlock == uint256S("0x0000000048a6c78d94afb93e91671c52132fff9bf39157fe6564da2932ea5908"));
-        assert(genesis.hashMerkleRoot == uint256S("0xe7d71d6faccc831ca1243929d3f98f47d844ea86e3a087200d81302cd6b8b983"));
+	// Note:  the genesis block hash: 0x0000000048a6c78d94afb93e91671c52132fff9bf39157fe6564da2932ea5908, was originally used by edc-sha3 branch 
+	// Changing the structure of the block or coinbase transaction, or any of their values, causes the blockhash to become invalid 
+	// if a new blockchain is required the assertions should be deactivated
+	// TODO: commenting the asserts temporarly until a new genesis block is generated
+	#ifndef EQUIBIT_MAKE_GENESIS 
+//	assert(consensus.hashGenesisBlock == uint256S("0x000000009901e9f74e39e1ed5b562a339250a2535e18f2f036ab1f397d13e17e"));
+	#endif
 
+	// Note: the genesis block merkle root previously used is: uint256S("0xe7d71d6faccc831ca1243929d3f98f47d844ea86e3a087200d81302cd6b8b983"));
+	// The assertion should not be checked if a new genesis is being created
+	#ifndef EQUIBIT_MAKE_GENESIS
+//	assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
+	#endif
+
+
+	// TODO: clear the seeds because Equibit does not yet have any
         vFixedSeeds.clear();
         vSeeds.clear();
+
         // nodes with support for servicebits filtering should be at the top
-        vSeeds.push_back(CDNSSeedData("testnetbitcoin.jonasschnelli.ch", "testnet-seed.bitcoin.jonasschnelli.ch", true));
-        vSeeds.push_back(CDNSSeedData("petertodd.org", "seed.tbtc.petertodd.org", true));
-        vSeeds.push_back(CDNSSeedData("bluematt.me", "testnet-seed.bluematt.me"));
-        vSeeds.push_back(CDNSSeedData("bitcoin.schildbach.de", "testnet-seed.bitcoin.schildbach.de"));
+        // TODO: Hardcode DNS seed provides for Equibit
+	vSeeds.push_back(CDNSSeedData("testnetbitcoin.jonasschnelli.ch", "testnet-seed.bitcoin.jonasschnelli.ch", true));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
@@ -245,19 +321,30 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >();
 
+	// TODO: add hardcoded known seed addresses for Equibit
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
-        fMiningRequiresPeers = true;
+	// TODO: It is possible to disable the following first flag to disable mandatory multiple Nodes 
+	// Default: True  
+	fMiningRequiresPeers = false;
+	
+	// TODO: add description
         fDefaultConsistencyChecks = false;
+	
+	// TODO: add description
         fRequireStandard = false;
+
+	// TODO: add description
         fMineBlocksOnDemand = false;
 
 
+	// TODO: change checkpoint hash value 
         checkpointData = {
             boost::assign::map_list_of
             ( 546, uint256S("000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70")),
         };
 
+	// TODO: change chaintxData checkpoint 
         chainTxData = ChainTxData{
             // Data as of block 00000000c2872f8f8a8935c8e3c5862be9038c97d4de2cf37ed496991166928a (height 1063660)
             1483546230,
@@ -267,7 +354,10 @@ public:
 
     }
 };
+
 static CTestNetParams testNetParams;
+
+
 
 /**
  * Regression test
@@ -313,6 +403,8 @@ public:
 
         genesis = CreateGenesisBlock(1296688602, 0, 0x207fffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
+
+// TODO: must generate new genesis block and add the correct information to the below lines
 //        assert(consensus.hashGenesisBlock == uint256S("0x4ca1b7884bba92e1ffb3b8b27ff0eb15f9516781bce4cb03fd1400becbb43e25"));
 //        assert(genesis.hashMerkleRoot == uint256S("0xe7d71d6faccc831ca1243929d3f98f47d844ea86e3a087200d81302cd6b8b983"));
 

@@ -1147,6 +1147,9 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
     }
 
     // Check the header
+    LogPrintf("The content of the block header is.. hash: %s , nBits: %d, powLimit: %s \n", block.GetHash().ToString(), 
+block.nBits, consensusParams.powLimit.ToString());
+
     if (!CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
         return error("ReadBlockFromDisk: Errors in block header at %s", pos.ToString());
 

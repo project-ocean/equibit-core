@@ -875,6 +875,7 @@ bool AppInitBasicSetup()
 bool AppInitParameterInteraction()
 {
     const CChainParams& chainparams = Params();
+
     // ********************************************************* Step 2: parameter interactions
 
     // also see: InitParameterInteraction()
@@ -1363,6 +1364,20 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     if (IsArgSet("-maxuploadtarget")) {
         nMaxOutboundLimit = GetArg("-maxuploadtarget", DEFAULT_MAX_UPLOAD_TARGET)*1024*1024;
     }
+
+ 
+
+// ********************************************************** Step 6b : Equibit specific: create a new genesis block 
+// The following block allows the creation of a genesis block based on existing block structure. The  method is only
+// called if the appropriate compilation flag is enabled
+#ifdef EQUIBIT_MAKE_GENESIS
+    LogPrintf("--------------------------------------------- \n");
+    LogPrintf("Computing the Nonce for the new Genesis block \n");
+    findNonceForGenesisBlock(chainparams.GenesisBlock());
+    LogPrintf("End of computation for new Genesis block \n");
+#endif
+
+
 
     // ********************************************************* Step 7: load block chain
 

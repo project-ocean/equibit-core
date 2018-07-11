@@ -85,11 +85,24 @@ bool AppInit(int argc, char* argv[])
     // Process help and version before taking care about datadir
     if (IsArgSet("-?") || IsArgSet("-h") || IsArgSet("-help") || IsArgSet("-version")) {
 
- 	std::string strUsage = "Equibit Core v 0.1.1 \n";
+ 	std::string strUsage = "Equibit Core v 0.1.1c \n";
+
+	#ifdef TEST_A
+		strUsage += "TestA flag is enabled! \n";
+	#endif 
+
+	#ifdef EQUIBIT_MAKE_GENESIS
+		strUsage += "Equibit genesis creation feature is enabled \n";
+	#endif
+
+	#ifdef BITCOIN_TX_TYPE
+		strUsage += "Bitcoin transaction feature is enabled \n");
+	#endif
 
 	#ifdef EQUIBIT_TX_TYPE
 		strUsage += "Equibit transaction feature is enabled \n";
 	#endif
+
 	#ifdef EQUIBIT_LOG
 		strUsage += "Equibit log feature is enabled \n";
 	#endif
