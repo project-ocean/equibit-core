@@ -276,7 +276,7 @@ def rpc_port(n):
 def rpc_url(datadir, i, rpchost=None):
     rpc_u, rpc_p = get_auth_cookie(datadir)
     host = '127.0.0.1'
-    port = 18331 ###HERE### rpc_port(i)
+    port = rpc_port(i)
     if rpchost:
         parts = rpchost.split(':')
         if len(parts) == 2:
@@ -294,7 +294,7 @@ def initialize_datadir(dirname, n):
         os.makedirs(datadir)
     with open(os.path.join(datadir, "equibit.conf"), 'w', encoding='utf8') as f:    ###HERE### bitcoin.conf
         f.write("regtest=1\n")
-        f.write("[regtest]\n")
+        # f.write("[regtest]\n")  ###HERE###
         f.write("port=" + str(p2p_port(n)) + "\n")
         f.write("rpcport=" + str(rpc_port(n)) + "\n")
         f.write("server=1\n")

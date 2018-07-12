@@ -10,7 +10,7 @@ forward all unrecognized arguments onto the individual test scripts.
 Functional tests are disabled on Windows by default. Use --force to run them anyway.
 
 For a description of arguments recognized by test scripts, see
-`test/functional/test_framework/test_framework.py:BitcoinTestFramework.main`.
+`eqbtest/functional/test_framework/test_framework.py:BitcoinTestFramework.main`.
 
 """
 
@@ -152,7 +152,8 @@ BASE_SCRIPTS = [
 ]
 
 # BASE_SCRIPTS = [
-#     'rpc_getblockstats.py',
+#     # 'rpc_getblockstats.py',
+#     'feature_help.py',
 #     'rpc_uptime.py'
 # ]
 
@@ -291,7 +292,7 @@ def main():
     check_script_prefixes()
 
     if not args.keepcache:
-        shutil.rmtree("%s/test/cache" % config["environment"]["BUILDDIR"], ignore_errors=True)
+        shutil.rmtree("%s/eqbtest/cache" % config["environment"]["BUILDDIR"], ignore_errors=True)
 
     run_tests(
         test_list,
@@ -316,11 +317,11 @@ def run_tests(test_list, src_dir, build_dir, tmpdir, jobs=1, enable_coverage=Fal
         pass
 
     # Warn if there is a cache directory
-    cache_dir = "%s/test/cache" % build_dir
+    cache_dir = "%s/eqbtest/cache" % build_dir
     if os.path.isdir(cache_dir):
         print("%sWARNING!%s There is a cache directory here: %s. If tests fail unexpectedly, try deleting the cache directory." % (BOLD[1], BOLD[0], cache_dir))
 
-    tests_dir = src_dir + '/test/functional/'
+    tests_dir = src_dir + '/eqbtest/functional/'
 
     flags = ['--cachedir={}'.format(cache_dir)] + args
 
@@ -536,7 +537,7 @@ def check_script_list(src_dir):
 
     Check that there are no scripts in the functional tests directory which are
     not being run by pull-tester.py."""
-    script_dir = src_dir + '/test/functional/'
+    script_dir = src_dir + '/eqbtest/functional/'
     python_files = set([test_file for test_file in os.listdir(script_dir) if test_file.endswith(".py")])
     missed_tests = list(python_files - set(map(lambda x: x.split()[0], ALL_SCRIPTS + NON_SCRIPTS)))
     if len(missed_tests) != 0:
@@ -557,7 +558,7 @@ class RPCCoverage():
     After all tests complete, the commands run are combined and diff'd against
     the complete list to calculate uncovered RPC commands.
 
-    See also: test/functional/test_framework/coverage.py
+    See also: eqbtest/functional/test_framework/coverage.py
 
     """
     def __init__(self):
@@ -585,7 +586,7 @@ class RPCCoverage():
         Return a set of currently untested RPC commands.
 
         """
-        # This is shared from `test/functional/test-framework/coverage.py`
+        # This is shared from `eqbeqbtest/functional/test-framework/coverage.py`
         reference_filename = 'rpc_interface.txt'
         coverage_file_prefix = 'coverage.'
 
