@@ -343,7 +343,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
         for group in node_groups:
             sync_blocks(group)
-            sync_mempools(group)
+            # sync_mempools(group)  ###HERE###
 
     def enable_mocktime(self):
         """Enable mocktime for the script.
