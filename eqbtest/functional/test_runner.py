@@ -153,8 +153,12 @@ BASE_SCRIPTS = [
 
 # BASE_SCRIPTS = [
 #     # 'rpc_getblockstats.py',
-#     'feature_help.py',
-#     'rpc_uptime.py'
+#     # 'feature_help.py',
+#     # 'rpc_uptime.py'
+#     "example_test",
+#     "feature_assumevalid",
+#     "feature_config_args",
+#     "feature_help"
 # ]
 
 EXTENDED_SCRIPTS = [
@@ -398,6 +402,8 @@ def print_results(test_results, max_len_name, runtime):
     test_results.sort(key=TestResult.sort_key)
     all_passed = True
     time_sum = 0
+    test_pass_cnt = 0
+    test_fail_cnt = 0
 
     for test_result in test_results:
         all_passed = all_passed and test_result.was_successful
@@ -405,12 +411,20 @@ def print_results(test_results, max_len_name, runtime):
         test_result.padding = max_len_name
         results += str(test_result)
 
+        if test_result.was_successful:
+            test_pass_cnt += 1
+        else:
+            test_fail_cnt += 1
+
     status = TICK + "Passed" if all_passed else CROSS + "Failed"
     if not all_passed:
         results += RED[1]
     results += BOLD[1] + "\n%s | %s | %s s (accumulated) \n" % ("ALL".ljust(max_len_name), status.ljust(9), time_sum) + BOLD[0]
     if not all_passed:
         results += RED[0]
+    results += "Total Passed: %s\n" % test_pass_cnt
+    results += "Total Failed: %s\n" % test_fail_cnt
+    results += "Number of tests: %s\n\n" % len(test_results)
     results += "Runtime: %s s\n" % (runtime)
     print(results)
 
