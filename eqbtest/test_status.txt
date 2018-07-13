@@ -27,10 +27,12 @@ feature_bip68_sequence.py             | ✖ Failed  |
 feature_block.py                      | ✖ Failed  |
 feature_blocksdir.py                  | ✖ Failed  |
 feature_cltv.py                       | ✖ Failed  |
+feature_config_args.py                | ✖ Failed  |
 feature_csv_activation.py             | ✖ Failed  |
 feature_dbcrash.py                    | ✖ Failed  |
 feature_dersig.py                     | ✖ Failed  |
 feature_fee_estimation.py             | ✖ Failed  |
+feature_help.py                       | ✖ Failed  |
 feature_includeconf.py                | ✖ Failed  |
 feature_logging.py                    | ✖ Failed  |
 feature_maxuploadtarget.py            | ✖ Failed  |
@@ -101,4 +103,8 @@ wallet_txn_doublespend.py             | ✖ Failed  |
 wallet_txn_doublespend.py --mineblock | ✖ Failed  |
 wallet_zapwallettxes.py               | ✖ Failed  |
 
+ALL                                   | ✖ Failed  |
+Total Passed: 18
+Total Failed: 79
+Number of tests: 97
 
