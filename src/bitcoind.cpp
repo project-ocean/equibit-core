@@ -16,6 +16,12 @@
 	#define EQUIBIT_LOG true
 #endif
 
+// TODO:temporary fix until CXXFLAGS is used 
+// uncomment for BITCOIN type transactions 
+//#undef EQUIBIT_TX_TYPE
+//#define BITCOIN_TX_TYPE
+//#define TEST_A
+
 
 #include "chainparams.h"
 #include "clientversion.h"
@@ -85,7 +91,7 @@ bool AppInit(int argc, char* argv[])
     // Process help and version before taking care about datadir
     if (IsArgSet("-?") || IsArgSet("-h") || IsArgSet("-help") || IsArgSet("-version")) {
 
- 	std::string strUsage = "Equibit Core v 0.1.1c \n";
+ 	std::string strUsage = "Equibit Core v 0.1.1e \n";
 
 	#ifdef TEST_A
 		strUsage += "TestA flag is enabled! \n";
@@ -96,7 +102,7 @@ bool AppInit(int argc, char* argv[])
 	#endif
 
 	#ifdef BITCOIN_TX_TYPE
-		strUsage += "Bitcoin transaction feature is enabled \n");
+		strUsage += "Bitcoin transaction feature is enabled \n";
 	#endif
 
 	#ifdef EQUIBIT_TX_TYPE

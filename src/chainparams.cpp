@@ -324,9 +324,15 @@ public:
 	// TODO: add hardcoded known seed addresses for Equibit
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
+
+	// temporarly clear the seeds list, as we don't have any
+        vFixedSeeds.clear();
+        vSeeds.clear();
+
+
 	// TODO: It is possible to disable the following first flag to disable mandatory multiple Nodes 
 	// Default: True  
-	fMiningRequiresPeers = false;
+	fMiningRequiresPeers = true;
 	
 	// TODO: add description
         fDefaultConsistencyChecks = false;
@@ -341,7 +347,7 @@ public:
 	// TODO: change checkpoint hash value 
         checkpointData = {
             boost::assign::map_list_of
-            ( 546, uint256S("000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70")),
+            ( 0, uint256S("000000009901e9f74e39e1ed5b562a339250a2535e18f2f036ab1f397d13e17e")),
         };
 
 	// TODO: change chaintxData checkpoint 

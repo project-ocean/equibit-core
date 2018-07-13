@@ -1187,6 +1187,9 @@ bool IsInitialBlockDownload()
 {
     const CChainParams& chainParams = Params();
 
+   // TODO: temporarly returning true 
+   return false;
+
     // Once this function has returned false, it must remain false.
     static std::atomic<bool> latchToFalse{false};
     // Optimization: pre-test latch before taking the lock.
