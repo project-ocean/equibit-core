@@ -17,6 +17,7 @@ TIMESTAMP_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z")
 
 LogEvent = namedtuple('LogEvent', ['timestamp', 'source', 'event'])
 
+
 def main():
     """Main function. Parses args, reads the log files and renders them as text or html."""
 
@@ -42,6 +43,7 @@ def main():
 
     print_logs(log_events, color=args.color, html=args.html)
 
+
 def read_logs(tmp_dir):
     """Reads log files.
 
@@ -56,6 +58,7 @@ def read_logs(tmp_dir):
         files.append(("node%d" % i, logfile))
 
     return heapq.merge(*[get_log_events(source, f) for source, f in files])
+
 
 def get_log_events(source, logfile):
     """Generator function that returns individual log events.
@@ -85,6 +88,7 @@ def get_log_events(source, logfile):
     except FileNotFoundError:
         print("File %s could not be opened. Continuing without it." % logfile, file=sys.stderr)
 
+
 def print_logs(log_events, color=False, html=False):
     """Renders the iterator of log events into text or html."""
     if not html:
@@ -109,6 +113,7 @@ def print_logs(log_events, color=False, html=False):
         print(jinja2.Environment(loader=jinja2.FileSystemLoader('./'))
                     .get_template('combined_log_template.html')
                     .render(title="Combined Logs from testcase", log_events=[event._asdict() for event in log_events]))
+
 
 if __name__ == '__main__':
     main()

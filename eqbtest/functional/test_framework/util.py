@@ -292,7 +292,7 @@ def initialize_datadir(dirname, n):
     datadir = get_datadir_path(dirname, n)
     if not os.path.isdir(datadir):
         os.makedirs(datadir)
-    with open(os.path.join(datadir, "equibit.conf"), 'w', encoding='utf8') as f:    ###HERE### bitcoin.conf
+    with open(os.path.join(datadir, "equibit.conf"), 'w', encoding='utf8') as f:
         f.write("regtest=1\n")
         # f.write("[regtest]\n")  ###HERE###
         f.write("port=" + str(p2p_port(n)) + "\n")
@@ -310,15 +310,15 @@ def get_datadir_path(dirname, n):
     return os.path.join(dirname, "node" + str(n))
 
 def append_config(datadir, options):
-    with open(os.path.join(datadir, "equibit.conf"), 'a', encoding='utf8') as f:    ###HERE### bitcoin.conf
+    with open(os.path.join(datadir, "equibit.conf"), 'a', encoding='utf8') as f:
         for option in options:
             f.write(option + "\n")
 
 def get_auth_cookie(datadir):
     user = None
     password = None
-    if os.path.isfile(os.path.join(datadir, "equibit.conf")):  ###HERE### bitcoin.conf
-        with open(os.path.join(datadir, "equibit.conf"), 'r', encoding='utf8') as f:  ###HERE### bitcoin.conf
+    if os.path.isfile(os.path.join(datadir, "equibit.conf")):
+        with open(os.path.join(datadir, "equibit.conf"), 'r', encoding='utf8') as f:
             for line in f:
                 if line.startswith("rpcuser="):
                     assert user is None  # Ensure that there is only one rpcuser line
@@ -326,8 +326,8 @@ def get_auth_cookie(datadir):
                 if line.startswith("rpcpassword="):
                     assert password is None  # Ensure that there is only one rpcpassword line
                     password = line.split("=")[1].strip("\n")
-    if os.path.isfile(os.path.join(datadir, "regtest", ".cookie")):  ###HERE### os.path.join(datadir, "regtest", ".cookie")
-        with open(os.path.join(datadir, "regtest", ".cookie"), 'r', encoding="ascii") as f:  ###HERE### os.path.join(datadir, "regtest", ".cookie")
+    if os.path.isfile(os.path.join(datadir, "regtest", ".cookie")):
+        with open(os.path.join(datadir, "regtest", ".cookie"), 'r', encoding="ascii") as f:
             userpass = f.read()
             split_userpass = userpass.split(':')
             user = split_userpass[0]
@@ -351,14 +351,14 @@ def set_node_times(nodes, t):
         node.setmocktime(t)
 
 def disconnect_nodes(from_connection, node_num):
-    for peer_id in [peer['id'] for peer in from_connection.getpeerinfo() if "testnode%d" % node_num in peer['subver']]:
+    for peer_addr in [peer['addr'] for peer in from_connection.getpeerinfo() if "testnode%d" % node_num in peer['subver']]:
         try:
-            from_connection.disconnectnode(nodeid=peer_id)
+            from_connection.disconnectnode(address=peer_addr)
         except JSONRPCException as e:
             # If this node is disconnected between calculating the peer id
             # and issuing the disconnect, don't worry about it.
             # This avoids a race condition if we're mass-disconnecting peers.
-            if e.error['code'] != -29: # RPC_CLIENT_NODE_NOT_CONNECTED
+            if e.error['code'] != -29:  # RPC_CLIENT_NODE_NOT_CONNECTED
                 raise
 
     # wait to disconnect
