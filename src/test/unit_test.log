@@ -3,25 +3,282 @@ Platform: linux
 Compiler: GNU C++ version 7.3.0
 STL     : GNU libstdc++ version 20180220
 Boost   : 1.65.1
+Entering test module "Bitcoin Test Suite"
+test/arith_uint256_tests.cpp(17): Entering test suite "arith_uint256_tests"
+test/arith_uint256_tests.cpp(67): Entering test case "basics"
+test/arith_uint256_tests.cpp(67): Leaving test case "basics"; testing time: 17776us
+test/arith_uint256_tests.cpp(156): Entering test case "shifts"
+test/arith_uint256_tests.cpp(156): Leaving test case "shifts"; testing time: 3413us
+test/arith_uint256_tests.cpp(199): Entering test case "unaryOperators"
+test/arith_uint256_tests.cpp(199): Leaving test case "unaryOperators"; testing time: 2636us
+test/arith_uint256_tests.cpp(230): Entering test case "bitwiseOperators"
+test/arith_uint256_tests.cpp(230): Leaving test case "bitwiseOperators"; testing time: 1745us
+test/arith_uint256_tests.cpp(274): Entering test case "comparison"
+test/arith_uint256_tests.cpp(274): Leaving test case "comparison"; testing time: 3042us
+test/arith_uint256_tests.cpp(288): Entering test case "plusMinus"
+test/arith_uint256_tests.cpp(288): Leaving test case "plusMinus"; testing time: 4444us
+test/arith_uint256_tests.cpp(332): Entering test case "multiply"
+test/arith_uint256_tests.cpp(332): Leaving test case "multiply"; testing time: 2141us
+test/arith_uint256_tests.cpp(353): Entering test case "divide"
+test/arith_uint256_tests.cpp(353): Leaving test case "divide"; testing time: 1895us
+test/arith_uint256_tests.cpp(377): Entering test case "methods"
+test/arith_uint256_tests.cpp(377): Leaving test case "methods"; testing time: 1873us
+test/arith_uint256_tests.cpp(412): Entering test case "bignum_SetCompact"
+test/arith_uint256_tests.cpp(412): Leaving test case "bignum_SetCompact"; testing time: 1948us
+test/arith_uint256_tests.cpp(541): Entering test case "getmaxcoverage"
+test/arith_uint256_tests.cpp(541): Leaving test case "getmaxcoverage"; testing time: 1951us
+test/arith_uint256_tests.cpp(17): Leaving test suite "arith_uint256_tests"; testing time: 43155us
+test/addrman_tests.cpp(76): Entering test suite "addrman_tests"
+test/addrman_tests.cpp(78): Entering test case "addrman_simple"
+test/addrman_tests.cpp(78): Leaving test case "addrman_simple"; testing time: 2159us
+test/addrman_tests.cpp(119): Entering test case "addrman_ports"
+test/addrman_tests.cpp(119): Leaving test case "addrman_ports"; testing time: 3360us
+test/addrman_tests.cpp(151): Entering test case "addrman_select"
+test/addrman_tests.cpp(151): Leaving test case "addrman_select"; testing time: 8284us
+test/addrman_tests.cpp(212): Entering test case "addrman_new_collisions"
+test/addrman_tests.cpp(212): Leaving test case "addrman_new_collisions"; testing time: 2769us
+test/addrman_tests.cpp(241): Entering test case "addrman_tried_collisions"
+test/addrman_tests.cpp(241): Leaving test case "addrman_tried_collisions"; testing time: 116956us
+test/addrman_tests.cpp(271): Entering test case "addrman_find"
+test/addrman_tests.cpp(271): Leaving test case "addrman_find"; testing time: 1893us
+test/addrman_tests.cpp(310): Entering test case "addrman_create"
+test/addrman_tests.cpp(310): Leaving test case "addrman_create"; testing time: 1611us
+test/addrman_tests.cpp(333): Entering test case "addrman_delete"
+test/addrman_tests.cpp(333): Leaving test case "addrman_delete"; testing time: 1619us
+test/addrman_tests.cpp(356): Entering test case "addrman_getaddr"
+test/addrman_tests.cpp(356): Leaving test case "addrman_getaddr"; testing time: 355677us
+test/addrman_tests.cpp(421): Entering test case "caddrinfo_get_tried_bucket"
+test/addrman_tests.cpp(421): Leaving test case "caddrinfo_get_tried_bucket"; testing time: 4066us
+test/addrman_tests.cpp(478): Entering test case "caddrinfo_get_new_bucket"
+test/addrman_tests.cpp(478): Leaving test case "caddrinfo_get_new_bucket"; testing time: 10371us
+test/addrman_tests.cpp(76): Leaving test suite "addrman_tests"; testing time: 509094us
+test/amount_tests.cpp(10): Entering test suite "amount_tests"
+test/amount_tests.cpp(12): Entering test case "GetFeeTest"
+test/amount_tests.cpp(12): Leaving test case "GetFeeTest"; testing time: 1800us
+test/amount_tests.cpp(10): Leaving test suite "amount_tests"; testing time: 1822us
+test/allocator_tests.cpp(12): Entering test suite "allocator_tests"
+test/allocator_tests.cpp(14): Entering test case "arena_tests"
+test/allocator_tests.cpp(14): Leaving test case "arena_tests"; testing time: 3061us
+test/allocator_tests.cpp(161): Entering test case "lockedpool_tests_mock"
+test/allocator_tests.cpp(161): Leaving test case "lockedpool_tests_mock"; testing time: 1667us
+test/allocator_tests.cpp(210): Entering test case "lockedpool_tests_live"
+test/allocator_tests.cpp(210): Leaving test case "lockedpool_tests_live"; testing time: 1749us
+test/allocator_tests.cpp(12): Leaving test suite "allocator_tests"; testing time: 6535us
+test/base32_tests.cpp(10): Entering test suite "base32_tests"
+test/base32_tests.cpp(12): Entering test case "base32_testvectors"
+test/base32_tests.cpp(12): Leaving test case "base32_testvectors"; testing time: 2684us
+test/base32_tests.cpp(10): Leaving test suite "base32_tests"; testing time: 2727us
+test/base58_tests.cpp(25): Entering test suite "base58_tests"
+test/base58_tests.cpp(28): Entering test case "base58_EncodeBase58"
+test/base58_tests.cpp(28): Leaving test case "base58_EncodeBase58"; testing time: 1896us
+test/base58_tests.cpp(48): Entering test case "base58_DecodeBase58"
+test/base58_tests.cpp(48): Leaving test case "base58_DecodeBase58"; testing time: 1984us
+test/base58_tests.cpp(121): Entering test case "base58_keys_valid_parse"
+test/base58_tests.cpp(121): Leaving test case "base58_keys_valid_parse"; testing time: 2610us
+test/base58_tests.cpp(178): Entering test case "base58_keys_valid_gen"
+test/base58_tests.cpp(178): Leaving test case "base58_keys_valid_gen"; testing time: 2097us
+test/base58_tests.cpp(245): Entering test case "base58_keys_invalid"
+test/base58_tests.cpp(245): Leaving test case "base58_keys_invalid"; testing time: 2607us
+test/base58_tests.cpp(25): Leaving test suite "base58_tests"; testing time: 11300us
+test/base64_tests.cpp(10): Entering test suite "base64_tests"
+test/base64_tests.cpp(12): Entering test case "base64_testvectors"
+test/base64_tests.cpp(12): Leaving test case "base64_testvectors"; testing time: 2033us
+test/base64_tests.cpp(10): Leaving test suite "base64_tests"; testing time: 2049us
+test/bip32_tests.cpp(139): Entering test suite "bip32_tests"
+test/bip32_tests.cpp(141): Entering test case "bip32_test1"
+test/bip32_tests.cpp(141): Leaving test case "bip32_test1"; testing time: 2661us
+test/bip32_tests.cpp(145): Entering test case "bip32_test2"
+test/bip32_tests.cpp(145): Leaving test case "bip32_test2"; testing time: 2796us
+test/bip32_tests.cpp(139): Leaving test suite "bip32_tests"; testing time: 5481us
+test/blockencodings_tests.cpp(20): Entering test suite "blockencodings_tests"
+test/blockencodings_tests.cpp(58): Entering test case "SimpleRoundTripTest"
+test/blockencodings_tests.cpp(58): Leaving test case "SimpleRoundTripTest"; testing time: 3166us
+test/blockencodings_tests.cpp(157): Entering test case "NonCoinbasePreforwardRTTest"
+test/blockencodings_tests.cpp(157): Leaving test case "NonCoinbasePreforwardRTTest"; testing time: 3361us
+test/blockencodings_tests.cpp(223): Entering test case "SufficientPreforwardRTTest"
+test/blockencodings_tests.cpp(223): Leaving test case "SufficientPreforwardRTTest"; testing time: 3199us
+test/blockencodings_tests.cpp(273): Entering test case "EmptyBlockRoundTripTest"
+test/blockencodings_tests.cpp(273): Leaving test case "EmptyBlockRoundTripTest"; testing time: 2596us
+test/blockencodings_tests.cpp(317): Entering test case "TransactionsRequestSerializationTest"
+test/blockencodings_tests.cpp(317): Leaving test case "TransactionsRequestSerializationTest"; testing time: 2708us
+test/blockencodings_tests.cpp(20): Leaving test suite "blockencodings_tests"; testing time: 15130us
+test/bloom_tests.cpp(24): Entering test suite "bloom_tests"
+test/bloom_tests.cpp(26): Entering test case "bloom_create_insert_serialize"
+test/bloom_tests.cpp(26): Leaving test case "bloom_create_insert_serialize"; testing time: 1740us
+test/bloom_tests.cpp(57): Entering test case "bloom_create_insert_serialize_with_tweak"
+test/bloom_tests.cpp(57): Leaving test case "bloom_create_insert_serialize_with_tweak"; testing time: 2235us
+test/bloom_tests.cpp(85): Entering test case "bloom_create_insert_key"
+test/bloom_tests.cpp(85): Leaving test case "bloom_create_insert_key"; testing time: 1994us
+test/bloom_tests.cpp(112): Entering test case "bloom_match"
 unknown location(0): fatal error: in "bloom_tests/bloom_match": std::ios_base::failure[abi:cxx11]: CDataStream::read(): end of data: iostream error
 test/bloom_tests.cpp(112): last checkpoint: "bloom_match" test entry
+test/bloom_tests.cpp(112): Leaving test case "bloom_match"; testing time: 1767us
+test/bloom_tests.cpp(181): Entering test case "merkle_block_1"
 unknown location(0): fatal error: in "bloom_tests/merkle_block_1": std::ios_base::failure[abi:cxx11]: ReadCompactSize(): size too large: iostream error
 test/bloom_tests.cpp(181): last checkpoint: "merkle_block_1" test entry
+test/bloom_tests.cpp(181): Leaving test case "merkle_block_1"; testing time: 1828us
+test/bloom_tests.cpp(227): Entering test case "merkle_block_2"
 unknown location(0): fatal error: in "bloom_tests/merkle_block_2": std::ios_base::failure[abi:cxx11]: ReadCompactSize(): size too large: iostream error
 test/bloom_tests.cpp(227): last checkpoint: "merkle_block_2" test entry
+test/bloom_tests.cpp(227): Leaving test case "merkle_block_2"; testing time: 1786us
+test/bloom_tests.cpp(282): Entering test case "merkle_block_2_with_update_none"
 unknown location(0): fatal error: in "bloom_tests/merkle_block_2_with_update_none": std::ios_base::failure[abi:cxx11]: ReadCompactSize(): size too large: iostream error
 test/bloom_tests.cpp(282): last checkpoint: "merkle_block_2_with_update_none" test entry
+test/bloom_tests.cpp(282): Leaving test case "merkle_block_2_with_update_none"; testing time: 1698us
+test/bloom_tests.cpp(334): Entering test case "merkle_block_3_and_serialize"
 unknown location(0): fatal error: in "bloom_tests/merkle_block_3_and_serialize": std::ios_base::failure[abi:cxx11]: CDataStream::read(): end of data: iostream error
 test/bloom_tests.cpp(334): last checkpoint: "merkle_block_3_and_serialize" test entry
+test/bloom_tests.cpp(334): Leaving test case "merkle_block_3_and_serialize"; testing time: 2148us
+test/bloom_tests.cpp(373): Entering test case "merkle_block_4"
 unknown location(0): fatal error: in "bloom_tests/merkle_block_4": std::ios_base::failure[abi:cxx11]: CDataStream::read(): end of data: iostream error
 test/bloom_tests.cpp(373): last checkpoint: "merkle_block_4" test entry
+test/bloom_tests.cpp(373): Leaving test case "merkle_block_4"; testing time: 2187us
+test/bloom_tests.cpp(419): Entering test case "merkle_block_4_test_p2pubkey_only"
 unknown location(0): fatal error: in "bloom_tests/merkle_block_4_test_p2pubkey_only": std::ios_base::failure[abi:cxx11]: CDataStream::read(): end of data: iostream error
 test/bloom_tests.cpp(419): last checkpoint: "merkle_block_4_test_p2pubkey_only" test entry
+test/bloom_tests.cpp(419): Leaving test case "merkle_block_4_test_p2pubkey_only"; testing time: 1772us
+test/bloom_tests.cpp(442): Entering test case "merkle_block_4_test_update_none"
 unknown location(0): fatal error: in "bloom_tests/merkle_block_4_test_update_none": std::ios_base::failure[abi:cxx11]: CDataStream::read(): end of data: iostream error
 test/bloom_tests.cpp(442): last checkpoint: "merkle_block_4_test_update_none" test entry
+test/bloom_tests.cpp(442): Leaving test case "merkle_block_4_test_update_none"; testing time: 1828us
+test/bloom_tests.cpp(470): Entering test case "rolling_bloom"
+RollingBloomFilter got 104 false positives (~100 expected)
+RollingBloomFilter got 2 false positives (~5 expected)
+test/bloom_tests.cpp(470): Leaving test case "rolling_bloom"; testing time: 28455us
+test/bloom_tests.cpp(24): Leaving test suite "bloom_tests"; testing time: 49677us
+test/bswap_tests.cpp(10): Entering test suite "bswap_tests"
+test/bswap_tests.cpp(12): Entering test case "bswap_tests"
+test/bswap_tests.cpp(12): Leaving test case "bswap_tests"; testing time: 1737us
+test/bswap_tests.cpp(10): Leaving test suite "bswap_tests"; testing time: 1757us
+test/coins_tests.cpp(93): Entering test suite "coins_tests"
+test/coins_tests.cpp(106): Entering test case "coins_cache_simulation_test"
+test/coins_tests.cpp(106): Leaving test case "coins_cache_simulation_test"; testing time: 327414us
+test/coins_tests.cpp(241): Entering test case "updatecoins_simulation_test"
+test/coins_tests.cpp(241): Leaving test case "updatecoins_simulation_test"; testing time: 1481752us
+test/coins_tests.cpp(433): Entering test case "ccoins_serialization"
 unknown location(0): fatal error: in "coins_tests/ccoins_serialization": std::ios_base::failure[abi:cxx11]: CDataStream::read(): end of data: iostream error
 test/coins_tests.cpp(433): last checkpoint: "ccoins_serialization" test entry
+test/coins_tests.cpp(433): Leaving test case "ccoins_serialization"; testing time: 14769us
+test/coins_tests.cpp(597): Entering test case "ccoins_access"
+test/coins_tests.cpp(597): Leaving test case "ccoins_access"; testing time: 3789us
+test/coins_tests.cpp(648): Entering test case "ccoins_modify"
+test/coins_tests.cpp(648): Leaving test case "ccoins_modify"; testing time: 2787us
+test/coins_tests.cpp(743): Entering test case "ccoins_modify_new"
+test/coins_tests.cpp(743): Leaving test case "ccoins_modify_new"; testing time: 2840us
+test/coins_tests.cpp(810): Entering test case "ccoins_write"
+test/coins_tests.cpp(810): Leaving test case "ccoins_write"; testing time: 2830us
+test/coins_tests.cpp(93): Leaving test suite "coins_tests"; testing time: 1836330us
+test/compress_tests.cpp(25): Entering test suite "compress_tests"
+test/compress_tests.cpp(40): Entering test case "compress_amounts"
+test/compress_tests.cpp(40): Leaving test case "compress_amounts"; testing time: 282781us
+test/compress_tests.cpp(25): Leaving test suite "compress_tests"; testing time: 282813us
+test/crypto_tests.cpp(23): Entering test suite "crypto_tests"
+test/crypto_tests.cpp(204): Entering test case "ripemd160_testvectors"
+test/crypto_tests.cpp(204): Leaving test case "ripemd160_testvectors"; testing time: 145598us
+test/crypto_tests.cpp(220): Entering test case "sha1_testvectors"
+test/crypto_tests.cpp(220): Leaving test case "sha1_testvectors"; testing time: 109875us
+test/crypto_tests.cpp(236): Entering test case "sha256_testvectors"
+test/crypto_tests.cpp(236): Leaving test case "sha256_testvectors"; testing time: 275296us
+test/crypto_tests.cpp(258): Entering test case "sha512_testvectors"
+test/crypto_tests.cpp(258): Leaving test case "sha512_testvectors"; testing time: 174870us
+test/crypto_tests.cpp(295): Entering test case "hmac_sha256_testvectors"
+test/crypto_tests.cpp(295): Leaving test case "hmac_sha256_testvectors"; testing time: 4577us
+test/crypto_tests.cpp(332): Entering test case "hmac_sha512_testvectors"
+test/crypto_tests.cpp(332): Leaving test case "hmac_sha512_testvectors"; testing time: 4560us
+test/crypto_tests.cpp(375): Entering test case "aes_testvectors"
+test/crypto_tests.cpp(375): Leaving test case "aes_testvectors"; testing time: 1748us
+test/crypto_tests.cpp(391): Entering test case "aes_cbc_testvectors"
+test/crypto_tests.cpp(391): Leaving test case "aes_cbc_testvectors"; testing time: 2267us
+test/crypto_tests.cpp(23): Leaving test suite "crypto_tests"; testing time: 718992us
+test/cuckoocache_tests.cpp(27): Entering test suite "cuckoocache_tests"
+test/cuckoocache_tests.cpp(59): Entering test case "test_cuckoocache_no_fakes"
+test/cuckoocache_tests.cpp(59): Leaving test case "test_cuckoocache_no_fakes"; testing time: 106677us
+test/cuckoocache_tests.cpp(132): Entering test case "cuckoocache_hit_rate_ok"
+test/cuckoocache_tests.cpp(132): Leaving test case "cuckoocache_hit_rate_ok"; testing time: 1084711us
+test/cuckoocache_tests.cpp(205): Entering test case "cuckoocache_erase_ok"
+test/cuckoocache_tests.cpp(205): Leaving test case "cuckoocache_erase_ok"; testing time: 350702us
+test/cuckoocache_tests.cpp(292): Entering test case "cuckoocache_erase_parallel_ok"
+test/cuckoocache_tests.cpp(292): Leaving test case "cuckoocache_erase_parallel_ok"; testing time: 353206us
+test/cuckoocache_tests.cpp(389): Entering test case "cuckoocache_generations"
+test/cuckoocache_tests.cpp(389): Leaving test case "cuckoocache_generations"; testing time: 3367031us
+test/cuckoocache_tests.cpp(27): Leaving test suite "cuckoocache_tests"; testing time: 5262582us
+test/DoS_tests.cpp(46): Entering test suite "DoS_tests"
+test/DoS_tests.cpp(48): Entering test case "DoS_banning"
+test/DoS_tests.cpp(48): Leaving test case "DoS_banning"; testing time: 3210us
+test/DoS_tests.cpp(79): Entering test case "DoS_banscore"
+test/DoS_tests.cpp(79): Leaving test case "DoS_banscore"; testing time: 2664us
+test/DoS_tests.cpp(103): Entering test case "DoS_bantime"
+test/DoS_tests.cpp(103): Leaving test case "DoS_bantime"; testing time: 2733us
+test/DoS_tests.cpp(138): Entering test case "DoS_mapOrphans"
+test/DoS_tests.cpp(138): Leaving test case "DoS_mapOrphans"; testing time: 81519us
+test/DoS_tests.cpp(46): Leaving test suite "DoS_tests"; testing time: 90209us
+test/getarg_tests.cpp(15): Entering test suite "getarg_tests"
+test/getarg_tests.cpp(34): Entering test case "boolarg"
+test/getarg_tests.cpp(34): Leaving test case "boolarg"; testing time: 1831us
+test/getarg_tests.cpp(86): Entering test case "stringarg"
+test/getarg_tests.cpp(86): Leaving test case "stringarg"; testing time: 1644us
+test/getarg_tests.cpp(110): Entering test case "intarg"
+test/getarg_tests.cpp(110): Leaving test case "intarg"; testing time: 1700us
+test/getarg_tests.cpp(129): Entering test case "doubledash"
+test/getarg_tests.cpp(129): Leaving test case "doubledash"; testing time: 1644us
+test/getarg_tests.cpp(139): Entering test case "boolargno"
+test/getarg_tests.cpp(139): Leaving test case "boolargno"; testing time: 1660us
+test/getarg_tests.cpp(15): Leaving test suite "getarg_tests"; testing time: 8544us
+test/hash_tests.cpp(13): Entering test suite "hash_tests"
+test/hash_tests.cpp(15): Entering test case "murmurhash3"
+test/hash_tests.cpp(15): Leaving test case "murmurhash3"; testing time: 1582us
+test/hash_tests.cpp(80): Entering test case "siphash"
+test/hash_tests.cpp(80): Leaving test case "siphash"; testing time: 1706us
+test/hash_tests.cpp(13): Leaving test suite "hash_tests"; testing time: 3310us
+test/key_tests.cpp(60): Entering test suite "key_tests"
+test/key_tests.cpp(62): Entering test case "key_test1"
+test/key_tests.cpp(62): Leaving test case "key_test1"; testing time: 30926us
+test/key_tests.cpp(60): Leaving test suite "key_tests"; testing time: 30948us
+test/limitedmap_tests.cpp(11): Entering test suite "limitedmap_tests"
+test/limitedmap_tests.cpp(13): Entering test case "limitedmap_test"
+test/limitedmap_tests.cpp(13): Leaving test case "limitedmap_test"; testing time: 1784us
+test/limitedmap_tests.cpp(11): Leaving test suite "limitedmap_tests"; testing time: 1810us
+test/dbwrapper_tests.cpp(24): Entering test suite "dbwrapper_tests"
+test/dbwrapper_tests.cpp(26): Entering test case "dbwrapper"
+test/dbwrapper_tests.cpp(26): Leaving test case "dbwrapper"; testing time: 2003us
+test/dbwrapper_tests.cpp(47): Entering test case "dbwrapper_batch"
+test/dbwrapper_tests.cpp(47): Leaving test case "dbwrapper_batch"; testing time: 1823us
+test/dbwrapper_tests.cpp(84): Entering test case "dbwrapper_iterator"
+test/dbwrapper_tests.cpp(84): Leaving test case "dbwrapper_iterator"; testing time: 1902us
+test/dbwrapper_tests.cpp(126): Entering test case "existing_data_no_obfuscate"
+test/dbwrapper_tests.cpp(126): Leaving test case "existing_data_no_obfuscate"; testing time: 3403us
+test/dbwrapper_tests.cpp(167): Entering test case "existing_data_reindex"
+test/dbwrapper_tests.cpp(167): Leaving test case "existing_data_reindex"; testing time: 3067us
+test/dbwrapper_tests.cpp(203): Entering test case "iterator_ordering"
+test/dbwrapper_tests.cpp(203): Leaving test case "iterator_ordering"; testing time: 3032us
+test/dbwrapper_tests.cpp(272): Entering test case "iterator_string_ordering"
+test/dbwrapper_tests.cpp(272): Leaving test case "iterator_string_ordering"; testing time: 2607us
+test/dbwrapper_tests.cpp(24): Leaving test suite "dbwrapper_tests"; testing time: 17961us
+test/main_tests.cpp(14): Entering test suite "main_tests"
+test/main_tests.cpp(40): Entering test case "block_subsidy_test"
+test/main_tests.cpp(40): Leaving test case "block_subsidy_test"; testing time: 3202us
+test/main_tests.cpp(47): Entering test case "subsidy_limit_test"
+test/main_tests.cpp(47): Leaving test case "subsidy_limit_test"; testing time: 16681us
+test/main_tests.cpp(63): Entering test case "test_combiner_all"
+test/main_tests.cpp(63): Leaving test case "test_combiner_all"; testing time: 4590us
+test/main_tests.cpp(14): Leaving test suite "main_tests"; testing time: 24923us
+test/mempool_tests.cpp(15): Entering test suite "mempool_tests"
+test/mempool_tests.cpp(17): Entering test case "MempoolRemoveTest"
+test/mempool_tests.cpp(17): Leaving test case "MempoolRemoveTest"; testing time: 2887us
+test/mempool_tests.cpp(119): Entering test case "MempoolIndexingTest"
+test/mempool_tests.cpp(119): Leaving test case "MempoolIndexingTest"; testing time: 3613us
+test/mempool_tests.cpp(321): Entering test case "MempoolAncestorIndexingTest"
+test/mempool_tests.cpp(321): Leaving test case "MempoolAncestorIndexingTest"; testing time: 3132us
+test/mempool_tests.cpp(433): Entering test case "MempoolSizeLimitTest"
 test/mempool_tests.cpp(577): error: in "mempool_tests/MempoolSizeLimitTest": check pool.GetMinFee(1).GetFeePerK() == 1000 has failed [0 != 1000]
+test/mempool_tests.cpp(433): Leaving test case "MempoolSizeLimitTest"; testing time: 3760us
+test/mempool_tests.cpp(15): Leaving test suite "mempool_tests"; testing time: 13512us
+test/merkle_tests.cpp(11): Entering test suite "merkle_tests"
+test/merkle_tests.cpp(67): Entering test case "merkle_test"
+test/merkle_tests.cpp(67): Leaving test case "merkle_test"; testing time: 813872us
+test/merkle_tests.cpp(11): Leaving test suite "merkle_tests"; testing time: 813896us
+test/miner_tests.cpp(26): Entering test suite "miner_tests"
+test/miner_tests.cpp(186): Entering test case "CreateNewBlock_validity"
 test/miner_tests.cpp(230): error: in "miner_tests/CreateNewBlock_validity": check ProcessNewBlock(chainparams, shared_pblock, true, __null) has failed
 test/miner_tests.cpp(230): error: in "miner_tests/CreateNewBlock_validity": check ProcessNewBlock(chainparams, shared_pblock, true, __null) has failed
 test/miner_tests.cpp(230): error: in "miner_tests/CreateNewBlock_validity": check ProcessNewBlock(chainparams, shared_pblock, true, __null) has failed
@@ -134,9 +391,127 @@ test/miner_tests.cpp(230): error: in "miner_tests/CreateNewBlock_validity": chec
 test/miner_tests.cpp(230): error: in "miner_tests/CreateNewBlock_validity": check ProcessNewBlock(chainparams, shared_pblock, true, __null) has failed
 unknown location(0): fatal error: in "miner_tests/CreateNewBlock_validity": std::runtime_error: CreateNewBlock: TestBlockValidity failed: bad-txns-inputs-missingorspent (code 16)
 test/miner_tests.cpp(273): last checkpoint
+test/miner_tests.cpp(186): Leaving test case "CreateNewBlock_validity"; testing time: 2323300us
+test/miner_tests.cpp(26): Leaving test suite "miner_tests"; testing time: 2323309us
+test/multisig_tests.cpp(22): Entering test suite "multisig_tests"
+test/multisig_tests.cpp(41): Entering test case "multisig_verify"
+test/multisig_tests.cpp(41): Leaving test case "multisig_verify"; testing time: 8181us
+test/multisig_tests.cpp(141): Entering test case "multisig_IsStandard"
+test/multisig_tests.cpp(141): Leaving test case "multisig_IsStandard"; testing time: 2303us
+test/multisig_tests.cpp(177): Entering test case "multisig_Solver1"
+test/multisig_tests.cpp(177): Leaving test case "multisig_Solver1"; testing time: 2196us
+test/multisig_tests.cpp(266): Entering test case "multisig_Sign"
+test/multisig_tests.cpp(266): Leaving test case "multisig_Sign"; testing time: 2729us
+test/multisig_tests.cpp(22): Leaving test suite "multisig_tests"; testing time: 15473us
+test/net_tests.cpp(73): Entering test suite "net_tests"
+test/net_tests.cpp(75): Entering test case "caddrdb_read"
+test/net_tests.cpp(75): Leaving test case "caddrdb_read"; testing time: 2638us
+test/net_tests.cpp(120): Entering test case "caddrdb_read_corrupted"
+test/net_tests.cpp(120): Leaving test case "caddrdb_read_corrupted"; testing time: 1924us
+test/net_tests.cpp(151): Entering test case "cnode_simple_test"
+test/net_tests.cpp(151): Leaving test case "cnode_simple_test"; testing time: 1872us
+test/net_tests.cpp(73): Leaving test suite "net_tests"; testing time: 6485us
+test/netbase_tests.cpp(13): Entering test suite "netbase_tests"
+test/netbase_tests.cpp(29): Entering test case "netbase_networks"
+test/netbase_tests.cpp(29): Leaving test case "netbase_networks"; testing time: 1708us
+test/netbase_tests.cpp(39): Entering test case "netbase_properties"
+test/netbase_tests.cpp(39): Leaving test case "netbase_properties"; testing time: 1688us
+test/netbase_tests.cpp(73): Entering test case "netbase_splithost"
+test/netbase_tests.cpp(73): Leaving test case "netbase_splithost"; testing time: 1620us
+test/netbase_tests.cpp(98): Entering test case "netbase_lookupnumeric"
+test/netbase_tests.cpp(98): Leaving test case "netbase_lookupnumeric"; testing time: 1726us
+test/netbase_tests.cpp(109): Entering test case "onioncat_test"
+test/netbase_tests.cpp(109): Leaving test case "onioncat_test"; testing time: 1783us
+test/netbase_tests.cpp(122): Entering test case "subnet_test"
+test/netbase_tests.cpp(122): Leaving test case "subnet_test"; testing time: 1872us
+test/netbase_tests.cpp(269): Entering test case "netbase_getgroup"
+test/netbase_tests.cpp(269): Leaving test case "netbase_getgroup"; testing time: 1763us
+test/netbase_tests.cpp(13): Leaving test suite "netbase_tests"; testing time: 12291us
+test/pmt_tests.cpp(31): Entering test suite "pmt_tests"
+test/pmt_tests.cpp(33): Entering test case "pmt_test1"
+test/pmt_tests.cpp(33): Leaving test case "pmt_test1"; testing time: 229973us
+test/pmt_tests.cpp(111): Entering test case "pmt_malleability"
+test/pmt_tests.cpp(111): Leaving test case "pmt_malleability"; testing time: 2030us
+test/pmt_tests.cpp(31): Leaving test suite "pmt_tests"; testing time: 232057us
+test/policyestimator_tests.cpp(15): Entering test suite "policyestimator_tests"
+test/policyestimator_tests.cpp(17): Entering test case "BlockPolicyEstimates"
+test/policyestimator_tests.cpp(17): Leaving test case "BlockPolicyEstimates"; testing time: 141935us
+test/policyestimator_tests.cpp(15): Leaving test suite "policyestimator_tests"; testing time: 141965us
+test/pow_tests.cpp(14): Entering test suite "pow_tests"
+test/pow_tests.cpp(17): Entering test case "get_next_work"
+test/pow_tests.cpp(17): Leaving test case "get_next_work"; testing time: 1792us
+test/pow_tests.cpp(31): Entering test case "get_next_work_pow_limit"
+test/pow_tests.cpp(31): Leaving test case "get_next_work_pow_limit"; testing time: 1647us
+test/pow_tests.cpp(45): Entering test case "get_next_work_lower_limit_actual"
+test/pow_tests.cpp(45): Leaving test case "get_next_work_lower_limit_actual"; testing time: 1619us
+test/pow_tests.cpp(59): Entering test case "get_next_work_upper_limit_actual"
+test/pow_tests.cpp(59): Leaving test case "get_next_work_upper_limit_actual"; testing time: 1654us
+test/pow_tests.cpp(72): Entering test case "GetBlockProofEquivalentTime_test"
+test/pow_tests.cpp(72): Leaving test case "GetBlockProofEquivalentTime_test"; testing time: 9719us
+test/pow_tests.cpp(14): Leaving test suite "pow_tests"; testing time: 16507us
+test/prevector_tests.cpp(16): Entering test suite "PrevectorTests"
+test/prevector_tests.cpp(197): Entering test case "PrevectorTestInt"
+test/prevector_tests.cpp(197): Leaving test case "PrevectorTestInt"; testing time: 116418us
+test/prevector_tests.cpp(16): Leaving test suite "PrevectorTests"; testing time: 116438us
+test/raii_event_tests.cpp(39): Entering test suite "raii_event_tests"
+test/raii_event_tests.cpp(41): Entering test case "raii_event_creation"
+test/raii_event_tests.cpp(41): Leaving test case "raii_event_creation"; testing time: 1801us
+test/raii_event_tests.cpp(70): Entering test case "raii_event_order"
+test/raii_event_tests.cpp(70): Leaving test case "raii_event_order"; testing time: 1767us
+test/raii_event_tests.cpp(39): Leaving test suite "raii_event_tests"; testing time: 3605us
+test/reverselock_tests.cpp(10): Entering test suite "reverselock_tests"
+test/reverselock_tests.cpp(12): Entering test case "reverselock_basics"
+test/reverselock_tests.cpp(12): Leaving test case "reverselock_basics"; testing time: 1625us
+test/reverselock_tests.cpp(25): Entering test case "reverselock_errors"
+test/reverselock_tests.cpp(25): Leaving test case "reverselock_errors"; testing time: 1655us
+test/reverselock_tests.cpp(10): Leaving test suite "reverselock_tests"; testing time: 3302us
+test/rpc_tests.cpp(41): Entering test suite "rpc_tests"
+test/rpc_tests.cpp(43): Entering test case "rpc_rawparams"
 test/rpc_tests.cpp(64): error: in "rpc_tests/rpc_rawparams": unexpected exception thrown by r = CallRPC(std::string("decoderawtransaction ")+rawtx)
 unknown location(0): fatal error: in "rpc_tests/rpc_rawparams": std::runtime_error: JSON value is not an object as expected
 test/rpc_tests.cpp(65): last checkpoint
+test/rpc_tests.cpp(43): Leaving test case "rpc_rawparams"; testing time: 3458us
+test/rpc_tests.cpp(85): Entering test case "rpc_togglenetwork"
+test/rpc_tests.cpp(85): Leaving test case "rpc_togglenetwork"; testing time: 2922us
+test/rpc_tests.cpp(107): Entering test case "rpc_rawsign"
+test/rpc_tests.cpp(107): Leaving test case "rpc_rawsign"; testing time: 3607us
+test/rpc_tests.cpp(126): Entering test case "rpc_createraw_op_return"
+test/rpc_tests.cpp(126): Leaving test case "rpc_createraw_op_return"; testing time: 2615us
+test/rpc_tests.cpp(144): Entering test case "rpc_format_monetary_values"
+test/rpc_tests.cpp(144): Leaving test case "rpc_format_monetary_values"; testing time: 2850us
+test/rpc_tests.cpp(186): Entering test case "rpc_parse_monetary_values"
+test/rpc_tests.cpp(186): Leaving test case "rpc_parse_monetary_values"; testing time: 3074us
+test/rpc_tests.cpp(219): Entering test case "json_parse_errors"
+test/rpc_tests.cpp(219): Leaving test case "json_parse_errors"; testing time: 2924us
+test/rpc_tests.cpp(240): Entering test case "rpc_ban"
+test/rpc_tests.cpp(240): Leaving test case "rpc_ban"; testing time: 5260us
+test/rpc_tests.cpp(323): Entering test case "rpc_convert_values_generatetoaddress"
+test/rpc_tests.cpp(323): Leaving test case "rpc_convert_values_generatetoaddress"; testing time: 2508us
+test/rpc_tests.cpp(41): Leaving test suite "rpc_tests"; testing time: 29401us
+test/sanity_tests.cpp(11): Entering test suite "sanity_tests"
+test/sanity_tests.cpp(13): Entering test case "basic_sanity"
+test/sanity_tests.cpp(13): Leaving test case "basic_sanity"; testing time: 1996us
+test/sanity_tests.cpp(11): Leaving test suite "sanity_tests"; testing time: 2007us
+test/scheduler_tests.cpp(16): Entering test suite "scheduler_tests"
+test/scheduler_tests.cpp(43): Entering test case "manythreads"
+test/scheduler_tests.cpp(43): Leaving test case "manythreads"; testing time: 1741us
+test/scheduler_tests.cpp(16): Leaving test suite "scheduler_tests"; testing time: 1764us
+test/script_P2SH_tests.cpp(48): Entering test suite "script_P2SH_tests"
+test/script_P2SH_tests.cpp(50): Entering test case "sign"
+test/script_P2SH_tests.cpp(50): Leaving test case "sign"; testing time: 4851us
+test/script_P2SH_tests.cpp(124): Entering test case "norecurse"
+test/script_P2SH_tests.cpp(124): Leaving test case "norecurse"; testing time: 1722us
+test/script_P2SH_tests.cpp(151): Entering test case "set"
+test/script_P2SH_tests.cpp(151): Leaving test case "set"; testing time: 2932us
+test/script_P2SH_tests.cpp(206): Entering test case "is"
+test/script_P2SH_tests.cpp(206): Leaving test case "is"; testing time: 1617us
+test/script_P2SH_tests.cpp(237): Entering test case "switchover"
+test/script_P2SH_tests.cpp(237): Leaving test case "switchover"; testing time: 1671us
+test/script_P2SH_tests.cpp(257): Entering test case "AreInputsStandard"
+test/script_P2SH_tests.cpp(257): Leaving test case "AreInputsStandard"; testing time: 3489us
+test/script_P2SH_tests.cpp(48): Leaving test suite "script_P2SH_tests"; testing time: 16375us
+test/script_tests.cpp(121): Entering test suite "script_tests"
+test/script_tests.cpp(478): Entering test case "script_build"
 test/script_tests.cpp(940): error: in "script_tests/script_build": Missing auto script_valid test: P2PK
 test/script_tests.cpp(940): error: in "script_tests/script_build": Missing auto script_valid test: P2PK, bad sig
 test/script_tests.cpp(940): error: in "script_tests/script_build": Missing auto script_valid test: P2PKH
@@ -262,6 +637,8 @@ test/script_tests.cpp(940): error: in "script_tests/script_build": Missing auto 
 test/script_tests.cpp(940): error: in "script_tests/script_build": Missing auto script_valid test: P2SH(P2WSH) CHECKMULTISIG with second key uncompressed and signing with the second key
 test/script_tests.cpp(940): error: in "script_tests/script_build": Missing auto script_valid test: P2WSH CHECKMULTISIG with second key uncompressed and signing with the second key
 test/script_tests.cpp(940): error: in "script_tests/script_build": Missing auto script_valid test: P2SH(P2WSH) CHECKMULTISIG with second key uncompressed and signing with the second key
+test/script_tests.cpp(478): Leaving test case "script_build"; testing time: 103963us
+test/script_tests.cpp(953): Entering test case "script_json_test"
 test/script_tests.cpp(168): error: in "script_tests/script_json_test": ["0x47 0x304402200a5c6163f07b8d3b013c4d1d6dba25e780b39658d79ba37af7057a3b7f15ffa102201fd9b4eaa9943f734928b99a83592c2e7bf342ea2680f6a2bb705167966b742001","0x41 0x0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8 CHECKSIG","","OK","P2PK"]
 test/script_tests.cpp(169): error: in "script_tests/script_json_test": EVAL_FALSE where OK expected: ["0x47 0x304402200a5c6163f07b8d3b013c4d1d6dba25e780b39658d79ba37af7057a3b7f15ffa102201fd9b4eaa9943f734928b99a83592c2e7bf342ea2680f6a2bb705167966b742001","0x41 0x0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8 CHECKSIG","","OK","P2PK"]
 test/script_tests.cpp(178): error: in "script_tests/script_json_test": ["0x47 0x304402200a5c6163f07b8d3b013c4d1d6dba25e780b39658d79ba37af7057a3b7f15ffa102201fd9b4eaa9943f734928b99a83592c2e7bf342ea2680f6a2bb705167966b742001","0x41 0x0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8 CHECKSIG","","OK","P2PK"]
@@ -436,6 +813,58 @@ test/script_tests.cpp(176): error: in "script_tests/script_json_test": [["","304
 test/script_tests.cpp(168): error: in "script_tests/script_json_test": [["","30440220687871bc6144012d75baf585bb26ce13997f7d8c626f4d8825b069c3b2d064470220108936fe1c57327764782253e99090b09c203ec400ed35ce9e026ce2ecf842a001","5141048282263212c609d9ea2a6e3e172de238d8c39cabd5ac1ca10646e23fd5f5150811f8a8098557dfe45e8256e830b60ace62d613ac2f7b17bed31b6eaff6e26caf210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179852ae",0.00000001],"0x22 0x0020230828ed48871f0f362ce9432aa52f620f442cc8d9ce7a8b5e798365595a38bb","HASH160 0x14 0x3478e7019ce61a68148f87549579b704cbe4c393 EQUAL","P2SH,WITNESS","OK","P2SH(P2WSH) CHECKMULTISIG with second key uncompressed and signing with the second key"]
 test/script_tests.cpp(169): error: in "script_tests/script_json_test": EVAL_FALSE where OK expected: [["","30440220687871bc6144012d75baf585bb26ce13997f7d8c626f4d8825b069c3b2d064470220108936fe1c57327764782253e99090b09c203ec400ed35ce9e026ce2ecf842a001","5141048282263212c609d9ea2a6e3e172de238d8c39cabd5ac1ca10646e23fd5f5150811f8a8098557dfe45e8256e830b60ace62d613ac2f7b17bed31b6eaff6e26caf210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179852ae",0.00000001],"0x22 0x0020230828ed48871f0f362ce9432aa52f620f442cc8d9ce7a8b5e798365595a38bb","HASH160 0x14 0x3478e7019ce61a68148f87549579b704cbe4c393 EQUAL","P2SH,WITNESS","OK","P2SH(P2WSH) CHECKMULTISIG with second key uncompressed and signing with the second key"]
 test/script_tests.cpp(176): error: in "script_tests/script_json_test": [["","30440220687871bc6144012d75baf585bb26ce13997f7d8c626f4d8825b069c3b2d064470220108936fe1c57327764782253e99090b09c203ec400ed35ce9e026ce2ecf842a001","5141048282263212c609d9ea2a6e3e172de238d8c39cabd5ac1ca10646e23fd5f5150811f8a8098557dfe45e8256e830b60ace62d613ac2f7b17bed31b6eaff6e26caf210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179852ae",0.00000001],"0x22 0x0020230828ed48871f0f362ce9432aa52f620f442cc8d9ce7a8b5e798365595a38bb","HASH160 0x14 0x3478e7019ce61a68148f87549579b704cbe4c393 EQUAL","P2SH,WITNESS","OK","P2SH(P2WSH) CHECKMULTISIG with second key uncompressed and signing with the second key"]
+test/script_tests.cpp(953): Leaving test case "script_json_test"; testing time: 36001us
+test/script_tests.cpp(996): Entering test case "script_PushData"
+test/script_tests.cpp(996): Leaving test case "script_PushData"; testing time: 1833us
+test/script_tests.cpp(1058): Entering test case "script_CHECKMULTISIG12"
+test/script_tests.cpp(1058): Leaving test case "script_CHECKMULTISIG12"; testing time: 2436us
+test/script_tests.cpp(1088): Entering test case "script_CHECKMULTISIG23"
+test/script_tests.cpp(1088): Leaving test case "script_CHECKMULTISIG23"; testing time: 4081us
+test/script_tests.cpp(1157): Entering test case "script_combineSigs"
+test/script_tests.cpp(1157): Leaving test case "script_combineSigs"; testing time: 5041us
+test/script_tests.cpp(1267): Entering test case "script_standard_push"
+test/script_tests.cpp(1267): Leaving test case "script_standard_push"; testing time: 126044us
+test/script_tests.cpp(1288): Entering test case "script_IsPushOnly_on_invalid_scripts"
+test/script_tests.cpp(1288): Leaving test case "script_IsPushOnly_on_invalid_scripts"; testing time: 1713us
+test/script_tests.cpp(1299): Entering test case "script_GetScriptAsm"
+test/script_tests.cpp(1299): Leaving test case "script_GetScriptAsm"; testing time: 1742us
+test/script_tests.cpp(1337): Entering test case "script_FindAndDelete"
+test/script_tests.cpp(1337): Leaving test case "script_FindAndDelete"; testing time: 1732us
+test/script_tests.cpp(121): Leaving test suite "script_tests"; testing time: 284757us
+test/scriptnum_tests.cpp(13): Entering test suite "scriptnum_tests"
+test/scriptnum_tests.cpp(169): Entering test case "creation"
+test/scriptnum_tests.cpp(169): Leaving test case "creation"; testing time: 3246us
+test/scriptnum_tests.cpp(182): Entering test case "operators"
+test/scriptnum_tests.cpp(182): Leaving test case "operators"; testing time: 21037us
+test/scriptnum_tests.cpp(13): Leaving test suite "scriptnum_tests"; testing time: 24320us
+test/serialize_tests.cpp(14): Entering test suite "serialize_tests"
+test/serialize_tests.cpp(60): Entering test case "sizes"
+test/serialize_tests.cpp(60): Leaving test case "sizes"; testing time: 1680us
+test/serialize_tests.cpp(91): Entering test case "floats_conversion"
+test/serialize_tests.cpp(91): Leaving test case "floats_conversion"; testing time: 1649us
+test/serialize_tests.cpp(110): Entering test case "doubles_conversion"
+test/serialize_tests.cpp(110): Leaving test case "doubles_conversion"; testing time: 1682us
+test/serialize_tests.cpp(139): Entering test case "floats"
+test/serialize_tests.cpp(139): Leaving test case "floats"; testing time: 2351us
+test/serialize_tests.cpp(156): Entering test case "doubles"
+test/serialize_tests.cpp(156): Leaving test case "doubles"; testing time: 2794us
+test/serialize_tests.cpp(173): Entering test case "varints"
+test/serialize_tests.cpp(173): Leaving test case "varints"; testing time: 105530us
+test/serialize_tests.cpp(205): Entering test case "varints_bitpatterns"
+test/serialize_tests.cpp(205): Leaving test case "varints_bitpatterns"; testing time: 1788us
+test/serialize_tests.cpp(226): Entering test case "compactsize"
+test/serialize_tests.cpp(226): Leaving test case "compactsize"; testing time: 1789us
+test/serialize_tests.cpp(257): Entering test case "noncanonical"
+test/serialize_tests.cpp(257): Leaving test case "noncanonical"; testing time: 1623us
+test/serialize_tests.cpp(294): Entering test case "insert_delete"
+test/serialize_tests.cpp(294): Leaving test case "insert_delete"; testing time: 1603us
+test/serialize_tests.cpp(342): Entering test case "class_methods"
+test/serialize_tests.cpp(342): Leaving test case "class_methods"; testing time: 1643us
+test/serialize_tests.cpp(14): Leaving test suite "serialize_tests"; testing time: 124396us
+test/sighash_tests.cpp(121): Entering test suite "sighash_tests"
+test/sighash_tests.cpp(123): Entering test case "sighash_test"
+test/sighash_tests.cpp(123): Leaving test case "sighash_test"; testing time: 685047us
+test/sighash_tests.cpp(170): Entering test case "sighash_from_data"
 test/sighash_tests.cpp(208): error: in "sighash_tests/sighash_from_data": Bad test, couldn't deserialize data: ["907c2bc503ade11cc3b04eb2918b6f547b0630ab569273824748c87ea14b0696526c66ba740200000004ab65ababfd1f9bdd4ef073c7afc4ae00da8a66f429c917a0081ad1e1dabce28d373eab81d8628de802000000096aab5253ab52000052ad042b5f25efb33beec9f3364e8a9139e8439d9d7e26529c3c30b6c3fd89f8684cfd68ea0200000009ab53526500636a52ab599ac2fe02a526ed040000000008535300516352515164370e010000000003006300ab2ec229","",2,1864164639,"31af167a6cf3f9d5f6875caa4d31704ceb0eba078d132b78dab52c3b8997317e"]
 test/sighash_tests.cpp(208): error: in "sighash_tests/sighash_from_data": Bad test, couldn't deserialize data: ["a0aa3126041621a6dea5b800141aa696daf28408959dfb2df96095db9fa425ad3f427f2f6103000000015360290e9c6063fa26912c2e7fb6a0ad80f1c5fea1771d42f12976092e7a85a4229fdb6e890000000001abc109f6e47688ac0e4682988785744602b8c87228fcef0695085edf19088af1a9db126e93000000000665516aac536affffffff8fe53e0806e12dfd05d67ac68f4768fdbe23fc48ace22a5aa8ba04c96d58e2750300000009ac51abac63ab5153650524aa680455ce7b000000000000499e50030000000008636a00ac526563ac5051ee030000000003abacabd2b6fe000000000003516563910fb6b5","65",0,-1391424484,"48d6a1bd2cd9eec54eb866fc71209418a950402b5d7e52363bfb75c98e141175"]
 test/sighash_tests.cpp(208): error: in "sighash_tests/sighash_from_data": Bad test, couldn't deserialize data: ["6e7e9d4b04ce17afa1e8546b627bb8d89a6a7fefd9d892ec8a192d79c2ceafc01694a6a7e7030000000953ac6a51006353636a33bced1544f797f08ceed02f108da22cd24c9e7809a446c61eb3895914508ac91f07053a01000000055163ab516affffffff11dc54eee8f9e4ff0bcf6b1a1a35b1cd10d63389571375501af7444073bcec3c02000000046aab53514a821f0ce3956e235f71e4c69d91abe1e93fb703bd33039ac567249ed339bf0ba0883ef300000000090063ab65000065ac654bec3cc504bcf499020000000005ab6a52abac64eb060100000000076a6a5351650053bbbc130100000000056a6aab53abd6e1380100000000026a51c4e509b8","acab655151",0,479279909,"2a3d95b09237b72034b23f2d2bb29fa32a58ab5c6aa72f6aafdfa178ab1dd01c"]
@@ -936,11 +1365,158 @@ test/sighash_tests.cpp(208): error: in "sighash_tests/sighash_from_data": Bad te
 test/sighash_tests.cpp(208): error: in "sighash_tests/sighash_from_data": Bad test, couldn't deserialize data: ["e1cfd73b0125add9e9d699f5a45dca458355af175a7bd4486ebef28f1928d87864384d02df02000000036a0051ffffffff0357df030100000000036a5365777e2d04000000000763ab6a00005265f434a601000000000351655100000000","ab53ab",0,-1936500914,"950f4b4f72ccdf8a6a0f381265d6c8842fdb7e8b3df3e9742905f643b2432b69"]
 test/sighash_tests.cpp(208): error: in "sighash_tests/sighash_from_data": Bad test, couldn't deserialize data: ["cf781855040a755f5ba85eef93837236b34a5d3daeb2dbbdcf58bb811828d806ed05754ab8010000000351ac53ffffffffda1e264727cf55c67f06ebcc56dfe7fa12ac2a994fecd0180ce09ee15c480f7d00000000096351516a51acac00ab53dd49ff9f334befd6d6f87f1a832cddfd826a90b78fd8cf19a52cb8287788af94e939d6020000000700525251ac526310d54a7e8900ed633f0f6f0841145aae7ee0cbbb1e2a0cae724ee4558dbabfdc58ba6855010000000552536a53abfd1b101102c51f910500000000096300656a525252656a300bee010000000009ac52005263635151abe19235c9","53005365",2,1422854188,"d5981bd4467817c1330da72ddb8760d6c2556cd809264b2d85e6d274609fc3a3"]
 test/sighash_tests.cpp(208): error: in "sighash_tests/sighash_from_data": Bad test, couldn't deserialize data: ["fea256ce01272d125e577c0a09570a71366898280dda279b021000db1325f27edda41a53460100000002ab53c752c21c013c2b3a01000000000000000000","65",0,1145543262,"076b9f844f6ae429de228a2c337c704df1652c292b6c6494882190638dad9efd"]
+test/sighash_tests.cpp(170): Leaving test case "sighash_from_data"; testing time: 10069us
+test/sighash_tests.cpp(121): Leaving test suite "sighash_tests"; testing time: 695154us
+test/sigopcount_tests.cpp(26): Entering test suite "sigopcount_tests"
+test/sigopcount_tests.cpp(28): Entering test case "GetSigOpCount"
+test/sigopcount_tests.cpp(28): Leaving test case "GetSigOpCount"; testing time: 1961us
+test/sigopcount_tests.cpp(108): Entering test case "GetTxSigOpCost"
+test/sigopcount_tests.cpp(108): Leaving test case "GetTxSigOpCost"; testing time: 1805us
+test/sigopcount_tests.cpp(26): Leaving test suite "sigopcount_tests"; testing time: 3800us
+test/skiplist_tests.cpp(16): Entering test suite "skiplist_tests"
+test/skiplist_tests.cpp(18): Entering test case "skiplist_test"
+test/skiplist_tests.cpp(18): Leaving test case "skiplist_test"; testing time: 286231us
+test/skiplist_tests.cpp(47): Entering test case "getlocator_test"
+test/skiplist_tests.cpp(47): Leaving test case "getlocator_test"; testing time: 173269us
+test/skiplist_tests.cpp(103): Entering test case "findearliestatleast_test"
+test/skiplist_tests.cpp(103): Leaving test case "findearliestatleast_test"; testing time: 82391us
+test/skiplist_tests.cpp(16): Leaving test suite "skiplist_tests"; testing time: 541975us
+test/streams_tests.cpp(15): Entering test suite "streams_tests"
+test/streams_tests.cpp(17): Entering test case "streams_vector_writer"
+test/streams_tests.cpp(17): Leaving test case "streams_vector_writer"; testing time: 1865us
+test/streams_tests.cpp(75): Entering test case "streams_serializedata_xor"
+test/streams_tests.cpp(75): Leaving test case "streams_serializedata_xor"; testing time: 1596us
+test/streams_tests.cpp(15): Leaving test suite "streams_tests"; testing time: 3496us
+test/timedata_tests.cpp(10): Entering test suite "timedata_tests"
+test/timedata_tests.cpp(12): Entering test case "util_MedianFilter"
+test/timedata_tests.cpp(12): Leaving test case "util_MedianFilter"; testing time: 1653us
+test/timedata_tests.cpp(10): Leaving test suite "timedata_tests"; testing time: 1664us
+test/transaction_tests.cpp(94): Entering test suite "transaction_tests"
+test/transaction_tests.cpp(96): Entering test case "tx_valid"
 unknown location(0): fatal error: in "transaction_tests/tx_valid": std::ios_base::failure[abi:cxx11]: CDataStream::read(): end of data: iostream error
 test/transaction_tests.cpp(96): last checkpoint: "tx_valid" test entry
+test/transaction_tests.cpp(96): Leaving test case "tx_valid"; testing time: 3020us
+test/transaction_tests.cpp(181): Entering test case "tx_invalid"
 unknown location(0): fatal error: in "transaction_tests/tx_invalid": std::ios_base::failure[abi:cxx11]: CDataStream::read(): end of data: iostream error
 test/transaction_tests.cpp(181): last checkpoint: "tx_invalid" test entry
+test/transaction_tests.cpp(181): Leaving test case "tx_invalid"; testing time: 2385us
+test/transaction_tests.cpp(265): Entering test case "basic_transaction_tests"
 unknown location(0): fatal error: in "transaction_tests/basic_transaction_tests": std::ios_base::failure[abi:cxx11]: CDataStream::read(): end of data: iostream error
 test/transaction_tests.cpp(265): last checkpoint: "basic_transaction_tests" test entry
+test/transaction_tests.cpp(265): Leaving test case "basic_transaction_tests"; testing time: 2157us
+test/transaction_tests.cpp(319): Entering test case "test_Get"
+test/transaction_tests.cpp(319): Leaving test case "test_Get"; testing time: 1997us
+test/transaction_tests.cpp(415): Entering test case "test_big_witness_transaction"
+Test case transaction_tests/test_big_witness_transaction did not check any assertions
+test/transaction_tests.cpp(415): Leaving test case "test_big_witness_transaction"; testing time: 24190761us
+test/transaction_tests.cpp(495): Entering test case "test_witness"
+test/transaction_tests.cpp(495): Leaving test case "test_witness"; testing time: 9555us
+test/transaction_tests.cpp(670): Entering test case "test_IsStandard"
 test/transaction_tests.cpp(700): error: in "transaction_tests/test_IsStandard": check IsStandardTx(t, reason) has failed
 test/transaction_tests.cpp(710): error: in "transaction_tests/test_IsStandard": check IsStandardTx(t, reason) has failed
+test/transaction_tests.cpp(670): Leaving test case "test_IsStandard"; testing time: 2065us
+test/transaction_tests.cpp(94): Leaving test suite "transaction_tests"; testing time: 24212075us
+test/txvalidationcache_tests.cpp(18): Entering test suite "tx_validationcache_tests"
+test/txvalidationcache_tests.cpp(29): Entering test case "tx_mempool_block_doublespend"
+test/txvalidationcache_tests.cpp(29): Leaving test case "tx_mempool_block_doublespend"; testing time: 21190us
+test/txvalidationcache_tests.cpp(18): Leaving test suite "tx_validationcache_tests"; testing time: 21208us
+test/versionbits_tests.cpp(145): Entering test suite "versionbits_tests"
+test/versionbits_tests.cpp(147): Entering test case "versionbits_test"
+test/versionbits_tests.cpp(147): Leaving test case "versionbits_test"; testing time: 968034us
+test/versionbits_tests.cpp(234): Entering test case "versionbits_computeblockversion"
+test/versionbits_tests.cpp(234): Leaving test case "versionbits_computeblockversion"; testing time: 17572us
+test/versionbits_tests.cpp(145): Leaving test suite "versionbits_tests"; testing time: 985648us
+test/uint256_tests.cpp(18): Entering test suite "uint256_tests"
+test/uint256_tests.cpp(75): Entering test case "basics"
+test/uint256_tests.cpp(75): Leaving test case "basics"; testing time: 1795us
+test/uint256_tests.cpp(127): Entering test case "comparison"
+test/uint256_tests.cpp(127): Leaving test case "comparison"; testing time: 1862us
+test/uint256_tests.cpp(159): Entering test case "methods"
+test/uint256_tests.cpp(159): Leaving test case "methods"; testing time: 1717us
+test/uint256_tests.cpp(253): Entering test case "conversion"
+test/uint256_tests.cpp(253): Leaving test case "conversion"; testing time: 1646us
+test/uint256_tests.cpp(18): Leaving test suite "uint256_tests"; testing time: 7092us
+test/univalue_tests.cpp(15): Entering test suite "univalue_tests"
+test/univalue_tests.cpp(17): Entering test case "univalue_constructor"
+test/univalue_tests.cpp(17): Leaving test case "univalue_constructor"; testing time: 1647us
+test/univalue_tests.cpp(65): Entering test case "univalue_typecheck"
+test/univalue_tests.cpp(65): Leaving test case "univalue_typecheck"; testing time: 1624us
+test/univalue_tests.cpp(107): Entering test case "univalue_set"
+test/univalue_tests.cpp(107): Leaving test case "univalue_set"; testing time: 1751us
+test/univalue_tests.cpp(166): Entering test case "univalue_array"
+test/univalue_tests.cpp(166): Leaving test case "univalue_array"; testing time: 1589us
+test/univalue_tests.cpp(204): Entering test case "univalue_object"
+test/univalue_tests.cpp(204): Leaving test case "univalue_object"; testing time: 1685us
+test/univalue_tests.cpp(290): Entering test case "univalue_readwrite"
+test/univalue_tests.cpp(290): Leaving test case "univalue_readwrite"; testing time: 1660us
+test/univalue_tests.cpp(15): Leaving test suite "univalue_tests"; testing time: 10031us
+test/util_tests.cpp(22): Entering test suite "util_tests"
+test/util_tests.cpp(24): Entering test case "util_criticalsection"
+Test case util_tests/util_criticalsection did not check any assertions
+test/util_tests.cpp(24): Leaving test case "util_criticalsection"; testing time: 1665us
+test/util_tests.cpp(51): Entering test case "util_ParseHex"
+test/util_tests.cpp(51): Leaving test case "util_ParseHex"; testing time: 1698us
+test/util_tests.cpp(72): Entering test case "util_HexStr"
+test/util_tests.cpp(72): Leaving test case "util_HexStr"; testing time: 1688us
+test/util_tests.cpp(94): Entering test case "util_DateTimeStrFormat"
+test/util_tests.cpp(94): Leaving test case "util_DateTimeStrFormat"; testing time: 1632us
+test/util_tests.cpp(103): Entering test case "util_ParseParameters"
+test/util_tests.cpp(103): Leaving test case "util_ParseParameters"; testing time: 1787us
+test/util_tests.cpp(127): Entering test case "util_GetArg"
+test/util_tests.cpp(127): Leaving test case "util_GetArg"; testing time: 1715us
+test/util_tests.cpp(151): Entering test case "util_FormatMoney"
+test/util_tests.cpp(151): Leaving test case "util_FormatMoney"; testing time: 1963us
+test/util_tests.cpp(176): Entering test case "util_ParseMoney"
+test/util_tests.cpp(176): Leaving test case "util_ParseMoney"; testing time: 1726us
+test/util_tests.cpp(229): Entering test case "util_IsHex"
+test/util_tests.cpp(229): Leaving test case "util_IsHex"; testing time: 1665us
+test/util_tests.cpp(244): Entering test case "util_seed_insecure_rand"
+test/util_tests.cpp(244): Leaving test case "util_seed_insecure_rand"; testing time: 1977us
+test/util_tests.cpp(269): Entering test case "util_TimingResistantEqual"
+test/util_tests.cpp(269): Leaving test case "util_TimingResistantEqual"; testing time: 1674us
+test/util_tests.cpp(284): Entering test case "strprintf_numbers"
+test/util_tests.cpp(284): Leaving test case "strprintf_numbers"; testing time: 1802us
+test/util_tests.cpp(310): Entering test case "gettime"
+test/util_tests.cpp(310): Leaving test case "gettime"; testing time: 1622us
+test/util_tests.cpp(315): Entering test case "test_ParseInt32"
+test/util_tests.cpp(315): Leaving test case "test_ParseInt32"; testing time: 1698us
+test/util_tests.cpp(344): Entering test case "test_ParseInt64"
+test/util_tests.cpp(344): Leaving test case "test_ParseInt64"; testing time: 1711us
+test/util_tests.cpp(374): Entering test case "test_ParseUInt32"
+test/util_tests.cpp(374): Leaving test case "test_ParseUInt32"; testing time: 2199us
+test/util_tests.cpp(405): Entering test case "test_ParseUInt64"
+test/util_tests.cpp(405): Leaving test case "test_ParseUInt64"; testing time: 2696us
+test/util_tests.cpp(437): Entering test case "test_ParseDouble"
+test/util_tests.cpp(437): Leaving test case "test_ParseDouble"; testing time: 1858us
+test/util_tests.cpp(465): Entering test case "test_FormatParagraph"
+test/util_tests.cpp(465): Leaving test case "test_FormatParagraph"; testing time: 1715us
+test/util_tests.cpp(492): Entering test case "test_FormatSubVersion"
+test/util_tests.cpp(492): Leaving test case "test_FormatSubVersion"; testing time: 1637us
+test/util_tests.cpp(504): Entering test case "test_ParseFixedPoint"
+test/util_tests.cpp(504): Leaving test case "test_ParseFixedPoint"; testing time: 2047us
+test/util_tests.cpp(22): Leaving test suite "util_tests"; testing time: 38646us
+wallet/test/accounting_tests.cpp(16): Entering test suite "accounting_tests"
+wallet/test/accounting_tests.cpp(32): Entering test case "acc_orderupgrade"
+wallet/test/accounting_tests.cpp(32): Leaving test case "acc_orderupgrade"; testing time: 52377us
+wallet/test/accounting_tests.cpp(16): Leaving test suite "accounting_tests"; testing time: 52406us
+wallet/test/wallet_tests.cpp(38): Entering test suite "wallet_tests"
+wallet/test/wallet_tests.cpp(78): Entering test case "coin_selection_tests"
+wallet/test/wallet_tests.cpp(78): Leaving test case "coin_selection_tests"; testing time: 3530307us
+wallet/test/wallet_tests.cpp(345): Entering test case "ApproximateBestSubset"
+wallet/test/wallet_tests.cpp(345): Leaving test case "ApproximateBestSubset"; testing time: 46342us
+wallet/test/wallet_tests.cpp(366): Entering test case "rescan"
+wallet/test/wallet_tests.cpp(366): Leaving test case "rescan"; testing time: 20426us
+wallet/test/wallet_tests.cpp(437): Entering test case "importwallet_rescan"
+wallet/test/wallet_tests.cpp(437): Leaving test case "importwallet_rescan"; testing time: 24256us
+wallet/test/wallet_tests.cpp(38): Leaving test suite "wallet_tests"; testing time: 3621436us
+wallet/test/crypto_tests.cpp(16): Entering test suite "wallet_crypto"
+wallet/test/crypto_tests.cpp(186): Entering test case "passphrase"
+wallet/test/crypto_tests.cpp(186): Leaving test case "passphrase"; testing time: 1353194us
+wallet/test/crypto_tests.cpp(202): Entering test case "encrypt"
+wallet/test/crypto_tests.cpp(202): Leaving test case "encrypt"; testing time: 43102us
+wallet/test/crypto_tests.cpp(217): Entering test case "decrypt"
+wallet/test/crypto_tests.cpp(217): Leaving test case "decrypt"; testing time: 12561us
+wallet/test/crypto_tests.cpp(16): Leaving test suite "wallet_crypto"; testing time: 1408951us
+Leaving test module "Bitcoin Test Suite"; testing time: 44713261us
+--
+
