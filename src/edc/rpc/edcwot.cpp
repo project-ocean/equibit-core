@@ -160,7 +160,7 @@ public:
     template<typename T>
     Hasher & operator<<(const T& obj)
     {
-        ::Serialize(*this, obj, SER_GETHASH, PROTOCOL_VERSION);
+        ::SerializeHash(obj, SER_GETHASH, PROTOCOL_VERSION);
         return (*this);
     }
 };
@@ -433,7 +433,7 @@ UniValue getwotcertificate(const JSONRPCRequest& request)
     uint16_t pkLen = static_cast<uint16_t>(pubkey.size());
     uint16_t spkLen = static_cast<uint16_t>(sPubkey.size());
 
-    uint16_t cLen = static_cast<uint16_t>(cert.GetSerializeSize(SER_NETWORK, PROTOCOL_VERSION));
+    uint16_t cLen = static_cast<uint16_t>(::GetSerializeSize(cert, SER_NETWORK, PROTOCOL_VERSION));
 
     std::vector<unsigned char> data;
     data.resize(pkLen + spkLen + cLen + sizeof(uint16_t) * 3);
