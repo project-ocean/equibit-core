@@ -113,8 +113,26 @@ public:
             READWRITE(VARINT(nVal));
             txout.nValue = DecompressAmount(nVal);
         }
+
+        READWRITE(txout.wotMinLevel);
+        READWRITE(txout.receiptTxID);
+        READWRITE(txout.issuerPubKey);
+        READWRITE(txout.issuerAddr);
+
         CScriptCompressor cscript(REF(txout.scriptPubKey));
         READWRITE(cscript);
+
+        if(!ser_action.ForRead())
+        {
+            int curr = txout.payCurr;
+            READWRITE(curr);
+        }
+        else
+        {
+            int curr;
+            READWRITE(curr);
+            txout.payCurr = static_cast<Currency>(curr);
+        }
     }
 };
 

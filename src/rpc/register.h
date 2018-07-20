@@ -20,6 +20,16 @@ void RegisterMiningRPCCommands(CRPCTable &tableRPC);
 /** Register raw transaction RPC commands */
 void RegisterRawTransactionRPCCommands(CRPCTable &tableRPC);
 
+/** Register Issuer related RPC commands */
+void RegisterIssuerRPCCommands(CRPCTable & tableRPC);
+/** Register messaging related RPC commands */
+void RegisterMessagingRPCCommands(CRPCTable & tableRPC);
+/** Register web-of-trust related RPC commands */
+void RegisterWoTRPCCommands(CRPCTable & tableRPC);
+/** Register polling related RPC commands */
+void RegisterPollingRPCCommands(CRPCTable & tableRPC);
+/** Register proxy related RPC commands */
+void RegisterProxyRPCCommands(CRPCTable & tableRPC);
 static inline void RegisterAllCoreRPCCommands(CRPCTable &t)
 {
     RegisterBlockchainRPCCommands(t);
@@ -27,6 +37,11 @@ static inline void RegisterAllCoreRPCCommands(CRPCTable &t)
     RegisterMiscRPCCommands(t);
     RegisterMiningRPCCommands(t);
     RegisterRawTransactionRPCCommands(t);
+    RegisterIssuerRPCCommands(t);
+    RegisterMessagingRPCCommands(t);
+    RegisterWoTRPCCommands(t);
+    RegisterPollingRPCCommands(t);
+    RegisterProxyRPCCommands(t);
 }
 
 #endif
