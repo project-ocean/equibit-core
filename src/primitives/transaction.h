@@ -7,6 +7,8 @@
 #define BITCOIN_PRIMITIVES_TRANSACTION_H
 
 #include "amount.h"
+#include "uint256.h"
+#include "pubkey.h"
 #include "script/script.h"
 #include "serialize.h"
 #include "uint256.h"
@@ -124,6 +126,12 @@ public:
     }
 
     std::string ToString() const;
+    std::string toJSON(const char*) const;
+};
+
+enum Currency
+{
+    BTC
 };
 
 /** An output of a transaction.  It contains the public key that the next input
@@ -132,7 +140,16 @@ public:
 class CTxOut
 {
 public:
+    // Num of equibits being transferred
     CAmount nValue;
+
+    unsigned wotMinLevel = 0;    // Minimum WoT level used when coins moved
+    uint256  receiptTxID;        // Related BTC Transaction ID (optional)
+    Currency payCurr = BTC;      // Payment currency
+    CPubKey  issuerPubKey;       // Public Key of issuer
+    CKeyID   issuerAddr;         // Issuer's payment address
+
+    // Script defining the conditions needed to spend the output (ie. smart contract)
     CScript scriptPubKey;
 
     CTxOut()
@@ -142,12 +159,34 @@ public:
 
     CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn);
 
+    CTxOut(const CAmount& nValueIn,
+           unsigned wotMinLevel,
+           const CPubKey& issuerPubKey,
+           const CKeyID& issuerAddr,
+           CScript scriptPubKeyIn);
+
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action) {
         READWRITE(nValue);
+        READWRITE(wotMinLevel);
+        READWRITE(receiptTxID);
+        READWRITE(issuerPubKey);
+        READWRITE(issuerAddr);
         READWRITE(*(CScriptBase*)(&scriptPubKey));
+
+        if (ser_action.ForRead())
+        {
+            int curr;
+            READWRITE(curr);
+            payCurr = static_cast<Currency>(curr);
+        }
+        else
+        {
+            int curr = payCurr;
+            READWRITE(curr);
+        }
     }
 
     void SetNull()
@@ -201,6 +240,10 @@ public:
     friend bool operator==(const CTxOut& a, const CTxOut& b)
     {
         return (a.nValue       == b.nValue &&
+                a.wotMinLevel == b.wotMinLevel &&
+                a.receiptTxID == b.receiptTxID &&
+                a.issuerPubKey == b.issuerPubKey &&
+                a.issuerAddr == b.issuerAddr &&
                 a.scriptPubKey == b.scriptPubKey);
     }
 
@@ -210,6 +253,7 @@ public:
     }
 
     std::string ToString() const;
+    std::string toJSON(const char*) const;
 };
 
 struct CMutableTransaction;
@@ -390,6 +434,7 @@ public:
     }
 
     std::string ToString() const;
+    std::string toJSON(const char*) const;
 
     bool HasWitness() const
     {

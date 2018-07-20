@@ -8,6 +8,7 @@
 #include "hash.h"
 #include "tinyformat.h"
 #include "utilstrencodings.h"
+#include "base58.h"
 
 std::string COutPoint::ToString() const
 {
@@ -49,9 +50,18 @@ CTxOut::CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn)
     scriptPubKey = scriptPubKeyIn;
 }
 
+const char* ToString(Currency c)
+{
+    switch (c)
+    {
+        default:  return "ERROR:Unsupported currency";
+        case BTC: return "BTC";
+    }
+}
+
 std::string CTxOut::ToString() const
 {
-    return strprintf("CTxOut(nValue=%d.%08d, scriptPubKey=%s)", nValue / COIN, nValue % COIN, HexStr(scriptPubKey).substr(0, 30));
+    return strprintf("CTxOut(nValue=%d.%08d, wotMinLevel=%d, receiptTxID=%s, payCurr=%s, issuerPubKey=%s, issuerAddr=%s, scriptPubKey=%s ...)", nValue / COIN, nValue % COIN, wotMinLevel, receiptTxID.ToString().c_str(), ::ToString(payCurr), HexStr(issuerPubKey).c_str(), (issuerAddr.IsNull() ? "" : CBitcoinAddress(issuerAddr).ToString().c_str()), HexStr(scriptPubKey).substr(0, 30));
 }
 
 CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0) {}
@@ -144,4 +154,112 @@ std::string CTransaction::ToString() const
 int64_t GetTransactionWeight(const CTransaction& tx)
 {
     return ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * (WITNESS_SCALE_FACTOR -1) + ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+}
+
+CTxOut::CTxOut(
+    const CAmount& nValueIn,
+    unsigned wotMinLevelIn,
+    const CPubKey& issuerPubKeyIn,
+    const CKeyID& issuerAddrIn,
+    CScript scriptPubKeyIn) :
+    nValue(nValueIn),
+    wotMinLevel(wotMinLevelIn),
+    payCurr(BTC),
+    issuerPubKey(issuerPubKeyIn),
+    issuerAddr(issuerAddrIn),
+    scriptPubKey(scriptPubKeyIn)
+{
+}
+
+std::string CTxIn::toJSON(const char* margin) const
+{
+    std::stringstream ans;
+
+    time_t t = prevout.n;
+    time_t s = nSequence;
+
+    ans << margin << "{\"prevout\":COutPoint(" << prevout.hash.ToString().substr(0, 10) << "..," << ctime(&t) << ")"
+        << ",\"scriptSig\":" << HexStr(scriptSig)
+        << ",\"sequence\":" << ctime(&s)
+        << "}";
+
+    return ans.str();
+}
+
+std::string CTxOut::toJSON(const char * margin) const
+{
+    std::stringstream ans;
+
+    ans << margin << "{\n"
+        << margin << "\"value\":" << nValue << ",\n"
+        << margin << "\"wotMinLevel\":" << wotMinLevel << ",\n"
+        << margin << "\"receiptTxID\":" << receiptTxID.ToString() << ",\n"
+        << margin << "\"payCurr\":" << ::ToString(payCurr) << ",\n"
+        << margin << "\"issuerPubKey\":" << HexStr(issuerPubKey) << ",\n"
+        << margin << "\"issuerAddr\":"
+        << (issuerAddr.IsNull() ? "" : CBitcoinAddress(issuerAddr).ToString()) << ",\n"
+        << margin << "\"scriptPubKey\":" << HexStr(scriptPubKey) << ",\n"
+        << margin << "}";
+
+    return ans.str();
+}
+
+std::string CTransaction::toJSON(const char* margin) const
+{
+    std::stringstream ans;
+
+    ans << margin << "{\n";
+
+    std::string innerMargin = margin;
+    innerMargin += " ";
+
+    time_t t = nLockTime;
+
+    ans << innerMargin << "\"lockTime\":" << ctime(&t) << ",\n";
+    ans << innerMargin << "\"txIn\": [\n";
+
+    auto ii = vin.begin();
+    auto ie = vin.end();
+
+    bool first = true;
+
+    std::string inner2Margin = innerMargin + " ";
+
+    while (ii != ie)
+    {
+        if (!first)
+            ans << ", ";
+        else
+            first = false;
+
+        ans << ii->toJSON(inner2Margin.c_str());
+        ++ii;
+    }
+
+    ans << innerMargin << "],\n";
+
+    ans << innerMargin << "\"txOut\": [\n";
+
+    auto oi = vout.begin();
+    auto oe = vout.end();
+
+    first = true;
+
+    while (oi != oe)
+    {
+        if (!first)
+            ans << ", ";
+        else
+            first = false;
+
+        ans << oi->toJSON(inner2Margin.c_str());
+
+        ++oi;
+    }
+
+    ans << innerMargin << "]\n";
+
+    ans << margin << "}\n";
+
+    return ans.str();
 }
