@@ -9,10 +9,11 @@
 #include "tinyformat.h"
 #include "utilstrencodings.h"
 #include "crypto/common.h"
+#include "edc/sha3/sha3.h"
 
 uint256 CBlockHeader::GetHash() const
 {
-    return SerializeHash(*this);
+    return Sha3::SerializeHash(*this);
 }
 
 std::string CBlock::ToString() const
