@@ -17,6 +17,7 @@
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #endif
+#include "edc/buildversion.h"
 
 #include <stdint.h>
 
@@ -47,6 +48,7 @@ UniValue getinfo(const JSONRPCRequest& request)
             "\nDEPRECATED. Returns an object containing various state info.\n"
             "\nResult:\n"
             "{\n"
+            "  \"builddate\": xxxx,          (string) the date of the build\n"
             "  \"version\": xxxxx,           (numeric) the server version\n"
             "  \"protocolversion\": xxxxx,   (numeric) the protocol version\n"
             "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
@@ -79,6 +81,7 @@ UniValue getinfo(const JSONRPCRequest& request)
     GetProxy(NET_IPV4, proxy);
 
     UniValue obj(UniValue::VOBJ);
+    obj.push_back(Pair("builddate", BUILD_DATE));
     obj.push_back(Pair("version", CLIENT_VERSION));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
 #ifdef ENABLE_WALLET
