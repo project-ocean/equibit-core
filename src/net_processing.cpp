@@ -29,6 +29,8 @@
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
 #include "validationinterface.h"
+#include "edc/message/edcmessage.h"
+#include "wallet/wallet.h"
 
 #include <boost/thread.hpp>
 
@@ -2592,6 +2594,27 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             LogPrint("net", "received: feefilter of %s from peer=%d\n", CFeeRate(newFeeFilter).ToString(), pfrom->id);
         }
     }
+    else if (strCommand == NetMsgType::USER)
+    {
+        std::string type;
+        vRecv >> type;
+        CUserMessage * msg = CUserMessage::create(type, vRecv);
+
+        LogPrint("net", "received: user message %s\n", msg->ToString().c_str());
+
+        bool isGood = msg->verify();
+
+        if (isGood)
+        {
+            pwalletMain->AddMessage(msg);
+        }
+        else
+        {
+            LogPrint("net", "ERROR: message failed signature verification. Message discarded.");
+        }
+
+        delete msg;
+    }
 
     else if (strCommand == NetMsgType::NOTFOUND) {
         // We do not care about the NOTFOUND message, but logging an Unknown Command
@@ -3267,6 +3290,33 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
                 pto->nextSendTimeFeeFilter = timeNow + GetRandInt(MAX_FEEFILTER_CHANGE_DELAY) * 1000000;
             }
         }
+
+        // Message: user
+        LOCK(pto->cs_userMessage);
+
+        // For each message in the user message collection
+        BOOST_FOREACH(CUserMessage * user, pto->vUserMessages)
+        {
+            // Push the message onto the net
+            if (CBroadcast* bm = dynamic_cast<CBroadcast*>(user))
+            {
+                connman.PushMessage(pto, msgMaker.Make(NetMsgType::USER, user->vtag(), *bm));
+            }
+            else if (CMulticast* mm = dynamic_cast<CMulticast*>(user))
+            {
+                connman.PushMessage(pto, msgMaker.Make(NetMsgType::USER, user->vtag(), *mm));
+            }
+            else if (CPeerToPeer* ppm = dynamic_cast<CPeerToPeer*>(user))
+            {
+                connman.PushMessage(pto, msgMaker.Make(NetMsgType::USER, user->vtag(), *ppm));
+            }
+            else
+                throw std::runtime_error("edcSendMessage(): invalid user message type");
+
+            delete user;
+        }
+
+        pto->vUserMessages.clear();
     }
     return true;
 }
