@@ -1254,9 +1254,12 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    inline void SerializationOp(Stream& s, Operation ser_action)
     {
+#if 0
+        // @todo BitCoin removed nVersion parameter, need to figure out what to do now
         if (!(nType & SER_GETHASH)) READWRITE(nVersion);
+#endif
         READWRITE(pubKey_);
         READWRITE(location_);
         READWRITE(emailAddress_);
