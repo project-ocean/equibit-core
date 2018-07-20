@@ -14,6 +14,9 @@
 #include "util.h"
 #include "utiltime.h"
 #include "wallet/wallet.h"
+#include "edc/message/edcmessage.h"
+#include "edc/rpc/edcwot.h"
+#include "edc/rpc/edcpolling.h"
 
 #include <atomic>
 
@@ -25,6 +28,37 @@
 using namespace std;
 
 static uint64_t nAccountingEntryNumber = 0;
+
+namespace
+{
+
+// Wallet DB Keys:
+const std::string ACC               = "acc";          // ACC:account-name/pubkey
+const std::string ACENTRY           = "acentry";      // ACENTRY:(account-name:account-number)/acentry
+const std::string BESTBLOCK         = "bestblock";    // BESTBLOCK/empty-locator
+const std::string BESTBLOCK_NOMERKLE= "bestblock_nomerkle";  // BESTBLOCK_NOMERKLE/locator
+const std::string CKEY              = "ckey";         // CKEY:pubkey/privkey-secret
+const std::string CSCRIPT           = "cscript";      // CSCRIPT:hash/script
+const std::string DEFAULTKEY        = "defaultkey";   // DEFAULTKEY/pubkey
+const std::string DESTDATA          = "destdata";     // DESTDATA:(address:key)/value
+const std::string HDCHAIN           = "hdchain";      // HDCHAIN/value
+const std::string IPROXY            = "iproxy";       // IPROXY:(addr,paddr:iaddr)/(ts:sign)
+const std::string IPROXY_RVK        = "iproxy_rvk";   // IPROXY_RVK:(addr:paddr,iaddr)/(ts:sign)
+const std::string ISSUER            = "issuer";       // ISSUER:issuer-name/issuer
+const std::string KEY               = "key";          // KEY:pubkey/(privkey:hash(pubkey,privkey))
+const std::string KEYMETA           = "keymeta";      // KEYMETA:pubkey/key-meta
+const std::string MINVERSION        = "minversion";   // MINVERSION/version
+const std::string MKEY              = "mkey";         // MKEY:id/masterkey
+const std::string NAME              = "name";         // NAME:address/name
+const std::string ORDERPOSNEXT      = "orderposnext"; // ORDERPOSNEXT/order-pos-next
+const std::string POOL              = "pool";         // POOL:number/keypool
+const std::string PURPOSE           = "purpose";      // PURPOSE:address/purpose
+const std::string TX                = "tx";           // TX:trx-hash/trx
+const std::string USER_MSG          = "user_msg";     // USER_MSG:(tag:hash)/msg
+const std::string VERSION           = "version";      // VERSION/version
+const std::string WATCHS            = "watchs";       // WATCHS/dest
+const std::string WKEY              = "wkey";         // WKEY:pubkey/privkey
+}
 
 static std::atomic<unsigned int> nWalletDBUpdateCounter;
 
@@ -192,6 +226,20 @@ bool CWalletDB::ReadAccount(const string& strAccount, CAccount& account)
 bool CWalletDB::WriteAccount(const string& strAccount, const CAccount& account)
 {
     return Write(make_pair(string("acc"), strAccount), account);
+}
+
+bool CWalletDB::ReadIssuer(const string& strIssuer, CIssuer& issuer)
+{
+    issuer.SetNull();
+
+    return Read(make_pair(ISSUER, strIssuer), issuer);
+}
+
+bool CWalletDB::WriteIssuer(const string& strIssuer, const CIssuer& issuer)
+{
+    nWalletDBUpdateCounter++;
+
+    return Write(make_pair(ISSUER, strIssuer), issuer);
 }
 
 bool CWalletDB::WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry)
@@ -538,6 +586,28 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 strErr = "Error reading wallet database: SetHDChain failed";
                 return false;
             }
+        }
+        else if (strType == ISSUER)
+        {
+            ; // no-op?
+        }
+        else if (strType == USER_MSG)
+        {
+            std::string tag;
+            ssKey >> tag;
+
+            uint256 hash;
+            ssKey >> hash;
+
+            CUserMessage* msg = CUserMessage::create(tag, ssValue);
+
+            if (!msg->verify())
+            {
+                strErr = "Error reading wallet database: Invalid message loaded";
+                return false;
+            }
+
+            pwallet->LoadMessage(msg);
         }
     } catch (...)
     {
@@ -960,4 +1030,962 @@ void CWalletDB::IncrementUpdateCounter()
 unsigned int CWalletDB::GetUpdateCounter()
 {
     return nWalletDBUpdateCounter;
+}
+
+namespace
+{
+
+bool dumpKey(
+    ostream& out,       // IN/OUT
+    CDataStream& ssKey, // IN
+    string& strType,    // OUT
+    string& msgTag)     // OUT
+{
+    try
+    {
+        ssKey >> strType;
+        out << strType;
+
+        if (strType == NAME)
+        {
+            string strAddress;
+            ssKey >> strAddress;
+            out << ':' << strAddress;
+        }
+        else if (strType == PURPOSE)
+        {
+            string strAddress;
+            ssKey >> strAddress;
+            out << ':' << strAddress;
+        }
+        else if (strType == TX)
+        {
+            uint256 hash;
+            ssKey >> hash;
+            out << ':' << hash.ToString();
+        }
+        else if (strType == ACENTRY)
+        {
+            string strAccount;
+            uint64_t nNumber;
+
+            ssKey >> strAccount;
+            ssKey >> nNumber;
+
+            out << ':' << strAccount << ':' << nNumber;
+        }
+        else if (strType == WATCHS)
+        {
+            CScript script;
+            ssKey >> *static_cast<CScriptBase *>(&script);
+            out << HexStr(script);
+        }
+        else if (strType == KEY || strType == WKEY)
+        {
+            CPubKey vchPubKey;
+            ssKey >> vchPubKey;
+            out << ':' << HexStr(vchPubKey);
+        }
+        else if (strType == MKEY)
+        {
+            unsigned int nID;
+            ssKey >> nID;
+            out << ':' << nID;
+        }
+        else if (strType == CKEY)
+        {
+            CPubKey vchPubKey;
+            ssKey >> vchPubKey;
+            out << ':' << HexStr(vchPubKey);
+        }
+        else if (strType == KEYMETA)
+        {
+            CPubKey vchPubKey;
+            ssKey >> vchPubKey;
+            out << ':' << HexStr(vchPubKey);
+        }
+        else if (strType == DEFAULTKEY)
+        {
+            // no-op
+        }
+        else if (strType == POOL)
+        {
+            int64_t nIndex;
+            ssKey >> nIndex;
+            out << ':' << nIndex;
+        }
+        else if (strType == VERSION)
+        {
+            // no-op
+        }
+        else if (strType == CSCRIPT)
+        {
+            uint160 hash;
+            ssKey >> hash;
+            out << ':' << hash.ToString();
+        }
+        else if (strType == ORDERPOSNEXT)
+        {
+            // no-op
+        }
+        else if (strType == DESTDATA)
+        {
+            std::string strAddress;
+            ssKey >> strAddress;
+
+            std::string strKey;
+            ssKey >> strKey;
+
+            out << ':' << strAddress << ':' << strKey;
+        }
+        else if (strType == BESTBLOCK)
+        {
+            // no-op
+        }
+        else if (strType == BESTBLOCK_NOMERKLE)
+        {
+            // no-op
+        }
+        else if (strType == MINVERSION)
+        {
+            // no-op
+        }
+        else if (strType == ACC)
+        {
+            std::string name;
+            ssKey >> name;
+            out << ':' << name;
+        }
+        else if (strType == ISSUER)
+        {
+            std::string name;
+            ssKey >> name;
+            out << ':' << name;
+        }
+        else if (strType == USER_MSG)
+        {
+            ssKey >> msgTag;
+            uint256	hash;
+            ssKey >> hash;
+            out << ':' << msgTag << ':' << hash.ToString();
+        }
+        else
+        {
+            out << "ERROR: Unsupported key [" << strType << "]" << endl;
+        }
+
+        out << endl;
+    }
+    catch (...)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool dumpValue(
+    ostream& out,               // OUT
+    string& strType,            // IN
+    CDataStream& ssValue,       // IN
+    const std::string& msgTag)  // IN
+{
+    try
+    {
+        if (strType == NAME)
+        {
+            string name;
+            ssValue >> name;
+            out << " \"" << name << "\"" << endl;
+        }
+        else if (strType == PURPOSE)
+        {
+            string purpose;
+            ssValue >> purpose;
+            out << " \"" << purpose << "\"" << endl;
+        }
+        else if (strType == TX)
+        {
+            CWalletTx wtx;
+            ssValue >> wtx;
+            out << wtx.toJSON(" ");
+        }
+        else if (strType == ACENTRY)
+        {
+            CAccountingEntry acentry;
+            ssValue >> acentry;
+
+            out << " {\"account\":" << acentry.strAccount
+                << " \",creditDebit\":" << acentry.nCreditDebit
+                << " \",time\":" << acentry.nTime
+                << " \",otherAccount\":" << acentry.strOtherAccount
+                << " \",comment\":" << acentry.strComment
+                << " \",mapValue\":[";
+
+            auto i = acentry.mapValue.begin();
+            auto e = acentry.mapValue.end();
+
+            bool first = true;
+
+            while (i != e)
+            {
+                if (!first)
+                    out << ",";
+                else
+                    first = false;
+
+                out << "[" << i->first << "," << i->second << "]";
+
+                ++i;
+            }
+            out << "]";
+
+            out << " \",orderPos\":" << acentry.nOrderPos
+                << " \",entryNo\":" << acentry.nEntryNo
+                << "}\n";
+        }
+        else if (strType == WATCHS)
+        {
+            char fYes;
+            ssValue >> fYes;
+            out << " " << fYes << endl;
+        }
+        else if (strType == KEY)
+        {
+            CPrivKey pkey;
+            uint256 hash;
+
+            ssValue >> pkey;
+            ssValue >> hash;
+
+            out << " {\"key\":" << HexStr(pkey) << ",\"hash\":" << hash.ToString() << "}\n";
+        }
+        else if (strType == MKEY)
+        {
+            CMasterKey masterKey;
+            ssValue >> masterKey;
+
+            out << " {";
+            out << "  \"cryptedKey\":" << HexStr(masterKey.vchCryptedKey) << "," << endl;
+            out << "  \"salt\":" << HexStr(masterKey.vchSalt) << "," << endl;
+            out << "  \"derivationMethod\":" << masterKey.nDerivationMethod << "," << endl;
+            out << "  \"derivationIterations\":" << masterKey.nDeriveIterations << "," << endl;
+            out << "  \"otherDerivationParamters\":" << HexStr(masterKey.vchOtherDerivationParameters) << endl;
+
+            out << " }\n";
+        }
+        else if (strType == CKEY)
+        {
+            vector<unsigned char> privKey;
+            ssValue >> privKey;
+
+            out << " " << HexStr(privKey) << endl;
+        }
+        else if (strType == KEYMETA)
+        {
+            CKeyMetadata keyMeta;
+            ssValue >> keyMeta;
+
+            std::string t = ctime(&keyMeta.nCreateTime);
+            t = t.substr(0, t.size() - 1);
+
+            out << "{\"version\":" << keyMeta.nVersion << ", \"createTime\":" << t << "}" << endl;
+        }
+        else if (strType == DEFAULTKEY)
+        {
+            CPubKey defaultKey;
+            ssValue >> defaultKey;
+            out << " " << HexStr(defaultKey) << endl;
+        }
+        else if (strType == POOL)
+        {
+            CKeyPool keypool;
+            ssValue >> keypool;
+
+            out << " {\"pool\":" << keypool.nTime << ", \"pubKey\":" <<
+                HexStr(keypool.vchPubKey) << "}" << endl;
+        }
+        else if (strType == VERSION)
+        {
+            int fileVersion;
+            ssValue >> fileVersion;
+            out << " " << fileVersion << endl;
+        }
+        else if (strType == CSCRIPT)
+        {
+            CScript script;
+            ssValue >> *(CScriptBase*)(&script);
+            out << " " << HexStr(script) << endl;
+        }
+        else if (strType == ORDERPOSNEXT)
+        {
+            int64_t orderPosNext;
+            ssValue >> orderPosNext;
+            out << " " << orderPosNext << endl;
+        }
+        else if (strType == DESTDATA)
+        {
+            std::string strValue;
+            ssValue >> strValue;
+            out << " " << strValue << endl;
+        }
+        else if (strType == BESTBLOCK)
+        {
+            CBlockLocator locator;
+            ssValue >> locator;
+
+            out << " [\n";
+
+            auto i = locator.vHave.begin();
+            auto e = locator.vHave.end();
+
+            bool first = true;
+
+            while (i != e)
+            {
+                if (!first)
+                    out << ",\n";
+                else
+                    first = false;
+
+                out << HexStr(*i);
+
+                ++i;
+            }
+
+            out << "\n ]\n";
+        }
+        else if (strType == BESTBLOCK_NOMERKLE)
+        {
+            CBlockLocator locator;
+            ssValue >> locator;
+
+            out << " [\n";
+
+            auto i = locator.vHave.begin();
+            auto e = locator.vHave.end();
+
+            bool first = true;
+
+            while (i != e)
+            {
+                if (!first)
+                    out << ",\n";
+                else
+                    first = false;
+
+                out << HexStr(*i);
+                ++i;
+            }
+
+            out << "\n ]\n";
+        }
+        else if (strType == MINVERSION)
+        {
+            int version;
+            ssValue >> version;
+            out << " " << version << endl;
+        }
+        else if (strType == ACC)
+        {
+            CAccount acct;
+            ssValue >> acct;
+            out << " " << HexStr(acct.vchPubKey) << endl;
+        }
+        else if (strType == ISSUER)
+        {
+            CIssuer issuer;
+            ssValue >> issuer;
+
+            out << " {\"pubKey\":" << HexStr(issuer.pubKey_)
+                << ", \"location\":" << issuer.location_
+                << ", \"email\":" << issuer.emailAddress_
+                << ", \"phone_number\":" << issuer.phoneNumber_
+                << "}" << endl;
+        }
+        else if (strType == USER_MSG)
+        {
+            CUserMessage* msg = CUserMessage::create(msgTag, ssValue);
+            out << msg->ToJSON() << endl;
+            delete msg;
+        }
+        else
+        {
+            LogPrintf("Error: Unsupported key in walletdb\n");
+        }
+    }
+    catch (...)
+    {
+        LogPrintf("Error getting value from wallet database cursor\n");
+    }
+
+    return true;
+}
+
+}
+
+void CWalletDB::Dump(ostream& out)
+{
+    try
+    {
+        // Get cursor
+        Dbc* pcursor = GetCursor();
+
+        if (!pcursor)
+        {
+            LogPrintf("Error getting wallet database cursor\n");
+            return;
+        }
+
+        while (true)
+        {
+            // Read next record
+            CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+            CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+
+            int ret = ReadAtCursor(pcursor, ssKey, ssValue);
+
+            if (ret == DB_NOTFOUND) break;
+            else if (ret != 0)
+            {
+                LogPrintf("Error reading next record from wallet database\n");
+                break;
+            }
+
+            string strType;
+            string msgTag;
+
+            if (!dumpKey(out, ssKey, strType, msgTag)) break;
+
+            out << '[' << endl;
+
+            if (!dumpValue(out, strType, ssValue, msgTag)) break;
+
+            out << ']' << endl;
+        }
+
+        pcursor->close();
+    }
+    catch (...)
+    {
+        // It is just a dump, so do not allow it to affect the process
+    }
+}
+
+void CWalletDB::ListIssuers(vector<pair<string, CIssuer>>& issuers)
+{
+    Dbc* pcursor = GetCursor();
+    if (!pcursor)
+        throw runtime_error(std::string(__func__) + ": cannot create DB cursor");
+
+    while (true)
+    {
+        // Read next record
+        CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+        CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+        int ret = ReadAtCursor(pcursor, ssKey, ssValue);
+
+        if (ret == DB_NOTFOUND) break;
+        else if (ret != 0)
+        {
+            pcursor->close();
+            throw runtime_error(std::string(__func__) + ": error scanning DB");
+        }
+
+        // Unserialize
+        string strType;
+        ssKey >> strType;
+
+        if (strType == ISSUER)
+        {
+            string name;
+            ssKey >> name;
+
+            CIssuer issuer;
+            ssValue >> issuer;
+
+            issuers.push_back(make_pair(name, issuer));
+        }
+    }
+
+    pcursor->close();
+}
+
+bool CWalletDB::WriteUserMsg(const CUserMessage* msg)
+{
+    nWalletDBUpdateCounter++;
+
+    if (const CPeerToPeer* p2pmsg = dynamic_cast<const CPeerToPeer *>(msg))
+        return Write(make_pair(make_pair(USER_MSG, msg->vtag()), msg->GetHash()), *p2pmsg);
+
+    else if (const CBroadcast* bmsg = dynamic_cast<const CBroadcast *>(msg))
+        return Write(make_pair(make_pair(USER_MSG, msg->vtag()), msg->GetHash()), *bmsg);
+
+    else if (const CMulticast* mmsg = dynamic_cast<const CMulticast *>(msg))
+        return Write(make_pair(make_pair(USER_MSG, msg->vtag()), msg->GetHash()), *mmsg);
+
+    assert(false);
+
+    return false;
+}
+
+bool CWalletDB::EraseUserMsg(const CUserMessage* msg)
+{
+    nWalletDBUpdateCounter++;
+
+    return Erase(make_pair(make_pair(USER_MSG, msg->vtag()), msg->GetHash()));
+}
+
+namespace
+{
+
+// They should be ordered in ascening order by the probablity that a message will be that type
+const char* msgTypeTags[] =
+{
+    "Ask",
+    "Bid",
+    "Private",
+    "Vote",
+    "CashDividend",
+    "Poll",
+    "Acquisition",
+    "Assimilation",
+    "Bankruptcy",
+    "BonusIssue",
+    "BonusRights",
+    "BuyBackProgram",
+    "CashStockOption",
+    "ClassAction",
+    "ConversionOfConvertibleBonds",
+    "CouponPayment",
+    "Delisting",
+    "DeMerger",
+    "DividendReinvestmentPlan",
+    "DutchAuction",
+    "EarlyRedemption",
+    "FinalRedemption",
+    "GeneralAnnouncement",
+    "InitialPublicOffering",
+    "Liquidation",
+    "Lottery",
+    "MandatoryExchange",
+    "Merger",
+    "MergerWithElections",
+    "NameChange",
+    "OddLotTender",
+    "OptionalPut",
+    "OtherEvent",
+    "PartialRedemption",
+    "ParValueChange",
+    "ReturnOfCapital",
+    "ReverseStockSplit",
+    "RightsAuction",
+    "RightsIssue",
+    "SchemeofArrangement",
+    "ScripDividend",
+    "ScripIssue",
+    "Spinoff",
+    "SpinOffWithElections",
+    "StockDividend",
+    "StockSplit",
+    "SubscriptionOffer",
+    "Takeover",
+    "TenderOffer",
+    "VoluntaryExchange",
+    "WarrantExercise",
+    "WarrantExpiry",
+    "WarrantIssue",
+    "AssetPrivate",
+};
+
+}
+
+void CWalletDB::GetMessage(const uint256& hash, CUserMessage *& msg)
+{
+    Dbc* pcursor = GetCursor();
+    if (!pcursor)
+        throw runtime_error(std::string(__func__) + ": cannot create DB cursor");
+
+    uint256 readHash = hash;
+
+    for (size_t i = 0; i < (sizeof(msgTypeTags) / sizeof(char *)); ++i)
+    {
+        CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+
+        // Read next record
+        ssKey << std::make_pair(
+            std::make_pair(USER_MSG, std::string(msgTypeTags[i])), readHash);
+
+        CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+        int ret = ReadAtCursor(pcursor, ssKey, ssValue, true);
+
+        if (ret == DB_NOTFOUND) continue;
+
+        if (ret != 0)
+        {
+            pcursor->close();
+            throw runtime_error(std::string(__func__) + ": error scanning DB");
+        }
+
+        std::string readType;
+        ssKey >> readType;
+
+        // If we have gone past the USER_MSGs
+        if (readType != USER_MSG) continue;
+
+        ssKey >> readType;
+        ssKey >> readHash;
+
+        if (readHash != hash) continue;
+
+        msg = CUserMessage::create(readType, ssValue);
+
+        return;
+    }
+
+    pcursor->close();
+    msg = NULL;
+}
+
+void CWalletDB::DeleteMessage(const uint256& hash)
+{
+    Dbc* pcursor = GetCursor();
+    if (!pcursor)
+        throw runtime_error(std::string(__func__) + ": cannot create DB cursor");
+
+    uint256 readHash = hash;
+
+    for (size_t i = 0; i < (sizeof(msgTypeTags) / sizeof(char *)); ++i)
+    {
+        CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+
+        // Read next record
+        ssKey << std::make_pair(
+            std::make_pair(USER_MSG, std::string(msgTypeTags[i])), readHash);
+
+        CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+        int ret = ReadAtCursor(pcursor, ssKey, ssValue, true);
+
+        if (ret == DB_NOTFOUND) continue;
+
+        if (ret != 0)
+        {
+            pcursor->close();
+            throw runtime_error(std::string(__func__) + ": error scanning DB");
+        }
+
+        std::string readType;
+        ssKey >> readType;
+
+        // If we have gone past the USER_MSGs
+        if (readType != USER_MSG) continue;
+
+        ssKey >> readType;
+        ssKey >> readHash;
+
+        if (readHash != hash) continue;
+
+        CUserMessage* msg = CUserMessage::create(readType, ssValue);
+        pcursor->close();
+        EraseUserMsg(msg);
+
+        delete msg;
+
+        return;
+    }
+    pcursor->close();
+}
+
+namespace
+{
+
+bool keep(
+    CPeerToPeer* msg,
+    time_t from,
+    time_t to,
+    const std::set<std::string>& senders,
+    const std::set<std::string>& receivers)
+{
+    if (from && from < msg->second()) return false;
+
+    if (to && to > msg->second()) return false;
+
+    if (senders.size() && (senders.find(msg->senderAddr()) == senders.end())) return false;
+
+    if (receivers.size() && (receivers.find(msg->receiverAddr()) == receivers.end())) return false;
+
+    return true;
+}
+
+bool keep(
+    CMulticast* msg,
+    time_t from,
+    time_t to,
+    const std::set<std::string>& senders)
+{
+    if (from && from < msg->second()) return false;
+
+    if (to && to > msg->second()) return false;
+
+    if (senders.size() && (senders.find(msg->senderAddr()) == senders.end())) return false;
+
+    return true;
+}
+
+bool keep(
+    CBroadcast* msg,
+    time_t from,
+    time_t to,
+    const std::set<std::string>& senders)
+{
+    if (from && from < msg->second()) return false;
+
+    if (to && to > msg->second()) return false;
+
+    if (senders.size() && (senders.find(msg->senderAddr()) == senders.end())) return false;
+
+    return true;
+}
+
+}
+
+void CWalletDB::GetMessages(
+    const std::string& type,
+    Dbc* pcursor,
+    time_t from,
+    time_t to,
+    const std::set<std::string>& assets,
+    const std::set<std::string>& senders,
+    const std::set<std::string>& receivers,
+    std::vector<CUserMessage *>& out
+)
+{
+    bool setRange = true;
+
+    uint256	hash;
+
+    while (true)
+    {
+        // Read next record
+        CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+        ssKey << std::make_pair(std::make_pair(USER_MSG, type), hash);
+
+        CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+        int ret = ReadAtCursor(pcursor, ssKey, ssValue, setRange);
+
+        if (ret == DB_NOTFOUND) break;
+        else if (ret != 0)
+        {
+            pcursor->close();
+            throw runtime_error(std::string(__func__) + ": error scanning DB");
+        }
+
+        std::string readType;
+        ssKey >> readType;
+
+        // If we have gone past the USER_MSGs
+        if (readType != USER_MSG) break;
+
+        ssKey >> readType;
+
+        // If we the key loaded does not match the requested key
+        if (type != readType) break;
+
+        ssKey >> hash;
+
+        // Get the next one for the rest of the loop
+        setRange = false;
+
+        CUserMessage* msg = CUserMessage::create(type, ssValue);
+
+        if (CBroadcast* bmsg = dynamic_cast<CBroadcast *>(msg))
+        {
+            if (keep(bmsg, from, to, senders))
+                out.push_back(msg);
+            else
+                delete msg;
+        }
+        else if (CMulticast* mmsg = dynamic_cast<CMulticast *>(msg))
+        {
+            if (keep(mmsg, from, to, senders))
+                out.push_back(msg);
+            else
+                delete msg;
+        }
+        else
+        {
+            CPeerToPeer* p2pmsg = dynamic_cast<CPeerToPeer *>(msg);
+
+            assert(p2pmsg);
+
+            if (keep(p2pmsg, from, to, senders, receivers))
+                out.push_back(msg);
+            else
+                delete msg;
+        }
+    }
+}
+
+void CWalletDB::GetMessages(
+    time_t from,
+    time_t to,
+    const std::set<std::string>& assets,
+    const std::set<std::string>& types,
+    const std::set<std::string>& senders,
+    const std::set<std::string>& receivers,
+    std::vector<CUserMessage *>& out
+)
+{
+    Dbc* pcursor = GetCursor();
+    if (!pcursor)
+        throw runtime_error(std::string(__func__) + ": cannot create DB cursor");
+
+    if (types.size())
+    {
+        auto i = types.begin();
+        auto e = types.end();
+
+        while (i != e)
+        {
+            GetMessages(*i, pcursor, from, to, assets, senders, receivers, out);
+            ++i;
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < (sizeof(msgTypeTags) / sizeof(char *)); ++i)
+        {
+            GetMessages(msgTypeTags[i], pcursor, from, to, assets, senders, receivers, out);
+        }
+    }
+
+    pcursor->close();
+}
+
+void CWalletDB::DeleteMessages(
+    const std::string& type,
+    time_t from,
+    time_t to,
+    const std::set<std::string>& assets,
+    const std::set<std::string>& senders,
+    const std::set<std::string>& receivers
+)
+{
+    Dbc* pcursor = NULL;
+
+    bool setRange = false;
+    uint256	hash;
+
+    while (true)
+    {
+        if (!pcursor)
+        {
+            pcursor = GetCursor();
+            if (!pcursor)
+                throw runtime_error(std::string(__func__) + ": cannot create DB cursor");
+
+            setRange = true;
+            hash.SetNull();
+        }
+
+        // Read next record
+        CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+        ssKey << std::make_pair(std::make_pair(USER_MSG, type), hash);
+
+        CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+        int ret = ReadAtCursor(pcursor, ssKey, ssValue, setRange);
+
+        if (ret == DB_NOTFOUND) break;
+        else if (ret != 0)
+        {
+            pcursor->close();
+            throw runtime_error(std::string(__func__) + ": error scanning DB");
+        }
+
+        std::string readType;
+        ssKey >> readType;
+
+        // If we have gone past the USER_MSGs
+        if (readType != USER_MSG) break;
+
+        ssKey >> readType;
+
+        // If we the key loaded does not match the requested key
+        if (type != readType) break;
+
+        ssKey >> hash;
+
+        // Get the next one for the rest of the loop
+        setRange = false;
+
+        CUserMessage* msg = CUserMessage::create(type, ssValue);
+
+        if (CBroadcast* bmsg = dynamic_cast<CBroadcast *>(msg))
+        {
+            if (keep(bmsg, from, to, senders))
+            {
+                pcursor->close();
+                pcursor = NULL;
+                EraseUserMsg(msg);
+            }
+
+            delete msg;
+        }
+        else if (CMulticast* mmsg = dynamic_cast<CMulticast *>(msg))
+        {
+            if (keep(mmsg, from, to, senders))
+            {
+                pcursor->close();
+                pcursor = NULL;
+                EraseUserMsg(msg);
+            }
+
+            delete msg;
+        }
+        else
+        {
+            CPeerToPeer* p2pmsg = dynamic_cast<CPeerToPeer *>(msg);
+
+            assert(p2pmsg);
+
+            if (keep(p2pmsg, from, to, senders, receivers))
+            {
+                pcursor->close();
+                pcursor = NULL;
+                EraseUserMsg(msg);
+            }
+
+            delete msg;
+        }
+    }
+
+    if (pcursor) pcursor->close();
+}
+
+void CWalletDB::DeleteMessages(
+    time_t from,
+    time_t to,
+    const std::set<std::string>& assets,
+    const std::set<std::string>& types,
+    const std::set<std::string>& senders,
+    const std::set<std::string>& receivers)
+{
+    if (types.size())
+    {
+        auto i = types.begin();
+        auto e = types.end();
+
+        while (i != e)
+        {
+            DeleteMessages(*i, from, to, assets, senders, receivers);
+            ++i;
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < (sizeof(msgTypeTags) / sizeof(char *)); ++i)
+        {
+            DeleteMessages(msgTypeTags[i], from, to, assets, senders, receivers);
+        }
+    }
 }

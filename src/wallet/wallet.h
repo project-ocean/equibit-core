@@ -17,6 +17,7 @@
 #include "wallet/crypter.h"
 #include "wallet/walletdb.h"
 #include "wallet/rpcwallet.h"
+#include "edc/rpc/edcpolling.h"
 
 #include <algorithm>
 #include <atomic>
@@ -74,8 +75,11 @@ static const bool DEFAULT_USE_HD_WALLET = true;
 
 extern const char * DEFAULT_WALLET_DAT;
 
+class EDCapp;
+class WoTCertificate;
 class CBlockIndex;
 class CCoinControl;
+class CBitcoinAddress;
 class COutput;
 class CReserveKey;
 class CScript;
@@ -242,6 +246,7 @@ public:
     bool isAbandoned() const { return (hashBlock == ABANDON_HASH); }
     void setAbandoned() { hashBlock = ABANDON_HASH; }
 
+    std::string toJSON(const char*) const;
     const uint256& GetHash() const { return tx->GetHash(); }
     bool IsCoinBase() const { return tx->IsCoinBase(); }
 };
@@ -427,6 +432,8 @@ public:
     bool RelayWalletTransaction(CConnman* connman);
 
     std::set<uint256> GetConflicts() const;
+
+    std::string toJSON(const char* margin) const;
 };
 
 
@@ -571,6 +578,22 @@ class CWallet : public CCryptoKeyStore, public CValidationInterface
 private:
     static std::atomic<bool> fFlushThreadRunning;
 
+    typedef std::set<std::pair<const CWalletTx*, unsigned int> > CoinSet;
+
+    bool AddFee(
+        EDCapp&,                                // IN
+        double dPriorityIn,                     // IN: Priority from authorized coins
+        CoinSet& authCoins,                     // IN: Authorized coins
+        CMutableTransaction& txIn,              // IN: Input Transaction
+        CWalletTx& wtxNew,                      // OUT: The wallet transaction
+        CReserveKey& reservekey,                // IN/OUT: Key from pool to be destination of change
+        int& nChangePosInOut,                   // IN/OUT: Position in txn for change
+        CAmount& nFeeRet,                       // OUT: The computed fee
+        std::string& strFailReason,             // OUT: Reason for failure
+        const CCoinControl* coinControl = NULL, // IN
+        bool sign = true                        // IN
+    ) const;
+
     /**
      * Select a set of coins such that nValueRet >= nTargetValue and at least
      * all coins from coinControl are selected; Never select unconfirmed coins
@@ -609,6 +632,46 @@ private:
     CHDChain hdChain;
 
     bool fFileBacked;
+
+    std::map<std::pair<std::string, uint256>, CUserMessage*> messageMap;
+
+    // pubkey authoring Key/revoke reason
+    struct WoTdata
+    {
+        WoTdata(const CPubKey& pk) : pubkey(pk), revoked(false)
+        {
+        }
+
+        WoTdata(const CPubKey& pk, const std::string& reason) : pubkey(pk), revoked(true), revokeReason(reason)
+        {
+        }
+
+        CPubKey     pubkey;
+        bool        revoked;
+        std::string revokeReason;
+    };
+
+    std::multimap<CPubKey, WoTdata> wotCertificates;
+
+    bool wotChainExists(const CPubKey& spk, const CPubKey& epk, uint64_t currlen, uint64_t maxlen);
+    bool wotChainExists(const CPubKey& spk, const CPubKey& epk, const CPubKey& expk, uint64_t currlen, uint64_t maxlen);
+
+    struct Proxy
+    {
+        // Poll ID Proxy addr/time stamp/is_active
+        std::map<std::string, std::tuple<CKeyID, std::string, bool>> pollProxies;
+
+        // Issuer Proxy addr/time stamp/is_active
+        std::map<CKeyID, std::tuple<CKeyID, std::string, bool>> issuerProxies;
+
+        // Proxy addr/timestamp/is_active
+        std::tuple<CKeyID, std::string, bool> generalProxy;
+    };
+
+    // address
+    std::map<CKeyID, Proxy>       proxyMap;
+    std::map<uint256, Poll>       polls;
+    std::map<uint256, PollResult> pollResults;
 
     std::set<int64_t> setKeyPool;
 
@@ -714,6 +777,16 @@ public:
      */
     void AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed=true, const CCoinControl *coinControl = NULL, bool fIncludeZeroValue=false) const;
 
+    //! populate vCoins with vector of available COutputs authorized by issuer
+    void AvailableCoins(
+        std::vector<COutput>& vCoins,
+        CBitcoinAddress& issuer,
+        unsigned wotlvl,
+        bool fOnlyConfirmed = true,
+        const CCoinControl* coinControl = NULL,
+        bool fIncludeZeroValue = false
+    ) const;
+
     /**
      * Shuffle and select coins until nTargetValue is reached while avoiding
      * small change; This method is stochastic for some inputs and upon
@@ -812,6 +885,46 @@ public:
      */
     bool CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, int& nChangePosInOut,
                            std::string& strFailReason, const CCoinControl *coinControl = NULL, bool sign = true);
+
+    //! Create a new transaction that is created to authorize the EQB of the input TxOut.
+    bool CreateAuthorizingTransaction(
+        const CIssuer& issuer,
+        unsigned wotLvl,
+        const std::vector<CRecipient>& vecSend,
+        CWalletTx& wtxNew,
+        CReserveKey& reservekey,
+        CAmount& nFeeRet,
+        int& nChangePosInOut,
+        std::string& strFailReason);
+
+    //! Create a new transaction that is created to blank the EQB of the input TxOut.
+    bool CreateBlankingTransaction(
+        const CIssuer& issuer,
+        const std::vector<CRecipient>& vecSend,
+        CWalletTx& wtxNew,
+        CReserveKey& reservekey,
+        bool feeFromBlank,
+        CAmount& nFeeRet,
+        int& nChangePosInOut,
+        std::string& strFailReason);
+
+    /**
+    * Create a new trusted transaction paying the recipients with a set of coins
+    * selected by SelectCoins(); Also create the change output, when needed
+    * @note passing nChangePosInOut as -1 will result in setting a random position
+    */
+    bool CreateTrustedTransaction(
+        CBitcoinAddress& issuer,
+        unsigned wotLvl,
+        const std::vector<CRecipient>& vecSend,
+        CWalletTx& wtxNew,
+        CReserveKey& reservekey,
+        CAmount& nFeeRet,
+        int& nChangePosInOut,
+        std::string& strFailReason,
+        const CCoinControl* coinControl = NULL,
+        bool sign = true);
+
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, CConnman* connman, CValidationState& state);
 
     void ListAccountCreditDebit(const std::string& strAccount, std::list<CAccountingEntry>& entries);
@@ -960,6 +1073,31 @@ public:
     /* Mark a transaction (and it in-wallet descendants) as abandoned so its inputs may be respent. */
     bool AbandonTransaction(const uint256& hashTx);
 
+    /** Load Message into the wallet **/
+    void LoadMessage(CUserMessage* msg);
+    bool AddMessage(CUserMessage* msg);
+
+    void GetMessage(const uint256&, CUserMessage*& msg);
+    void DeleteMessage(const uint256&);
+
+    void GetMessages(
+        time_t from,
+        time_t to,
+        const std::set<std::string>& assets,
+        const std::set<std::string>& types,
+        const std::set<std::string>& senders,
+        const std::set<std::string>& receivers,
+        std::vector<CUserMessage*>& out
+    );
+
+    void DeleteMessages(
+        time_t from,
+        time_t to,
+        const std::set<std::string>& assets,
+        const std::set<std::string>& types,
+        const std::set<std::string>& senders,
+        const std::set<std::string>& receivers);
+
     /** Mark a transaction as replaced by another transaction (e.g., BIP 125). */
     bool MarkReplaced(const uint256& originalHash, const uint256& newHash);
 
@@ -993,6 +1131,37 @@ public:
     
     /* Set the current HD master key (will reset the chain child index counters) */
     bool SetHDMasterKey(const CPubKey& key);
+
+    bool AddWoTCertificate(const CPubKey& pk1, const CPubKey& pk2, const WoTCertificate& cert, std::string&);
+    bool RevokeWoTCertificate(const CPubKey& pk1, const CPubKey& pk2, const std::string& reason, std::string&);
+    bool DeleteWoTCertificate(const CPubKey& pk1, const CPubKey& pk2, std::string&);
+    bool WoTchainExists(const CPubKey&, const CPubKey&, uint64_t);
+    bool WoTchainExists(const CPubKey&, const CPubKey&, const CPubKey&, uint64_t);
+
+    void LoadWoTCertificate(const CPubKey& pk1, const CPubKey& pk2, const WoTCertificate& cert);
+    void LoadWoTCertificateRevoke(const CPubKey& pk1, const CPubKey& pk2, const std::string& reason);
+
+    bool AddGeneralProxy(const CKeyID&, const CKeyID&, std::string&);
+    bool AddGeneralProxyRevoke(const CKeyID&, const CKeyID&, std::string&);
+    bool AddIssuerProxy(const CKeyID&, const CKeyID&, const CKeyID&, std::string&);
+    bool AddIssuerProxyRevoke(const CKeyID&, const CKeyID&, const CKeyID&, std::string&);
+    bool AddPollProxy(const CKeyID&, const CKeyID&, const std::string&, std::string&);
+    bool AddPollProxyRevoke(const CKeyID&, const CKeyID&, const std::string&, std::string&);
+
+    bool VerifyProxy(const std::string& ts, const std::string& addr, const std::string& paddr, const std::string& other, const std::vector<unsigned char >&, std::string&);
+
+    void LoadGeneralProxy(const std::string& ts, const CKeyID&, const CKeyID&);
+    void LoadGeneralProxyRevoke(const std::string& ts, const CKeyID&, const CKeyID&);
+    void LoadIssuerProxy(const std::string& ts, const CKeyID&, const CKeyID&, const CKeyID&);
+    void LoadIssuerProxyRevoke(const std::string& ts, const CKeyID&, const CKeyID&, const CKeyID&);
+    void LoadPollProxy(const std::string& ts, const CKeyID&, const CKeyID&, const std::string&);
+    void LoadPollProxyRevoke(const std::string& ts, const CKeyID&, const CKeyID&, const std::string&);
+
+    bool AddPoll(const Poll&, const uint256&, std::string&);
+
+    bool pollResult(const uint256&, const PollResult *&) const;
+
+    bool AddVote(struct timespec&, const CKeyID& addr, const CKeyID& iaddr, const std::string& pollid, const std::string& response, const CKeyID& pAddr, std::string& errStr);
 };
 
 /** A key allocated from the key pool. */
@@ -1048,6 +1217,50 @@ public:
         if (!(s.GetType() & SER_GETHASH))
             READWRITE(nVersion);
         READWRITE(vchPubKey);
+    }
+};
+
+class CIssuer
+{
+
+public:
+
+    CPubKey pubKey_;
+    std::string location_;
+    std::string emailAddress_;
+    std::string phoneNumber_;
+
+    CIssuer(
+        const std::string& loc,
+        const std::string& ea,
+        const std::string& pn) :
+        location_(loc),
+        emailAddress_(ea),
+        phoneNumber_(pn)
+    {
+        SetNull();
+    }
+
+    CIssuer()
+    {
+        SetNull();
+    }
+
+    void SetNull()
+    {
+        pubKey_ = CPubKey();
+    }
+
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    {
+        if (!(nType & SER_GETHASH)) READWRITE(nVersion);
+        READWRITE(pubKey_);
+        READWRITE(location_);
+        READWRITE(emailAddress_);
+        READWRITE(phoneNumber_);
     }
 };
 

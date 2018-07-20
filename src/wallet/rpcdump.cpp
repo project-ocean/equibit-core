@@ -1104,3 +1104,38 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
 
     return response;
 }
+
+UniValue dumpwalletdb(const JSONRPCRequest& request)
+{
+    if (!EnsureWalletIsAvailable(request.fHelp))
+        return NullUniValue;
+
+    if (request.fHelp || request.params.size() != 1)
+        throw runtime_error(
+            "dumpwalletdb \"filename\"\n"
+            "\nDumps the wallet DB in a human-readable format.\n"
+            "\nArguments:\n"
+            "1. \"filename\"    (string, required) The filename\n"
+            "\nExamples:\n"
+            + HelpExampleCli("dumpwalletdb", "\"walletdb.txt\"")
+            + HelpExampleRpc("dumpwalletdb", "\"walletdb.txt\"")
+        );
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
+    EnsureWalletIsUnlocked();
+
+    ofstream file;
+    file.open(request.params[0].get_str().c_str());
+
+    if (!file.is_open())
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Cannot open wallet dump file");
+
+    CWalletDB walletdb(pwalletMain->strWalletFile);
+
+    walletdb.Dump(file);
+
+    file.close();
+
+    return NullUniValue;
+}
