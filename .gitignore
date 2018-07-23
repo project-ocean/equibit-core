@@ -118,3 +118,7 @@ wallet.backup
 # func tests cache
 eqbtest/cache/
 
+# Visual Studio
+.vscode/
+
+

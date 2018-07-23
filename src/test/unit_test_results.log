@@ -1,9 +1,9 @@
-Running 229 test cases...
-2018-07-23 09:56:04
+Running 231 test cases...
+2018-07-23 16:48:38
 
-Suites with errors:         0
-Test Cases with errors:     0
-Errors total:               0
+Suites with errors:         1
+Test Cases with errors:     1
+Errors total:               1
 -----------------------------------------------------------------------------
 Test Suite: DoS_tests
 
@@ -453,5 +453,11 @@ Test Case: coin_selection_tests                               Errors:     0
 Test Case: importwallet_rescan                                Errors:     0
 Test Case: rescan                                             Errors:     0
                                                                TOTAL:     0
+-----------------------------------------------------------------------------
+Test Suite: zzz_example_tests
+
+Test Case: zzz_example_one                                    Errors:     1
+Test Case: zzz_example_two                                    Errors:     0
+                                                               TOTAL:     1
 -----------------------------------------------------------------------------
 
