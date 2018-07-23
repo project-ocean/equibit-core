@@ -1,5 +1,5 @@
-    Version
-Dev 0.0.0
+    Version	Date
+Dev 0.0.0	2018-07-23	
 QA  0.0.0
 UAT 0.0.0
 
@@ -15,6 +15,7 @@ p2p_timeouts.py                       | ✓ Passed  |
 rpc_bind.py --ipv4                    | ✓ Passed  |
 rpc_bind.py --ipv6                    | ✓ Passed  |
 rpc_bind.py --nonloopback             | ✓ Passed  |
+rpc_getchaintips.py                   | ✓ Passed  |
 rpc_invalidateblock.py                | ✓ Passed  |
 rpc_named_arguments.py                | ✓ Passed  |
 rpc_preciousblock.py                  | ✓ Passed  |
@@ -70,7 +71,6 @@ rpc_decodescript.py                   | ✖ Failed  |
 rpc_deprecated.py                     | ✖ Failed  |
 rpc_fundrawtransaction.py             | ✖ Failed  |
 rpc_getblockstats.py                  | ✖ Failed  |
-rpc_getchaintips.py                   | ✖ Failed  |
 rpc_net.py                            | ✖ Failed  |
 rpc_rawtransaction.py                 | ✖ Failed  |
 rpc_signrawtransaction.py             | ✖ Failed  |
@@ -103,8 +103,8 @@ wallet_txn_doublespend.py             | ✖ Failed  |
 wallet_txn_doublespend.py --mineblock | ✖ Failed  |
 wallet_zapwallettxes.py               | ✖ Failed  |
 
-ALL                                   | ✖ Failed  |
-Total Passed: 18
-Total Failed: 79
+ALL                                   | ✖ Failed  | 
+Total Passed: 19
+Total Failed: 78
 Number of tests: 97
 
