@@ -8,6 +8,7 @@ src/bitcoin-tx
 src/test/test_bitcoin
 src/test/test_bitcoin_fuzzy
 src/qt/test/test_bitcoin-qt
+src/equibitd
 
 # autoreconf
 Makefile.in
@@ -60,7 +61,7 @@ src/qt/test/moc*.cpp
 *.pb.cc
 *.pb.h
 
-*.log
+# *.log
 *.trs
 *.dmg
 
@@ -76,6 +77,7 @@ src/qt/test/moc*.cpp
 Makefile
 bitcoin-qt
 Bitcoin-Qt.app
+
 
 # Unit-tests
 Makefile.test
@@ -110,3 +112,6 @@ qa/cache/*
 
 libbitcoinconsensus.pc
 contrib/devtools/split-debug.sh
+
+wallet.backup
+
