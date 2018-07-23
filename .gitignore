@@ -115,3 +115,6 @@ contrib/devtools/split-debug.sh
 
 wallet.backup
 
+# func tests cache
+eqbtest/cache/
+
