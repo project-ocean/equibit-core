@@ -121,4 +121,7 @@ eqbtest/cache/
 # Visual Studio
 .vscode/
 
+# PyCharm
+.idea/
+
 
