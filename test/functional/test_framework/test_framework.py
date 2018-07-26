@@ -118,6 +118,9 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
                           help="Attach a python debugger if test fails")
         parser.add_option("--usecli", dest="usecli", default=False, action="store_true",
                           help="use bitcoin-cli instead of RPC for all commands")
+
+        parser.add_option("--bitcoinoriginal", dest="bitcode", default=False, action="store_true")
+
         self.add_options(parser)
         (self.options, self.args) = parser.parse_args()
 
@@ -129,7 +132,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
         config = configparser.ConfigParser()
         config.read_file(open(self.options.configfile))
-        self.options.bitcoind = os.getenv("BITCOIND", default=config["environment"]["BUILDDIR"] + '/src/bitcoind' + config["environment"]["EXEEXT"])
+        self.options.bitcoind = os.getenv("BITCOIND", default=config["environment"]["BUILDDIR"] + '/src/equibitd' + config["environment"]["EXEEXT"])
         self.options.bitcoincli = os.getenv("BITCOINCLI", default=config["environment"]["BUILDDIR"] + '/src/bitcoin-cli' + config["environment"]["EXEEXT"])
 
         os.environ['PATH'] = os.pathsep.join([

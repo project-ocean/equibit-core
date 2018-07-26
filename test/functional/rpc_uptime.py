@@ -13,25 +13,24 @@ from test_framework.test_framework import BitcoinTestFramework
 
 
 class UptimeTest(BitcoinTestFramework):
-    # def add_options(self):
-    #     # --loglevel DEBUG
-    #     self.options['loglevel'] = "DEBUG"
-
     def set_test_params(self):
         self.num_nodes = 1
         self.setup_clean_chain = True
 
     def run_test(self):
-        # self._test_uptime()
-        self._test_getinfo()
+        if not self.options.bitcode:
+            self._test_getinfo()
+        else:
+            self._test_uptime()
 
     def _test_uptime(self):
         wait_time = 10
         self.nodes[0].setmocktime(int(time.time() + wait_time))
-        assert(self.nodes[0].uptime() >= wait_time)
+        assert(self.nodes[0].uopptime() >= wait_time)
 
     def _test_getinfo(self):
         msg = self.nodes[0].getinfo()
+        print("EQB VERSION")
         self.log.debug(msg)
 
 
