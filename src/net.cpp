@@ -1506,8 +1506,13 @@ void ThreadMapPort()
                     LogPrintf("UPnP: GetExternalIPAddress failed.\n");
             }
         }
-
-        std::string strDesc = "Equibit " + FormatFullVersion();
+#ifdef EQB_ONLY
+       std::string strDesc = "Equibit " + FormatFullVersion();
+#endif
+#ifdef BTC_ONLY
+        std::string strDesc = "Bitcoin " + FormatFullVersion();
+#endif
+        
 
         try {
             while (true) {
@@ -1777,7 +1782,6 @@ void CConnman::ThreadOpenConnections(const std::vector<std::string> connect)
         // Only connect out to one peer per network group (/16 for IPv4).
         // Do this here so we don't have to critsect vNodes inside mapAddresses critsect.
         int nOutbound = 0;
-        int nOutboundRelevant = 0;
         std::set<std::vector<unsigned char> > setConnected;
         {
             LOCK(cs_vNodes);
