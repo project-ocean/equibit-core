@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(zzz_example_one)
 BOOST_AUTO_TEST_CASE(zzz_example_two)
 {
     // checks
-    BOOST_CHECK(true == true);
+    BOOST_CHECK(1 == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
