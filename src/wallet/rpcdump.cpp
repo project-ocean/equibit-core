@@ -1274,6 +1274,9 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
     return response;
 }
 #ifdef EQB_ONLY
+// The below code is Equibit specific code. The code is commented out due to compatibility issues with version of Bitcoin 0.16.1
+
+/*
 UniValue dumpwalletdb(const JSONRPCRequest& request)
 {
     if (!EnsureWalletIsAvailable(request.fHelp))
@@ -1308,4 +1311,5 @@ UniValue dumpwalletdb(const JSONRPCRequest& request)
 
     return NullUniValue;
 }
+*/
 #endif 

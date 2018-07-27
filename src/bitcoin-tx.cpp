@@ -55,6 +55,7 @@ static int AppInitRawTx(int argc, char* argv[])
     {
         // First part of help message is specific to this utility
  
+
 #ifdef EQB_ONLY
         std::string strUsage = strprintf(_("%s equibit-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
             _("Usage:") + "\n" +

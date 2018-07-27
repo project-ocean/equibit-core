@@ -177,6 +177,7 @@ static bool InitHTTPAllowList()
     LookupHost("::1", localv6, false);
     rpc_allow_subnets.push_back(CSubNet(localv4, 8));      // always allow IPv4 local subnet
     rpc_allow_subnets.push_back(CSubNet(localv6));         // always allow IPv6 localhost
+
     for (const std::string& strAllow : gArgs.GetArgs("-rpcallowip")) {
         CSubNet subnet;
         LookupSubNet(strAllow.c_str(), subnet);
@@ -191,13 +192,14 @@ static bool InitHTTPAllowList()
     std::string strAllowed;
     for (const CSubNet& subnet : rpc_allow_subnets)
         strAllowed += subnet.ToString() + " ";
-    LogPrint(BCLog::HTTP", "Allowing HTTP connections from: %s\n", strAllowed);
+    LogPrint(BCLog::HTTP, "Allowing HTTP connections from: %s\n", strAllowed);
 #ifdef EQB_ONLY
     rpc_allow_any_ip = mapMultiArgs.count("-rpcallowanyip") ? true : false;
 
     if (rpc_allow_any_ip) LogPrint(BCLog::HTTP, "WARNING: Allowed RPC connections from any IP\n");
 #endif
     return true;
+
 }
 
 /** HTTP request method as string - use for logging only */
