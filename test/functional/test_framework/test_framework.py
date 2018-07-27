@@ -132,8 +132,15 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
         config = configparser.ConfigParser()
         config.read_file(open(self.options.configfile))
-        self.options.bitcoind = os.getenv("BITCOIND", default=config["environment"]["BUILDDIR"] + '/src/equibitd' + config["environment"]["EXEEXT"])
-        self.options.bitcoincli = os.getenv("BITCOINCLI", default=config["environment"]["BUILDDIR"] + '/src/bitcoin-cli' + config["environment"]["EXEEXT"])
+
+        if self.options.bitcode:
+            # bitcoin
+            self.options.bitcoind = os.getenv("BITCOIND", default=config["environment"]["BUILDDIR"] + '/src/bitcoind' + config["environment"]["EXEEXT"])
+            self.options.bitcoincli = os.getenv("BITCOINCLI", default=config["environment"]["BUILDDIR"] + '/src/bitcoin-cli' + config["environment"]["EXEEXT"])
+        else:
+            # equibit
+            self.options.bitcoind = os.getenv("BITCOIND", default=config["environment"]["BUILDDIR"] + '/src/equibitd' + config["environment"]["EXEEXT"])
+            self.options.bitcoincli = os.getenv("BITCOINCLI", default=config["environment"]["BUILDDIR"] + '/src/bitcoin-cli' + config["environment"]["EXEEXT"])
 
         os.environ['PATH'] = os.pathsep.join([
             os.path.join(config['environment']['BUILDDIR'], 'src'),
@@ -163,7 +170,10 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
             self.run_test()
             success = TestStatus.PASSED
         except JSONRPCException as e:
-            self.log.exception("JSONRPC error: {}".format(e))
+            if self.options.bitcode:
+                self.log.exception("JSONRPC error")
+            else:
+                self.log.exception("JSONRPC error: {}".format(e))
         except SkipTest as e:
             self.log.warning("Test Skipped: %s" % e.message)
             success = TestStatus.SKIPPED
@@ -346,7 +356,10 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
         for group in node_groups:
             sync_blocks(group)
-            # sync_mempools(group)  ###HERE###
+            if self.options.bitcode:
+                sync_mempools(group)
+            else:
+                pass
 
     def enable_mocktime(self):
         """Enable mocktime for the script.
