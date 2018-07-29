@@ -22,7 +22,7 @@ for ln in contents:
     module = re.match(r'.*(Entering test module)\s\"(.+)\"', ln)
     suite = re.match(r'.*(Entering test suite)\s\"(.+)\"', ln)
     testcase = re.match(r'.*(Entering test case)\s\"(.+)\"', ln)
-    testerror = re.match(r'.*(error: in)\s\"(.+)\":\s(.*)', ln)
+    testerror = re.match(r'.*(error[:]* in)\s\"(.+)\":\s(.*)', ln)
 
     if tests_number is not None:
         log_header += ln + "\n"
