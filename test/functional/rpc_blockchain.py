@@ -32,6 +32,17 @@ from test_framework.util import (
     assert_is_hex_string,
     assert_is_hash_string,
 )
+from test_framework.blocktools import (
+    create_block,
+    create_coinbase,
+)
+from test_framework.messages import (
+    msg_block,
+)
+from test_framework.mininode import (
+    P2PInterface,
+)
+
 
 class BlockchainTest(BitcoinTestFramework):
     def set_test_params(self):
@@ -46,6 +57,7 @@ class BlockchainTest(BitcoinTestFramework):
         self._test_getdifficulty()
         self._test_getnetworkhashps()
         self._test_stopatheight()
+        self._test_waitforblockheight()
         assert self.nodes[0].verifychain(4, 0)
 
     def _test_getblockchaininfo(self):
@@ -100,6 +112,24 @@ class BlockchainTest(BitcoinTestFramework):
         assert_greater_than(res['size_on_disk'], 0)
 
     def _test_getchaintxstats(self):
+        self.log.info("Test getchaintxstats")
+
+        # Test `getchaintxstats` invalid extra parameters
+        assert_raises_rpc_error(-1, 'getchaintxstats', self.nodes[0].getchaintxstats, 0, '', 0)
+
+        # Test `getchaintxstats` invalid `nblocks`
+        assert_raises_rpc_error(-1, "JSON value is not an integer as expected", self.nodes[0].getchaintxstats, '')
+        assert_raises_rpc_error(-8, "Invalid block count: should be between 0 and the block's height - 1", self.nodes[0].getchaintxstats, -1)
+        assert_raises_rpc_error(-8, "Invalid block count: should be between 0 and the block's height - 1", self.nodes[0].getchaintxstats, self.nodes[0].getblockcount())
+
+        # Test `getchaintxstats` invalid `blockhash`
+        assert_raises_rpc_error(-1, "JSON value is not a string as expected", self.nodes[0].getchaintxstats, blockhash=0)
+        assert_raises_rpc_error(-5, "Block not found", self.nodes[0].getchaintxstats, blockhash='0')
+        blockhash = self.nodes[0].getblockhash(200)
+        self.nodes[0].invalidateblock(blockhash)
+        assert_raises_rpc_error(-8, "Block is not in main chain", self.nodes[0].getchaintxstats, blockhash=blockhash)
+        self.nodes[0].reconsiderblock(blockhash)
+
         chaintxstats = self.nodes[0].getchaintxstats(1)
         # 200 txs plus genesis tx
         assert_equal(chaintxstats['txcount'], 201)
@@ -107,27 +137,29 @@ class BlockchainTest(BitcoinTestFramework):
         # we have to round because of binary math
         assert_equal(round(chaintxstats['txrate'] * 600, 10), Decimal(1))
 
-        b1 = self.nodes[0].getblock(self.nodes[0].getblockhash(1))
-        b200 = self.nodes[0].getblock(self.nodes[0].getblockhash(200))
+        b1_hash = self.nodes[0].getblockhash(1)
+        b1 = self.nodes[0].getblock(b1_hash)
+        b200_hash = self.nodes[0].getblockhash(200)
+        b200 = self.nodes[0].getblock(b200_hash)
         time_diff = b200['mediantime'] - b1['mediantime']
 
         chaintxstats = self.nodes[0].getchaintxstats()
         assert_equal(chaintxstats['time'], b200['time'])
         assert_equal(chaintxstats['txcount'], 201)
+        assert_equal(chaintxstats['window_final_block_hash'], b200_hash)
         assert_equal(chaintxstats['window_block_count'], 199)
         assert_equal(chaintxstats['window_tx_count'], 199)
         assert_equal(chaintxstats['window_interval'], time_diff)
         assert_equal(round(chaintxstats['txrate'] * time_diff, 10), Decimal(199))
 
-        chaintxstats = self.nodes[0].getchaintxstats(blockhash=b1['hash'])
+        chaintxstats = self.nodes[0].getchaintxstats(blockhash=b1_hash)
         assert_equal(chaintxstats['time'], b1['time'])
         assert_equal(chaintxstats['txcount'], 2)
+        assert_equal(chaintxstats['window_final_block_hash'], b1_hash)
         assert_equal(chaintxstats['window_block_count'], 0)
         assert('window_tx_count' not in chaintxstats)
         assert('window_interval' not in chaintxstats)
         assert('txrate' not in chaintxstats)
-
-        assert_raises_rpc_error(-8, "Invalid block count: should be between 0 and the block's height - 1", self.nodes[0].getchaintxstats, 201)
 
     def _test_gettxoutsetinfo(self):
         node = self.nodes[0]
@@ -173,8 +205,7 @@ class BlockchainTest(BitcoinTestFramework):
     def _test_getblockheader(self):
         node = self.nodes[0]
 
-        assert_raises_rpc_error(-5, "Block not found",
-                              node.getblockheader, "nonsense")
+        assert_raises_rpc_error(-5, "Block not found", node.getblockheader, "nonsense")
 
         besthash = node.getbestblockhash()
         secondbesthash = node.getblockhash(199)
@@ -185,6 +216,7 @@ class BlockchainTest(BitcoinTestFramework):
         assert_equal(header['confirmations'], 1)
         assert_equal(header['previousblockhash'], secondbesthash)
         assert_is_hex_string(header['chainwork'])
+        assert_equal(header['nTx'], 1)
         assert_is_hash_string(header['hash'])
         assert_is_hash_string(header['previousblockhash'])
         assert_is_hash_string(header['merkleroot'])
@@ -221,6 +253,49 @@ class BlockchainTest(BitcoinTestFramework):
         self.nodes[0].wait_until_stopped()
         self.start_node(0)
         assert_equal(self.nodes[0].getblockcount(), 207)
+
+    def _test_waitforblockheight(self):
+        self.log.info("Test waitforblockheight")
+
+        node = self.nodes[0]
+
+        # Start a P2P connection since we'll need to create some blocks.
+        node.add_p2p_connection(P2PInterface())
+        node.p2p.wait_for_verack()
+
+        current_height = node.getblock(node.getbestblockhash())['height']
+
+        # Create a fork somewhere below our current height, invalidate the tip
+        # of that fork, and then ensure that waitforblockheight still
+        # works as expected.
+        #
+        # (Previously this was broken based on setting
+        # `rpc/blockchain.cpp:latestblock` incorrectly.)
+        #
+        b20hash = node.getblockhash(20)
+        b20 = node.getblock(b20hash)
+
+        def solve_and_send_block(prevhash, height, time):
+            b = create_block(prevhash, create_coinbase(height), time)
+            b.solve()
+            node.p2p.send_message(msg_block(b))
+            node.p2p.sync_with_ping()
+            return b
+
+        b21f = solve_and_send_block(int(b20hash, 16), 21, b20['time'] + 1)
+        b22f = solve_and_send_block(b21f.sha256, 22, b21f.nTime + 1)
+
+        node.invalidateblock(b22f.hash)
+
+        def assert_waitforheight(height, timeout=2):
+            assert_equal(
+                node.waitforblockheight(height, timeout)['height'],
+                current_height)
+
+        assert_waitforheight(0)
+        assert_waitforheight(current_height - 1)
+        assert_waitforheight(current_height)
+        assert_waitforheight(current_height + 1)
 
 
 if __name__ == '__main__':

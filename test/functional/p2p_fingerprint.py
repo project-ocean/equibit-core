@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test various fingerprinting protections.
 
-If an stale block more than a month old or its header are requested by a peer,
+If a stale block more than a month old or its header are requested by a peer,
 the node should pretend that it does not have it to avoid fingerprinting.
 """
 
@@ -18,7 +18,6 @@ from test_framework.mininode import (
     msg_block,
     msg_getdata,
     msg_getheaders,
-    network_thread_start,
     wait_until,
 )
 from test_framework.test_framework import BitcoinTestFramework
@@ -76,8 +75,6 @@ class P2PFingerprintTest(BitcoinTestFramework):
     # last month but that have over a month's worth of work are also withheld.
     def run_test(self):
         node0 = self.nodes[0].add_p2p_connection(P2PInterface())
-
-        network_thread_start()
         node0.wait_for_verack()
 
         # Set node time to 60 days ago

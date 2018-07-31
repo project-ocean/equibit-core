@@ -42,7 +42,7 @@ def create_transaction(node, coinbase, to_address, amount):
     inputs = [{ "txid" : from_txid, "vout" : 0}]
     outputs = { to_address : amount }
     rawtx = node.createrawtransaction(inputs, outputs)
-    signresult = node.signrawtransaction(rawtx)
+    signresult = node.signrawtransactionwithwallet(rawtx)
     tx = CTransaction()
     tx.deserialize(BytesIO(hex_str_to_bytes(signresult['hex'])))
     return tx
@@ -55,8 +55,6 @@ class BIP66Test(BitcoinTestFramework):
 
     def run_test(self):
         self.nodes[0].add_p2p_connection(P2PInterface())
-
-        network_thread_start()
 
         # wait_for_verack ensures that the P2P connection is fully up.
         self.nodes[0].p2p.wait_for_verack()
