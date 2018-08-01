@@ -443,14 +443,14 @@ def print_results(test_results, max_len_name, runtime):
     log_header += "QA  {:10} {:8}         Total Failed:  {:5}\n".format(version['qa'], time, test_fail_cnt)
     log_header += "UAT {:10}                  Number of tests: {:3}\n".format(version['uat'], len(test_results))
 
-    results_file = log_header + "\n" + BOLD[1] + "%s   %s \n\n" % ("TEST".ljust(max_len_name), "STATUS   ") + BOLD[0]
+    results_file = log_header + "\n" + "%s   %s \n\n" % ("TEST".ljust(max_len_name), "STATUS   ")
     test_results.sort(key=TestResult.resultname)
     for test_result_f in test_results:
         test_result_f.padding = max_len_name
         results_file += "{t_name}   {t_sts} \n".format(t_name=test_result_f.name.ljust(max_len_name),
                                                        t_sts=test_result_f.status)
 
-    with open("test_status.txt", "w") as file_log:
+    with open("../test_status.txt", "w") as file_log:
         print(results_file, file=file_log)
 
 class TestHandler:
