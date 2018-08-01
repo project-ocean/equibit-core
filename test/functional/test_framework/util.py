@@ -292,9 +292,9 @@ def initialize_datadir(dirname, n):
     datadir = get_datadir_path(dirname, n)
     if not os.path.isdir(datadir):
         os.makedirs(datadir)
-    with open(os.path.join(datadir, "bitcoin.conf"), 'w', encoding='utf8') as f:
+    with open(os.path.join(datadir, "equibit.conf"), 'w', encoding='utf8') as f:
         f.write("regtest=1\n")
-        f.write("[regtest]\n")
+        # f.write("[regtest]\n")
         f.write("port=" + str(p2p_port(n)) + "\n")
         f.write("rpcport=" + str(rpc_port(n)) + "\n")
         f.write("server=1\n")
@@ -310,15 +310,15 @@ def get_datadir_path(dirname, n):
     return os.path.join(dirname, "node" + str(n))
 
 def append_config(datadir, options):
-    with open(os.path.join(datadir, "bitcoin.conf"), 'a', encoding='utf8') as f:
+    with open(os.path.join(datadir, "equibit.conf"), 'a', encoding='utf8') as f:
         for option in options:
             f.write(option + "\n")
 
 def get_auth_cookie(datadir):
     user = None
     password = None
-    if os.path.isfile(os.path.join(datadir, "bitcoin.conf")):
-        with open(os.path.join(datadir, "bitcoin.conf"), 'r', encoding='utf8') as f:
+    if os.path.isfile(os.path.join(datadir, "equibit.conf")):
+        with open(os.path.join(datadir, "equibit.conf"), 'r', encoding='utf8') as f:
             for line in f:
                 if line.startswith("rpcuser="):
                     assert user is None  # Ensure that there is only one rpcuser line
@@ -351,14 +351,14 @@ def set_node_times(nodes, t):
         node.setmocktime(t)
 
 def disconnect_nodes(from_connection, node_num):
-    for peer_id in [peer['id'] for peer in from_connection.getpeerinfo() if "testnode%d" % node_num in peer['subver']]:
+    for peer_addr in [peer['addr'] for peer in from_connection.getpeerinfo() if "testnode%d" % node_num in peer['subver']]:
         try:
-            from_connection.disconnectnode(nodeid=peer_id)
+            from_connection.disconnectnode(address=peer_addr)
         except JSONRPCException as e:
             # If this node is disconnected between calculating the peer id
             # and issuing the disconnect, don't worry about it.
             # This avoids a race condition if we're mass-disconnecting peers.
-            if e.error['code'] != -29: # RPC_CLIENT_NODE_NOT_CONNECTED
+            if e.error['code'] != -29:  # RPC_CLIENT_NODE_NOT_CONNECTED
                 raise
 
     # wait to disconnect
@@ -402,6 +402,7 @@ def sync_mempools(rpc_connections, *, wait=1, timeout=60, flush_scheduler=True):
         if pool.count(pool[0]) == len(rpc_connections):
             if flush_scheduler:
                 for r in rpc_connections:
+                    # This is a new function, not in the core code so far
                     r.syncwithvalidationinterfacequeue()
             return
         time.sleep(wait)

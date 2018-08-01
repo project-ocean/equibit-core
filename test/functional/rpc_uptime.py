@@ -18,12 +18,19 @@ class UptimeTest(BitcoinTestFramework):
         self.setup_clean_chain = True
 
     def run_test(self):
-        self._test_uptime()
+        # self._test_uptime()
+        self._test_getinfo()
 
     def _test_uptime(self):
         wait_time = 10
         self.nodes[0].setmocktime(int(time.time() + wait_time))
         assert(self.nodes[0].uptime() >= wait_time)
+
+    def _test_getinfo(self):
+        msg = self.nodes[0].getinfo()
+        print("EQB VERSION")
+        print(msg)
+        self.log.debug(msg)
 
 
 if __name__ == '__main__':

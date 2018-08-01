@@ -129,7 +129,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
         config = configparser.ConfigParser()
         config.read_file(open(self.options.configfile))
-        self.options.bitcoind = os.getenv("BITCOIND", default=config["environment"]["BUILDDIR"] + '/src/bitcoind' + config["environment"]["EXEEXT"])
+        self.options.bitcoind = os.getenv("BITCOIND", default=config["environment"]["BUILDDIR"] + '/src/equibitd' + config["environment"]["EXEEXT"])        ### HERE ###
         self.options.bitcoincli = os.getenv("BITCOINCLI", default=config["environment"]["BUILDDIR"] + '/src/bitcoin-cli' + config["environment"]["EXEEXT"])
 
         os.environ['PATH'] = os.pathsep.join([
@@ -343,7 +343,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
         for group in node_groups:
             sync_blocks(group)
-            sync_mempools(group)
+            # sync_mempools(group)      ### HERE ### syncwithvalidationinterfacequeue() method doesn't exist in equibitd
 
     def enable_mocktime(self):
         """Enable mocktime for the script.

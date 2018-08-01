@@ -1,9 +1,9 @@
-Running 231 test cases...
-2018-07-31 15:01:55
+Running 278 test cases...
+2018-07-31 15:34:56
 
-Suites with errors:         1
-Test Cases with errors:     1
-Errors total:               1
+Suites with errors:         2
+Test Cases with errors:     3
+Errors total:               3
 -----------------------------------------------------------------------------
 Test Suite: DoS_tests
 
@@ -11,6 +11,8 @@ Test Case: DoS_banning                                        Errors:     0
 Test Case: DoS_banscore                                       Errors:     0
 Test Case: DoS_bantime                                        Errors:     0
 Test Case: DoS_mapOrphans                                     Errors:     0
+Test Case: outbound_slow_chain_eviction                       Errors:     0
+Test Case: stale_tip_peer_management                          Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
 Test Suite: PrevectorTests
@@ -47,7 +49,10 @@ Test Case: lockedpool_tests_mock                              Errors:     0
 -----------------------------------------------------------------------------
 Test Suite: amount_tests
 
+Test Case: BinaryOperatorTest                                 Errors:     0
 Test Case: GetFeeTest                                         Errors:     0
+Test Case: MoneyRangeTest                                     Errors:     0
+Test Case: ToStringTest                                       Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
 Test Suite: arith_uint256_tests
@@ -84,10 +89,29 @@ Test Suite: base64_tests
 Test Case: base64_testvectors                                 Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
+Test Suite: bech32_tests
+
+Test Case: bip173_testvectors_invalid                         Errors:     0
+Test Case: bip173_testvectors_valid                           Errors:     0
+                                                               TOTAL:     0
+-----------------------------------------------------------------------------
 Test Suite: bip32_tests
 
 Test Case: bip32_test1                                        Errors:     0
 Test Case: bip32_test2                                        Errors:     0
+Test Case: bip32_test3                                        Errors:     0
+                                                               TOTAL:     0
+-----------------------------------------------------------------------------
+Test Suite: blockchain_difficulty_tests
+
+Test Case: get_difficulty_for_block_index_overrides_tip       Errors:     0
+Test Case: get_difficulty_for_high_target                     Errors:     0
+Test Case: get_difficulty_for_low_target                      Errors:     0
+Test Case: get_difficulty_for_mid_target                      Errors:     0
+Test Case: get_difficulty_for_null_block_index                Errors:     0
+Test Case: get_difficulty_for_null_tip                        Errors:     0
+Test Case: get_difficulty_for_very_high_target                Errors:     0
+Test Case: get_difficulty_for_very_low_target                 Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
 Test Suite: blockencodings_tests
@@ -120,12 +144,26 @@ Test Suite: bswap_tests
 Test Case: bswap_tests                                        Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
+Test Suite: checkqueue_tests
+
+Test Case: test_CheckQueueControl_Locks                       Errors:     0
+Test Case: test_CheckQueue_Catches_Failure                    Errors:     0
+Test Case: test_CheckQueue_Correct_Max                        Errors:     0
+Test Case: test_CheckQueue_Correct_One                        Errors:     0
+Test Case: test_CheckQueue_Correct_Random                     Errors:     0
+Test Case: test_CheckQueue_Correct_Zero                       Errors:     0
+Test Case: test_CheckQueue_FrozenCleanup                      Errors:     0
+Test Case: test_CheckQueue_Memory                             Errors:     0
+Test Case: test_CheckQueue_Recovers_From_Failure              Errors:     0
+Test Case: test_CheckQueue_UniqueCheck                        Errors:     0
+                                                               TOTAL:     0
+-----------------------------------------------------------------------------
 Test Suite: coins_tests
 
 Test Case: ccoins_access                                      Errors:     0
-Test Case: ccoins_modify                                      Errors:     0
-Test Case: ccoins_modify_new                                  Errors:     0
+Test Case: ccoins_add                                         Errors:     0
 Test Case: ccoins_serialization                               Errors:     0
+Test Case: ccoins_spend                                       Errors:     0
 Test Case: ccoins_write                                       Errors:     0
 Test Case: coins_cache_simulation_test                        Errors:     0
 Test Case: updatecoins_simulation_test                        Errors:     0
@@ -140,6 +178,8 @@ Test Suite: crypto_tests
 
 Test Case: aes_cbc_testvectors                                Errors:     0
 Test Case: aes_testvectors                                    Errors:     0
+Test Case: chacha20_testvector                                Errors:     0
+Test Case: countbits_tests                                    Errors:     0
 Test Case: hmac_sha256_testvectors                            Errors:     0
 Test Case: hmac_sha512_testvectors                            Errors:     0
 Test Case: ripemd160_testvectors                              Errors:     0
@@ -213,6 +253,12 @@ Test Suite: merkle_tests
 Test Case: merkle_test                                        Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
+Test Suite: merkleblock_tests
+
+Test Case: merkleblock_construct_from_txids_found             Errors:     0
+Test Case: merkleblock_construct_from_txids_not_found         Errors:     0
+                                                               TOTAL:     0
+-----------------------------------------------------------------------------
 Test Suite: miner_tests
 
 Test Case: CreateNewBlock_validity                            Errors:     0
@@ -222,7 +268,6 @@ Test Suite: multisig_tests
 
 Test Case: multisig_IsStandard                                Errors:     0
 Test Case: multisig_Sign                                      Errors:     0
-Test Case: multisig_Solver1                                   Errors:     0
 Test Case: multisig_verify                                    Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
@@ -230,8 +275,9 @@ Test Suite: net_tests
 
 Test Case: caddrdb_read                                       Errors:     0
 Test Case: caddrdb_read_corrupted                             Errors:     0
+Test Case: cnode_listen_port                                  Errors:     1
 Test Case: cnode_simple_test                                  Errors:     0
-                                                               TOTAL:     0
+                                                               TOTAL:     1
 -----------------------------------------------------------------------------
 Test Suite: netbase_tests
 
@@ -268,6 +314,13 @@ Test Suite: raii_event_tests
 
 Test Case: raii_event_creation                                Errors:     0
 Test Case: raii_event_order                                   Errors:     0
+                                                               TOTAL:     0
+-----------------------------------------------------------------------------
+Test Suite: random_tests
+
+Test Case: fastrandom_randbits                                Errors:     0
+Test Case: fastrandom_tests                                   Errors:     0
+Test Case: osrandom_tests                                     Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
 Test Suite: reverselock_tests
@@ -309,15 +362,27 @@ Test Case: sign                                               Errors:     0
 Test Case: switchover                                         Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
+Test Suite: script_standard_tests
+
+Test Case: script_standard_ExtractDestination                 Errors:     0
+Test Case: script_standard_ExtractDestinations                Errors:     0
+Test Case: script_standard_GetScriptFor_                      Errors:     0
+Test Case: script_standard_IsMine                             Errors:     0
+Test Case: script_standard_Solver_failure                     Errors:     0
+Test Case: script_standard_Solver_success                     Errors:     0
+                                                               TOTAL:     0
+-----------------------------------------------------------------------------
 Test Suite: script_tests
 
 Test Case: script_CHECKMULTISIG12                             Errors:     0
 Test Case: script_CHECKMULTISIG23                             Errors:     0
 Test Case: script_FindAndDelete                               Errors:     0
 Test Case: script_GetScriptAsm                                Errors:     0
+Test Case: script_HasValidOps                                 Errors:     0
 Test Case: script_IsPushOnly_on_invalid_scripts               Errors:     0
 Test Case: script_PushData                                    Errors:     0
 Test Case: script_build                                       Errors:     0
+Test Case: script_can_append_self                             Errors:     0
 Test Case: script_combineSigs                                 Errors:     0
 Test Case: script_json_test                                   Errors:     0
 Test Case: script_standard_push                               Errors:     0
@@ -358,6 +423,7 @@ Test Case: GetTxSigOpCost                                     Errors:     0
 -----------------------------------------------------------------------------
 Test Suite: skiplist_tests
 
+Test Case: findearliestatleast_edge_test                      Errors:     0
 Test Case: findearliestatleast_test                           Errors:     0
 Test Case: getlocator_test                                    Errors:     0
 Test Case: skiplist_test                                      Errors:     0
@@ -374,6 +440,12 @@ Test Suite: timedata_tests
 Test Case: util_MedianFilter                                  Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
+Test Suite: torcontrol_tests
+
+Test Case: util_ParseTorReplyMapping                          Errors:     0
+Test Case: util_SplitTorReplyLine                             Errors:     0
+                                                               TOTAL:     0
+-----------------------------------------------------------------------------
 Test Suite: transaction_tests
 
 Test Case: basic_transaction_tests                            Errors:     0
@@ -387,7 +459,13 @@ Test Case: tx_valid                                           Errors:     0
 -----------------------------------------------------------------------------
 Test Suite: tx_validationcache_tests
 
+Test Case: checkinputs_test                                   Errors:     0
 Test Case: tx_mempool_block_doublespend                       Errors:     0
+                                                               TOTAL:     0
+-----------------------------------------------------------------------------
+Test Suite: txvalidation_tests
+
+Test Case: tx_mempool_reject_coinbase                         Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
 Test Suite: uint256_tests
@@ -398,22 +476,13 @@ Test Case: conversion                                         Errors:     0
 Test Case: methods                                            Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
-Test Suite: univalue_tests
-
-Test Case: univalue_array                                     Errors:     0
-Test Case: univalue_constructor                               Errors:     0
-Test Case: univalue_object                                    Errors:     0
-Test Case: univalue_readwrite                                 Errors:     0
-Test Case: univalue_set                                       Errors:     0
-Test Case: univalue_typecheck                                 Errors:     0
-                                                               TOTAL:     0
------------------------------------------------------------------------------
 Test Suite: util_tests
 
 Test Case: gettime                                            Errors:     0
 Test Case: strprintf_numbers                                  Errors:     0
 Test Case: test_FormatParagraph                               Errors:     0
 Test Case: test_FormatSubVersion                              Errors:     0
+Test Case: test_LockDirectory                                 Errors:     0
 Test Case: test_ParseDouble                                   Errors:     0
 Test Case: test_ParseFixedPoint                               Errors:     0
 Test Case: test_ParseInt32                                    Errors:     0
@@ -425,12 +494,18 @@ Test Case: util_FormatMoney                                   Errors:     0
 Test Case: util_GetArg                                        Errors:     0
 Test Case: util_HexStr                                        Errors:     0
 Test Case: util_IsHex                                         Errors:     0
+Test Case: util_IsHexNumber                                   Errors:     0
 Test Case: util_ParseHex                                      Errors:     0
 Test Case: util_ParseMoney                                    Errors:     0
 Test Case: util_ParseParameters                               Errors:     0
 Test Case: util_TimingResistantEqual                          Errors:     0
 Test Case: util_criticalsection                               Errors:     0
 Test Case: util_seed_insecure_rand                            Errors:     0
+                                                               TOTAL:     0
+-----------------------------------------------------------------------------
+Test Suite: validation_block_tests
+
+Test Case: processnewblock_signals_ordering                   Errors:     0
                                                                TOTAL:     0
 -----------------------------------------------------------------------------
 Test Suite: versionbits_tests
@@ -449,6 +524,10 @@ Test Case: passphrase                                         Errors:     0
 Test Suite: wallet_tests
 
 Test Case: ApproximateBestSubset                              Errors:     0
+Test Case: ComputeTimeSmart                                   Errors:     0
+Test Case: ListCoins                                          Errors:     0
+Test Case: LoadReceiveRequests                                Errors:     0
+Test Case: coin_mark_dirty_immature_credit                    Errors:     0
 Test Case: coin_selection_tests                               Errors:     0
 Test Case: importwallet_rescan                                Errors:     0
 Test Case: rescan                                             Errors:     0
@@ -457,7 +536,7 @@ Test Case: rescan                                             Errors:     0
 Test Suite: zzz_example_tests
 
 Test Case: zzz_example_one                                    Errors:     1
-Test Case: zzz_example_two                                    Errors:     0
-                                                               TOTAL:     1
+Test Case: zzz_example_two                                    Errors:     1
+                                                               TOTAL:     2
 -----------------------------------------------------------------------------
 

@@ -156,6 +156,10 @@ BASE_SCRIPTS = [
     # Put them in a random line within the section that fits their approximate run-time
 ]
 
+# BASE_SCRIPTS = [
+#     'rpc_uptime.py'
+# ]
+
 EXTENDED_SCRIPTS = [
     # These tests are not run by the travis build process.
     # Longest test should go first, to favor running tests in parallel
