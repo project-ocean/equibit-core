@@ -157,7 +157,10 @@ BASE_SCRIPTS = [
 ]
 
 # BASE_SCRIPTS = [
-#     'rpc_uptime.py'
+#     'rpc_uptime.py',
+#     'rpc_named_arguments.py',
+#     'feature_segwit.py',
+#     'wallet_bumpfee.py'
 # ]
 
 EXTENDED_SCRIPTS = [
@@ -314,7 +317,7 @@ def run_tests(test_list, src_dir, build_dir, tmpdir, jobs=1, enable_coverage=Fal
 
     # Warn if bitcoind is already running (unix only)
     try:
-        if subprocess.check_output(["pidof", "bitcoind"]) is not None:
+        if subprocess.check_output(["pidof", "equibitd"]) is not None:
             print("%sWARNING!%s There is already a bitcoind process running on this system. Tests may fail unexpectedly due to resource contention!" % (BOLD[1], BOLD[0]))
     except (OSError, subprocess.SubprocessError):
         pass
@@ -401,6 +404,8 @@ def print_results(test_results, max_len_name, runtime):
     test_results.sort(key=TestResult.sort_key)
     all_passed = True
     time_sum = 0
+    test_pass_cnt = 0
+    test_fail_cnt = 0
 
     for test_result in test_results:
         all_passed = all_passed and test_result.was_successful
@@ -408,14 +413,45 @@ def print_results(test_results, max_len_name, runtime):
         test_result.padding = max_len_name
         results += str(test_result)
 
+        if test_result.status == "Passed":
+            test_pass_cnt += 1
+        elif test_result.status == "Failed":
+            test_fail_cnt += 1
+
     status = TICK + "Passed" if all_passed else CROSS + "Failed"
     if not all_passed:
         results += RED[1]
     results += BOLD[1] + "\n%s | %s | %s s (accumulated) \n" % ("ALL".ljust(max_len_name), status.ljust(9), time_sum) + BOLD[0]
     if not all_passed:
         results += RED[0]
+    results += "Total Passed: %s\n" % test_pass_cnt
+    results += "Total Failed: %s\n" % test_fail_cnt
+    results += "Number of tests: %s\n\n" % len(test_results)
     results += "Runtime: %s s\n" % (runtime)
     print(results)
+
+    # print resulting table to file
+    version = {"dev": "0.0.0",
+               "qa": "0.0.0",
+               "uat": "0.0.0"}
+
+    now = datetime.datetime.now()
+    date = str(now.strftime("%Y-%m-%d"))
+    time = str(now.strftime("%H:%M:%S"))
+    log_header = "    Version    Date/Time\n"
+    log_header += "DEV {:10} {:10}       Total Passed:  {:5}\n".format(version['dev'], date, test_pass_cnt)
+    log_header += "QA  {:10} {:8}         Total Failed:  {:5}\n".format(version['qa'], time, test_fail_cnt)
+    log_header += "UAT {:10}                  Number of tests: {:3}\n".format(version['uat'], len(test_results))
+
+    results_file = log_header + "\n" + BOLD[1] + "%s   %s \n\n" % ("TEST".ljust(max_len_name), "STATUS   ") + BOLD[0]
+    test_results.sort(key=TestResult.resultname)
+    for test_result_f in test_results:
+        test_result_f.padding = max_len_name
+        results_file += "{t_name}   {t_sts} \n".format(t_name=test_result_f.name.ljust(max_len_name),
+                                                       t_sts=test_result_f.status)
+
+    with open("test_status.txt", "w") as file_log:
+        print(results_file, file=file_log)
 
 class TestHandler:
     """
@@ -521,6 +557,9 @@ class TestResult():
     @property
     def was_successful(self):
         return self.status != "Failed"
+
+    def resultname(self):
+        return self.name.lower()
 
 
 def check_script_prefixes():
