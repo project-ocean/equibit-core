@@ -1,3 +1,7 @@
+
+
+
+
 // Copyright (c) 2015-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -194,7 +198,7 @@ static bool InitHTTPAllowList()
         strAllowed += subnet.ToString() + " ";
     LogPrint(BCLog::HTTP, "Allowing HTTP connections from: %s\n", strAllowed);
 #ifdef EQB_ONLY
-    rpc_allow_any_ip = mapMultiArgs.count("-rpcallowanyip") ? true : false;
+    rpc_allow_any_ip = gArgs.IsArgSet("-rpcallowanyip");
 
     if (rpc_allow_any_ip) LogPrint(BCLog::HTTP, "WARNING: Allowed RPC connections from any IP\n");
 #endif

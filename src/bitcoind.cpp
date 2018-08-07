@@ -17,12 +17,6 @@
 	#define EQUIBIT_LOG true
 #endif
 
-// Define EQB_ONLY so EQB related operations are performed 
-#define EQB_ONLY true 
-
-// Define BTC_ONLY so BTC related operations are performed
-// By default this parameter is disabled 
-// #define BTC_ONLY
 
 
 #include <chainparams.h>
@@ -86,7 +80,15 @@ bool AppInit(int argc, char* argv[])
     // Process help and version before taking care about datadir
     if (gArgs.IsArgSet("-?") || gArgs.IsArgSet("-h") ||  gArgs.IsArgSet("-help") || gArgs.IsArgSet("-version"))
     {
+
+
         std::string strUsage = strprintf(_("%s Daemon"), _(PACKAGE_NAME)) + " " + _("version") + " " + FormatFullVersion() + "\n";
+
+
+	#ifdef EQB_ONLY
+		strUsage += "EQB_ONLY flag is set! \n";
+	#endif
+
 
         if (gArgs.IsArgSet("-version"))
         {
