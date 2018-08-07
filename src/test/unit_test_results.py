@@ -22,7 +22,9 @@ for ln in contents:
     module = re.match(r'.*(Entering test module)\s\"(.+)\"', ln)
     suite = re.match(r'.*(Entering test suite)\s\"(.+)\"', ln)
     testcase = re.match(r'.*(Entering test case)\s\"(.+)\"', ln)
-    testerror = re.match(r'.*(error: in)\s\"(.+)\":\s(.*)', ln)
+
+# Note: the error format is different for BOOST version 1.58 and 1.65
+    testerror = re.match(r'.*(: error)(.+)\"(.+)\":\s(.*)', ln)
 
     if tests_number is not None:
         log_header += ln + "\n"

@@ -51,9 +51,10 @@ std::string FormatSubVersion(const std::string& name, int nClientVersion, const 
 #endif // WINDRES_PREPROC
 
 // Manually added EQB_ONLY. 
-// TODO: This parameter should be given to CPPFlag attribute
-#define EQB_ONLY
-
+// TODO: This parameter should be given to CPPFlag attribute, as this file is not loaded by every c file 
+//#define EQB_ONLY
+//#define EQUIBIT_TX_TYPE
+//#define EQUIBIT_LOG
 
 
 #endif // BITCOIN_CLIENTVERSION_H

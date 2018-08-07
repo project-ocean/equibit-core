@@ -56,15 +56,17 @@ static int AppInitRawTx(int argc, char* argv[])
         // First part of help message is specific to this utility
  
 
+	std::string strUsage;
 #ifdef EQB_ONLY
-        std::string strUsage = strprintf(_("%s equibit-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
+        strUsage = strprintf(_("%s equibit-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
             _("Usage:") + "\n" +
               "  equibit-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded equibit transaction") + "\n" +
               "  equibit-tx [options] -create [commands]   " + _("Create hex-encoded equibit transaction") + "\n" +
               "\n";
 #endif
+
 #ifdef BTC_ONLY
-          std::string strUsage = strprintf(_("%s bitcoin-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
+         strUsage = strprintf(_("%s bitcoin-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
             _("Usage:") + "\n" +
               "  bitcoin-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded bitcoin transaction") + "\n" +
               "  bitcoin-tx [options] -create [commands]   " + _("Create hex-encoded bitcoin transaction") + "\n" +

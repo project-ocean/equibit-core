@@ -1317,6 +1317,9 @@ case ${OS} in
    ;;
 esac
 
+CPPFLAGS="$CPPFLAGS -DEQB_ONLY -DEQUIBIT_LOG -DEQUIBIT_TX_TYPE"
+CXXFLAGS="$CXXFLAGS -DEQB_ONLY -DEQUIBIT_LOG -DEQUIBIT_TX_TYPE"
+
 echo
 echo "Options used to compile and link:"
 echo "  with wallet   = $enable_wallet"
