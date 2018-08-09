@@ -28,6 +28,7 @@ import tempfile
 import re
 import logging
 
+
 # Formatting. Default colors to empty strings.
 BOLD, BLUE, RED, GREY = ("", ""), ("", ""), ("", ""), ("", "")
 try:
@@ -157,10 +158,10 @@ BASE_SCRIPTS = [
 ]
 
 # BASE_SCRIPTS = [
-#     'rpc_uptime.py',
-#     'rpc_named_arguments.py',
-#     'feature_segwit.py',
-#     'wallet_bumpfee.py'
+#     'rpc_uptime.py'
+# #    'rpc_named_arguments.py',
+# #    'feature_segwit.py',
+# #    'wallet_bumpfee.py'
 # ]
 
 EXTENDED_SCRIPTS = [
@@ -230,7 +231,7 @@ def main():
     config.read_file(open(configfile, encoding="utf8"))
 
     passon_args.append("--configfile=%s" % configfile)
-
+    print("=============== PRSER =================")
     # Set up logging
     logging_level = logging.INFO if args.quiet else logging.DEBUG
     logging.basicConfig(format='%(message)s', level=logging_level)
@@ -429,7 +430,7 @@ def print_results(test_results, max_len_name, runtime):
     results += "Number of tests: %s\n\n" % len(test_results)
     results += "Runtime: %s s\n" % (runtime)
     print(results)
-
+#ifdef equibitcode
     # print resulting table to file
     version = {"dev": "0.0.0",
                "qa": "0.0.0",
@@ -449,9 +450,12 @@ def print_results(test_results, max_len_name, runtime):
         test_result_f.padding = max_len_name
         results_file += "{t_name}   {t_sts} \n".format(t_name=test_result_f.name.ljust(max_len_name),
                                                        t_sts=test_result_f.status)
-
+    print(results_file)
     with open("../test_status.txt", "w") as file_log:
         print(results_file, file=file_log)
+#else
+    # print("+++++++++++++++++++++++++++++++++++++ BTC ")
+#endif
 
 class TestHandler:
     """
