@@ -10,7 +10,7 @@ forward all unrecognized arguments onto the individual test scripts.
 Functional tests are disabled on Windows by default. Use --force to run them anyway.
 
 For a description of arguments recognized by test scripts, see
-`eqbtest/functional/test_framework/test_framework.py:BitcoinTestFramework.main`.
+`test/functional/test_framework/test_framework.py:BitcoinTestFramework.main`.
 
 """
 
@@ -27,6 +27,7 @@ import subprocess
 import tempfile
 import re
 import logging
+
 
 # Formatting. Default colors to empty strings.
 BOLD, BLUE, RED, GREY = ("", ""), ("", ""), ("", ""), ("", "")
@@ -58,7 +59,6 @@ TRAVIS_TIMEOUT_DURATION = 20 * 60
 BASE_SCRIPTS = [
     # Scripts that are run by the travis build process.
     # Longest test should go first, to favor running tests in parallel
-
     'wallet_hd.py',
     'wallet_backup.py',
     # vv Tests less than 5m vv
@@ -66,7 +66,6 @@ BASE_SCRIPTS = [
     'rpc_fundrawtransaction.py',
     'p2p_compactblocks.py',
     'feature_segwit.py',
-
     # vv Tests less than 2m vv
     'wallet_basic.py',
     'wallet_labels.py',
@@ -100,10 +99,14 @@ BASE_SCRIPTS = [
     'mempool_persist.py',
     'wallet_multiwallet.py',
     'wallet_multiwallet.py --usecli',
+    'wallet_disableprivatekeys.py',
+    'wallet_disableprivatekeys.py --usecli',
     'interface_http.py',
+    'rpc_psbt.py',
     'rpc_users.py',
     'feature_proxy.py',
     'rpc_signrawtransaction.py',
+    'wallet_groups.py',
     'p2p_disconnect_ban.py',
     'rpc_decodescript.py',
     'rpc_blockchain.py',
@@ -115,9 +118,11 @@ BASE_SCRIPTS = [
     'mining_prioritisetransaction.py',
     'p2p_invalid_block.py',
     'p2p_invalid_tx.py',
+    'rpc_createmultisig.py',
     'feature_versionbits_warning.py',
     'rpc_preciousblock.py',
     'wallet_importprunedfunds.py',
+    'rpc_zmq.py',
     'rpc_signmessage.py',
     'feature_nulldummy.py',
     'mempool_accept.py',
@@ -142,6 +147,7 @@ BASE_SCRIPTS = [
     'feature_uacomment.py',
     'p2p_unrequested_blocks.py',
     'feature_includeconf.py',
+    'rpc_scantxoutset.py',
     'feature_logging.py',
     'p2p_node_network_limited.py',
     'feature_blocksdir.py',
@@ -152,13 +158,10 @@ BASE_SCRIPTS = [
 ]
 
 # BASE_SCRIPTS = [
-#     # 'rpc_getblockstats.py',
-#     # 'feature_help.py',
-#     # 'rpc_uptime.py'
-#     "example_test",
-#     "feature_assumevalid",
-#     "feature_config_args",
-#     "feature_help"
+#     'rpc_uptime.py'
+# #    'rpc_named_arguments.py',
+# #    'feature_segwit.py',
+# #    'wallet_bumpfee.py'
 # ]
 
 EXTENDED_SCRIPTS = [
@@ -228,7 +231,7 @@ def main():
     config.read_file(open(configfile, encoding="utf8"))
 
     passon_args.append("--configfile=%s" % configfile)
-
+    print("=============== PRSER =================")
     # Set up logging
     logging_level = logging.INFO if args.quiet else logging.DEBUG
     logging.basicConfig(format='%(message)s', level=logging_level)
@@ -296,7 +299,7 @@ def main():
     check_script_prefixes()
 
     if not args.keepcache:
-        shutil.rmtree("%s/eqbtest/cache" % config["environment"]["BUILDDIR"], ignore_errors=True)
+        shutil.rmtree("%s/test/cache" % config["environment"]["BUILDDIR"], ignore_errors=True)
 
     run_tests(
         test_list,
@@ -315,17 +318,17 @@ def run_tests(test_list, src_dir, build_dir, tmpdir, jobs=1, enable_coverage=Fal
 
     # Warn if bitcoind is already running (unix only)
     try:
-        if subprocess.check_output(["pidof", "bitcoind"]) is not None:
+        if subprocess.check_output(["pidof", "equibitd"]) is not None:
             print("%sWARNING!%s There is already a bitcoind process running on this system. Tests may fail unexpectedly due to resource contention!" % (BOLD[1], BOLD[0]))
     except (OSError, subprocess.SubprocessError):
         pass
 
     # Warn if there is a cache directory
-    cache_dir = "%s/eqbtest/cache" % build_dir
+    cache_dir = "%s/test/cache" % build_dir
     if os.path.isdir(cache_dir):
         print("%sWARNING!%s There is a cache directory here: %s. If tests fail unexpectedly, try deleting the cache directory." % (BOLD[1], BOLD[0], cache_dir))
 
-    tests_dir = src_dir + '/eqbtest/functional/'
+    tests_dir = src_dir + '/test/functional/'
 
     flags = ['--cachedir={}'.format(cache_dir)] + args
 
@@ -411,9 +414,9 @@ def print_results(test_results, max_len_name, runtime):
         test_result.padding = max_len_name
         results += str(test_result)
 
-        if test_result.was_successful:
+        if test_result.status == "Passed":
             test_pass_cnt += 1
-        else:
+        elif test_result.status == "Failed":
             test_fail_cnt += 1
 
     status = TICK + "Passed" if all_passed else CROSS + "Failed"
@@ -427,6 +430,32 @@ def print_results(test_results, max_len_name, runtime):
     results += "Number of tests: %s\n\n" % len(test_results)
     results += "Runtime: %s s\n" % (runtime)
     print(results)
+#ifdef equibitcode
+    # print resulting table to file
+    version = {"dev": "0.0.0",
+               "qa": "0.0.0",
+               "uat": "0.0.0"}
+
+    now = datetime.datetime.now()
+    date = str(now.strftime("%Y-%m-%d"))
+    time = str(now.strftime("%H:%M:%S"))
+    log_header = "    Version    Date/Time\n"
+    log_header += "DEV {:10} {:10}       Total Passed:  {:5}\n".format(version['dev'], date, test_pass_cnt)
+    log_header += "QA  {:10} {:8}         Total Failed:  {:5}\n".format(version['qa'], time, test_fail_cnt)
+    log_header += "UAT {:10}                  Number of tests: {:3}\n".format(version['uat'], len(test_results))
+
+    results_file = log_header + "\n" + "%s   %s \n\n" % ("TEST".ljust(max_len_name), "STATUS   ")
+    test_results.sort(key=TestResult.resultname)
+    for test_result_f in test_results:
+        test_result_f.padding = max_len_name
+        results_file += "{t_name}   {t_sts} \n".format(t_name=test_result_f.name.ljust(max_len_name),
+                                                       t_sts=test_result_f.status)
+    print(results_file)
+    with open("../test_status.txt", "w") as file_log:
+        print(results_file, file=file_log)
+#else
+    # print("+++++++++++++++++++++++++++++++++++++ BTC ")
+#endif
 
 class TestHandler:
     """
@@ -533,6 +562,9 @@ class TestResult():
     def was_successful(self):
         return self.status != "Failed"
 
+    def resultname(self):
+        return self.name.lower()
+
 
 def check_script_prefixes():
     """Check that test scripts start with one of the allowed name prefixes."""
@@ -551,7 +583,7 @@ def check_script_list(src_dir):
 
     Check that there are no scripts in the functional tests directory which are
     not being run by pull-tester.py."""
-    script_dir = src_dir + '/eqbtest/functional/'
+    script_dir = src_dir + '/test/functional/'
     python_files = set([test_file for test_file in os.listdir(script_dir) if test_file.endswith(".py")])
     missed_tests = list(python_files - set(map(lambda x: x.split()[0], ALL_SCRIPTS + NON_SCRIPTS)))
     if len(missed_tests) != 0:
@@ -572,7 +604,7 @@ class RPCCoverage():
     After all tests complete, the commands run are combined and diff'd against
     the complete list to calculate uncovered RPC commands.
 
-    See also: eqbtest/functional/test_framework/coverage.py
+    See also: test/functional/test_framework/coverage.py
 
     """
     def __init__(self):
@@ -600,7 +632,7 @@ class RPCCoverage():
         Return a set of currently untested RPC commands.
 
         """
-        # This is shared from `eqbeqbtest/functional/test-framework/coverage.py`
+        # This is shared from `test/functional/test-framework/coverage.py`
         reference_filename = 'rpc_interface.txt'
         coverage_file_prefix = 'coverage.'
 

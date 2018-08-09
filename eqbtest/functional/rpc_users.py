@@ -41,11 +41,11 @@ class HTTPBasicsTest(BitcoinTestFramework):
         rpcauth3 = lines[1]
         self.password = lines[3]
 
-        with open(os.path.join(get_datadir_path(self.options.tmpdir, 0), "equibit.conf"), 'a', encoding='utf8') as f:
+        with open(os.path.join(get_datadir_path(self.options.tmpdir, 0), "bitcoin.conf"), 'a', encoding='utf8') as f:
             f.write(rpcauth+"\n")
             f.write(rpcauth2+"\n")
             f.write(rpcauth3+"\n")
-        with open(os.path.join(get_datadir_path(self.options.tmpdir, 1), "equibit.conf"), 'a', encoding='utf8') as f:
+        with open(os.path.join(get_datadir_path(self.options.tmpdir, 1), "bitcoin.conf"), 'a', encoding='utf8') as f:
             f.write(rpcuser+"\n")
             f.write(rpcpassword+"\n")
 
@@ -59,7 +59,7 @@ class HTTPBasicsTest(BitcoinTestFramework):
         #Old authpair
         authpair = url.username + ':' + url.password
 
-        #New authpair generated via share/rpcuser tool
+        #New authpair generated via share/rpcauth tool
         password = "cA773lm788buwYe4g4WT+05pKyNruVKjQ25x3n0DQcM="
 
         #Second authpair with different username

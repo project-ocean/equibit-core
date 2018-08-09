@@ -129,7 +129,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
         config = configparser.ConfigParser()
         config.read_file(open(self.options.configfile))
-        self.options.bitcoind = os.getenv("BITCOIND", default=config["environment"]["BUILDDIR"] + '/src/bitcoind' + config["environment"]["EXEEXT"])
+        self.options.bitcoind = os.getenv("BITCOIND", default=config["environment"]["BUILDDIR"] + '/src/equibitd' + config["environment"]["EXEEXT"])        ### HERE ###
         self.options.bitcoincli = os.getenv("BITCOINCLI", default=config["environment"]["BUILDDIR"] + '/src/bitcoin-cli' + config["environment"]["EXEEXT"])
 
         os.environ['PATH'] = os.pathsep.join([
@@ -160,7 +160,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
             self.run_test()
             success = TestStatus.PASSED
         except JSONRPCException as e:
-            self.log.exception("JSONRPC error: {}".format(e))
+            self.log.exception("JSONRPC error")
         except SkipTest as e:
             self.log.warning("Test Skipped: %s" % e.message)
             success = TestStatus.SKIPPED
@@ -270,7 +270,6 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
     def start_node(self, i, *args, **kwargs):
         """Start a bitcoind"""
-
         node = self.nodes[i]
 
         node.start(*args, **kwargs)
@@ -343,7 +342,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
         for group in node_groups:
             sync_blocks(group)
-            # sync_mempools(group)  ###HERE###
+            # sync_mempools(group)      ### HERE ### syncwithvalidationinterfacequeue() method doesn't exist in equibitd
 
     def enable_mocktime(self):
         """Enable mocktime for the script.
@@ -475,3 +474,20 @@ class SkipTest(Exception):
     """This exception is raised to skip a test"""
     def __init__(self, message):
         self.message = message
+
+
+def skip_if_no_py3_zmq():
+    """Attempt to import the zmq package and skip the test if the import fails."""
+    try:
+        import zmq  # noqa
+    except ImportError:
+        raise SkipTest("python3-zmq module not available.")
+
+
+def skip_if_no_bitcoind_zmq(test_instance):
+    """Skip the running test if bitcoind has not been compiled with zmq support."""
+    config = configparser.ConfigParser()
+    config.read_file(open(test_instance.options.configfile))
+
+    if not config["components"].getboolean("ENABLE_ZMQ"):
+        raise SkipTest("bitcoind has not been built with zmq enabled.")

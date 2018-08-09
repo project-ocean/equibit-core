@@ -13,10 +13,6 @@ from test_framework.test_framework import BitcoinTestFramework
 
 
 class UptimeTest(BitcoinTestFramework):
-    # def add_options(self):
-    #     # --loglevel DEBUG
-    #     self.options['loglevel'] = "DEBUG"
-
     def set_test_params(self):
         self.num_nodes = 1
         self.setup_clean_chain = True
@@ -32,6 +28,8 @@ class UptimeTest(BitcoinTestFramework):
 
     def _test_getinfo(self):
         msg = self.nodes[0].getinfo()
+        print("EQB VERSION")
+        print(msg)
         self.log.debug(msg)
 
 
