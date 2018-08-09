@@ -634,6 +634,7 @@ const fs::path &GetDataDir(bool fNetSpecific)
 
     if (gArgs.IsArgSet("-datadir")) {
         path = fs::system_complete(gArgs.GetArg("-datadir", ""));
+	fprintf(stderr, "Checking to make sure the given path is available: %s \n", path.c_str());
         if (!fs::is_directory(path)) {
             path = "";
             return path;
