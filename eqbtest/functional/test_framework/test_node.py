@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2017 The Bitcoin Core developers
+# Copyright (c) 2017-2018 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Class for bitcoind node under test"""
@@ -15,6 +15,7 @@ import re
 import subprocess
 import tempfile
 import time
+import urllib.parse
 
 from .authproxy import JSONRPCException
 from .util import (
@@ -56,17 +57,13 @@ class TestNode():
     To make things easier for the test writer, any unrecognised messages will
     be dispatched to the RPC connection."""
 
-    def __init__(self, i, datadir, rpchost, timewait, bitcoind, bitcoin_cli, mocktime, coverage_dir, extra_conf=None, extra_args=None, use_cli=False):
+    def __init__(self, i, datadir, *, rpchost, timewait, bitcoind, bitcoin_cli, mocktime, coverage_dir, extra_conf=None, extra_args=None, use_cli=False):
         self.index = i
         self.datadir = datadir
         self.stdout_dir = os.path.join(self.datadir, "stdout")
         self.stderr_dir = os.path.join(self.datadir, "stderr")
         self.rpchost = rpchost
-        if timewait:
-            self.rpc_timeout = timewait
-        else:
-            # Wait for up to 60 seconds for the RPC server to respond
-            self.rpc_timeout = 60
+        self.rpc_timeout = timewait
         self.binary = bitcoind
         self.coverage_dir = coverage_dir
         if extra_conf != None:
@@ -184,7 +181,7 @@ class TestNode():
             return self.cli("-rpcwallet={}".format(wallet_name))
         else:
             assert self.rpc_connected and self.rpc, self._node_msg("RPC not connected")
-            wallet_path = "wallet/%s" % wallet_name
+            wallet_path = "wallet/{}".format(urllib.parse.quote(wallet_name))
             return self.rpc / wallet_path
 
     def stop_node(self, expected_stderr=''):
@@ -279,7 +276,7 @@ class TestNode():
         self.encryptwallet(passphrase)
         self.wait_until_stopped()
 
-    def add_p2p_connection(self, p2p_conn, *args, **kwargs):
+    def add_p2p_connection(self, p2p_conn, *, wait_for_verack=True, **kwargs):
         """Add a p2p connection to the node.
 
         This method adds the p2p connection to the self.p2ps list and also
@@ -289,8 +286,10 @@ class TestNode():
         if 'dstaddr' not in kwargs:
             kwargs['dstaddr'] = '127.0.0.1'
 
-        p2p_conn.peer_connect(*args, **kwargs)()
+        p2p_conn.peer_connect(**kwargs)()
         self.p2ps.append(p2p_conn)
+        if wait_for_verack:
+            p2p_conn.wait_for_verack()
 
         return p2p_conn
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2015-2017 The Bitcoin Core developers
+# Copyright (c) 2015-2018 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test BIP65 (CHECKLOCKTIMEVERIFY).
@@ -62,12 +62,11 @@ def create_transaction(node, coinbase, to_address, amount):
 class BIP65Test(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
-        self.extra_args = [['-promiscuousmempoolflags=1', '-whitelist=127.0.0.1']]
+        self.extra_args = [['-whitelist=127.0.0.1']]
         self.setup_clean_chain = True
 
     def run_test(self):
         self.nodes[0].add_p2p_connection(P2PInterface())
-        self.nodes[0].p2p.wait_for_verack()
 
         self.log.info("Mining %d blocks", CLTV_HEIGHT - 2)
         self.coinbase_blocks = self.nodes[0].generate(CLTV_HEIGHT - 2)
@@ -116,12 +115,13 @@ class BIP65Test(BitcoinTestFramework):
         spendtx.rehash()
 
         # First we show that this tx is valid except for CLTV by getting it
-        # accepted to the mempool (which we can achieve with
-        # -promiscuousmempoolflags).
-        self.nodes[0].p2p.send_and_ping(msg_tx(spendtx))
-        assert spendtx.hash in self.nodes[0].getrawmempool()
+        # rejected from the mempool for exactly that reason.
+        assert_equal(
+            [{'txid': spendtx.hash, 'allowed': False, 'reject-reason': '64: non-mandatory-script-verify-flag (Negative locktime)'}],
+            self.nodes[0].testmempoolaccept(rawtxs=[bytes_to_hex_str(spendtx.serialize())], allowhighfees=True)
+        )
 
-        # Now we verify that a block with this transaction is invalid.
+        # Now we verify that a block with this transaction is also invalid.
         block.vtx.append(spendtx)
         block.hashMerkleRoot = block.calc_merkle_root()
         block.solve()

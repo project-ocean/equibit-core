@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2017 The Bitcoin Core developers
+# Copyright (c) 2014-2018 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test logic for skipping signature validation on old blocks.
@@ -98,7 +98,7 @@ class AssumeValidTest(BitcoinTestFramework):
 
         # Connect to node0
         p2p0 = self.nodes[0].add_p2p_connection(BaseNode())
-        self.nodes[0].p2p.wait_for_verack()
+        # self.nodes[0].p2p.wait_for_verack()
 
         # Build the blockchain
         self.tip = int(self.nodes[0].getbestblockhash(), 16)
@@ -168,9 +168,9 @@ class AssumeValidTest(BitcoinTestFramework):
         p2p1 = self.nodes[1].add_p2p_connection(BaseNode())
         p2p2 = self.nodes[2].add_p2p_connection(BaseNode())
 
-        p2p0.wait_for_verack()
-        p2p1.wait_for_verack()
-        p2p2.wait_for_verack()
+        # p2p0.wait_for_verack()
+        # p2p1.wait_for_verack()
+        # p2p2.wait_for_verack()
 
         # send header lists to all three nodes
         p2p0.send_header_for_blocks(self.blocks[0:2000])
