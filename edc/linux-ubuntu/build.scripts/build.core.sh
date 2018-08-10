@@ -1,5 +1,5 @@
 #!/bin/bash
-
+make clean
 source ./set.environment.sh
 
 cd $source_folder
