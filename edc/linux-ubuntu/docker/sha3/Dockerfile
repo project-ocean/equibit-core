@@ -9,7 +9,7 @@ ENV EQUIBIT_DATA=/home/equibit/.equibit \
 
 WORKDIR /root/equibit/source
 
-RUN git clone -b edc-sha3 https://Equibit:f41c78627c23717323d6dc2a83fe9193b09b13f7@github.com/Equibit/equibit-core.git
+RUN git clone -b edc-sha3-devops https://Equibit:f41c78627c23717323d6dc2a83fe9193b09b13f7@github.com/Equibit/equibit-core.git
 
 RUN cd /root/equibit/source/equibit-core/edc/linux-ubuntu/build.scripts/ && \
     ./build.core.sh && \
