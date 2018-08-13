@@ -16,7 +16,7 @@ RUN ls -ltr /root/equibit/source/equibit-core/src/ && \
     
 RUN cd /root/equibit/source/equibit-core/edc/linux-ubuntu/build.scripts/ && \
     ./build.core.sh && \
-    ls -ltr /root/equibit/source/equibit-core/src/ && \
+    ls -ltr /root/equibit/source/equibit-core/src/ 
   #  mkdir -p /opt/equibit-${EQUIBIT_VERSION}/ && \
    # mv /root/equibit/source/equibit-core/src/equibitd    /opt/equibit-${EQUIBIT_VERSION}/equibitd    && \
    # mv /root/equibit/source/equibit-core/src/equibit-cli /opt/equibit-${EQUIBIT_VERSION}/equibit-cli && \
