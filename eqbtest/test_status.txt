@@ -1,6 +1,6 @@
     Version    Date/Time
-DEV 0.0.0      2018-08-03       Total Passed:      0
-QA  0.0.0      15:33:12         Total Failed:      1
+DEV 0.0.0      2018-08-14       Total Passed:      0
+QA  0.0.0      09:50:26         Total Failed:      1
 UAT 0.0.0                       Number of tests:   1
 
 TEST            STATUS    

@@ -27,7 +27,7 @@ class UptimeTest(BitcoinTestFramework):
         assert(self.nodes[0].uptime() >= wait_time)
 
     def _test_getinfo(self):
-        msg = self.nodes[0].getinfo()
+        msg = self.nodes[0].getblockchaininfo()
         print("EQB VERSION")
         print(msg)
         self.log.debug(msg)
