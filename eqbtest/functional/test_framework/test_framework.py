@@ -170,7 +170,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
         except KeyError as e:
             self.log.exception("Key error")
         except Exception as e:
-            self.log.exception("Unexpected exception caught during testing")
+            self.log.exception("Unexpected exception caught during testing: {}".format(e))
         except KeyboardInterrupt as e:
             self.log.warning("Exiting after keyboard interrupt")
 
@@ -344,7 +344,7 @@ class BitcoinTestFramework(metaclass=BitcoinTestMetaClass):
 
         for group in node_groups:
             sync_blocks(group)
-            # sync_mempools(group)      ### HERE ### syncwithvalidationinterfacequeue() method doesn't exist in equibitd
+            sync_mempools(group)      ### HERE ### syncwithvalidationinterfacequeue() method doesn't exist in equibitd
 
     def enable_mocktime(self):
         """Enable mocktime for the script.

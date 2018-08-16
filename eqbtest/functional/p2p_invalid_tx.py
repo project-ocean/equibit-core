@@ -140,6 +140,7 @@ class InvalidTxRequestTest(BitcoinTestFramework):
         self.reconnect_p2p(num_connections=1)
         node.p2p.send_txs_and_test([tx1], node, success=False, expect_disconnect=True)
         # send_txs_and_test will have waited for disconnect, so we can safely check that no reject has been received
+
         assert_equal(node.p2p.reject_code_received, None)
 
 if __name__ == '__main__':
