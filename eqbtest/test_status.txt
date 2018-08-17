@@ -1,10 +1,11 @@
     Version    Date/Time
-DEV 0.0.0      2018-08-14       Total Passed:     36
-QA  0.0.0      11:02:32         Total Failed:     66
-UAT 0.0.0                       Number of tests: 104
+DEV 0.0.0      2018-08-16       Total Passed:     39
+QA  0.0.0      15:51:35         Total Failed:     64
+UAT 0.0.0                       Number of tests: 105
 
 TEST                                    STATUS    
 
+feature_assumevalid.py                  Passed 
 feature_bip68_sequence.py               Failed 
 feature_block.py                        Passed 
 feature_blocksdir.py                    Failed 
@@ -28,14 +29,14 @@ feature_reindex.py                      Passed
 feature_segwit.py                       Failed 
 feature_uacomment.py                    Passed 
 feature_versionbits_warning.py          Passed 
-interface_bitcoin_cli.py                Failed 
+interface_bitcoin_cli.py                Passed 
 interface_http.py                       Passed 
 interface_rest.py                       Failed 
 interface_zmq.py                        Skipped 
 mempool_accept.py                       Failed 
 mempool_limit.py                        Failed 
 mempool_packages.py                     Failed 
-mempool_persist.py                      Failed 
+mempool_persist.py                      Passed 
 mempool_reorg.py                        Failed 
 mempool_resurrect.py                    Failed 
 mempool_spend_coinbase.py               Failed 
