@@ -1,0 +1,83 @@
+    Version    Date/Time
+DEV 0.0.0      2018-08-23       Total Passed:     74
+QA  0.0.0      10:32:45         Total Failed:      0
+UAT 0.0.0                       Number of tests:  75
+
+TEST                                    STATUS    
+
+feature_block.py                        Passed 
+feature_cltv.py                         Passed 
+feature_config_args.py                  Passed 
+feature_csv_activation.py               Passed 
+feature_dersig.py                       Passed 
+feature_help.py                         Passed 
+feature_logging.py                      Passed 
+feature_minchainwork.py                 Passed 
+feature_nulldummy.py                    Passed 
+feature_proxy.py                        Passed 
+feature_reindex.py                      Passed 
+feature_segwit.py                       Passed 
+feature_uacomment.py                    Passed 
+feature_versionbits_warning.py          Passed 
+interface_bitcoin_cli.py                Passed 
+interface_http.py                       Passed 
+interface_rest.py                       Passed 
+interface_zmq.py                        Skipped 
+mempool_limit.py                        Passed 
+mempool_persist.py                      Passed 
+mempool_reorg.py                        Passed 
+mempool_resurrect.py                    Passed 
+mempool_spend_coinbase.py               Passed 
+mining_basic.py                         Passed 
+mining_prioritisetransaction.py         Passed 
+p2p_compactblocks.py                    Passed 
+p2p_disconnect_ban.py                   Passed 
+p2p_fingerprint.py                      Passed 
+p2p_invalid_block.py                    Passed 
+p2p_invalid_tx.py                       Passed 
+p2p_leak.py                             Passed 
+p2p_mempool.py                          Passed 
+p2p_node_network_limited.py             Passed 
+p2p_segwit.py                           Passed 
+p2p_sendheaders.py                      Passed 
+p2p_unrequested_blocks.py               Passed 
+rpc_blockchain.py                       Passed 
+rpc_decodescript.py                     Passed 
+rpc_deprecated.py                       Passed 
+rpc_fundrawtransaction.py               Passed 
+rpc_getchaintips.py                     Passed 
+rpc_listtransactions.py                 Passed 
+rpc_named_arguments.py                  Passed 
+rpc_net.py                              Passed 
+rpc_preciousblock.py                    Passed 
+rpc_rawtransaction.py                   Passed 
+rpc_signmessage.py                      Passed 
+rpc_signrawtransaction.py               Passed 
+rpc_txoutproof.py                       Passed 
+rpc_uptime.py                           Passed 
+rpc_users.py                            Passed 
+wallet_abandonconflict.py               Passed 
+wallet_accounts.py                      Passed 
+wallet_address_types.py                 Passed 
+wallet_backup.py                        Passed 
+wallet_basic.py                         Passed 
+wallet_bumpfee.py                       Passed 
+wallet_disable.py                       Passed 
+wallet_dump.py                          Passed 
+wallet_encryption.py                    Passed 
+wallet_hd.py                            Passed 
+wallet_import_rescan.py                 Passed 
+wallet_importmulti.py                   Passed 
+wallet_importprunedfunds.py             Passed 
+wallet_keypool.py                       Passed 
+wallet_keypool_topup.py                 Passed 
+wallet_listreceivedby.py                Passed 
+wallet_listsinceblock.py                Passed 
+wallet_multiwallet.py                   Passed 
+wallet_multiwallet.py --usecli          Passed 
+wallet_resendwallettransactions.py      Passed 
+wallet_txn_clone.py                     Passed 
+wallet_txn_clone.py --segwit            Passed 
+wallet_txn_doublespend.py --mineblock   Passed 
+wallet_zapwallettxes.py                 Passed 
+

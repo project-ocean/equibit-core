@@ -138,6 +138,13 @@ BASE_SCRIPTS= [
     # Put them in a random line within the section that fits their approximate run-time
 ]
 
+# BASE_SCRIPTS = [
+#    'rpc_uptime.py',
+#     'rpc_named_arguments.py'
+# #    'feature_segwit.py',
+# #    'wallet_bumpfee.py'
+# ]
+
 EXTENDED_SCRIPTS = [
     # These tests are not run by the travis build process.
     # Longest test should go first, to favor running tests in parallel
@@ -298,7 +305,7 @@ def run_tests(test_list, src_dir, build_dir, exeext, tmpdir, jobs=1, enable_cove
         os.environ["BITCOIND"] = build_dir + '/src/bitcoind' + exeext
         os.environ["BITCOINCLI"] = build_dir + '/src/bitcoin-cli' + exeext
 
-    tests_dir = src_dir + '/test/functional/'
+    tests_dir = src_dir + '/eqbtest/functional/'
 
     flags = ["--srcdir={}/src".format(build_dir)] + args
     flags.append("--cachedir=%s" % cache_dir)
@@ -368,6 +375,8 @@ def print_results(test_results, max_len_name, runtime):
     test_results.sort(key=lambda result: result.name.lower())
     all_passed = True
     time_sum = 0
+    test_pass_cnt = 0
+    test_fail_cnt = 0
 
     for test_result in test_results:
         all_passed = all_passed and test_result.was_successful
@@ -375,10 +384,48 @@ def print_results(test_results, max_len_name, runtime):
         test_result.padding = max_len_name
         results += str(test_result)
 
+        if test_result.status == "Passed":
+            test_pass_cnt += 1
+        elif test_result.status == "Failed":
+            test_fail_cnt += 1
+
     status = TICK + "Passed" if all_passed else CROSS + "Failed"
+    if not all_passed:
+        results += RED[1]
     results += BOLD[1] + "\n%s | %s | %s s (accumulated) \n" % ("ALL".ljust(max_len_name), status.ljust(9), time_sum) + BOLD[0]
+    if not all_passed:
+        results += RED[0]
+    results += "Total Passed: %s\n" % test_pass_cnt
+    results += "Total Failed: %s\n" % test_fail_cnt
+    results += "Number of tests: %s\n\n" % len(test_results)
     results += "Runtime: %s s\n" % (runtime)
     print(results)
+#ifdef equibitcode
+    # print resulting table to file
+    version = {"dev": "0.0.0",
+               "qa": "0.0.0",
+               "uat": "0.0.0"}
+
+    now = datetime.datetime.now()
+    date = str(now.strftime("%Y-%m-%d"))
+    time = str(now.strftime("%H:%M:%S"))
+    log_header = "    Version    Date/Time\n"
+    log_header += "DEV {:10} {:10}       Total Passed:  {:5}\n".format(version['dev'], date, test_pass_cnt)
+    log_header += "QA  {:10} {:8}         Total Failed:  {:5}\n".format(version['qa'], time, test_fail_cnt)
+    log_header += "UAT {:10}                  Number of tests: {:3}\n".format(version['uat'], len(test_results))
+
+    results_file = log_header + "\n" + "%s   %s \n\n" % ("TEST".ljust(max_len_name), "STATUS   ")
+    test_results.sort(key=TestResult.resultname)
+    for test_result_f in test_results:
+        test_result_f.padding = max_len_name
+        results_file += "{t_name}   {t_sts} \n".format(t_name=test_result_f.name.ljust(max_len_name),
+                                                       t_sts=test_result_f.status)
+    print(results_file)
+    with open("../test_status.txt", "w") as file_log:
+        print(results_file, file=file_log)
+#else
+    # print("+++++++++++++++++++++++++++++++++++++ BTC ")
+#endif
 
 class TestHandler:
     """
@@ -454,6 +501,14 @@ class TestResult():
         self.time = time
         self.padding = 0
 
+    def sort_key(self):
+        if self.status == "Passed":
+            return 0, self.name.lower()
+        elif self.status == "Failed":
+            return 2, self.name.lower()
+        elif self.status == "Skipped":
+            return 1, self.name.lower()
+
     def __repr__(self):
         if self.status == "Passed":
             color = BLUE
@@ -470,6 +525,9 @@ class TestResult():
     @property
     def was_successful(self):
         return self.status != "Failed"
+
+    def resultname(self):
+        return self.name.lower()
 
 
 def check_script_prefixes():
@@ -495,7 +553,7 @@ def check_script_list(src_dir):
 
     Check that there are no scripts in the functional tests directory which are
     not being run by pull-tester.py."""
-    script_dir = src_dir + '/test/functional/'
+    script_dir = src_dir + '/eqbtest/functional/'
     python_files = set([t for t in os.listdir(script_dir) if t[-3:] == ".py"])
     missed_tests = list(python_files - set(map(lambda x: x.split()[0], ALL_SCRIPTS + NON_SCRIPTS)))
     if len(missed_tests) != 0:
