@@ -1,1 +1,7 @@
 src/clientversion.cpp export-subst
+
+# Make all Windows scripts have CRLF on checkout
+*.bat text eol=crlf
+
+# Make all Linux scripts have LF on checkout
+*.sh text eol=lf

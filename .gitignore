@@ -116,3 +116,9 @@ test/cache/*
 
 libbitcoinconsensus.pc
 contrib/devtools/split-debug.sh
+
+# Eclipse specific
+.cproject
+.project
+.settings/
+
