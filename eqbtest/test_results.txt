@@ -1,0 +1,98 @@
+TEST                                  | STATUS    | DURATION
+
+example_test.py                       | ✓ Passed  | 2 s
+feature_assumevalid.py                | ✓ Passed  | 75 s
+feature_bip68_sequence.py             | ✓ Passed  | 89 s
+feature_bip9_softforks.py             | ✓ Passed  | 333 s
+feature_block.py                      | ✖ Failed  | 764 s
+feature_cltv.py                       | ✓ Passed  | 17 s
+feature_config_args.py                | ✓ Passed  | 3 s
+feature_csv_activation.py             | ✓ Passed  | 16 s
+feature_dbcrash.py                    | ✓ Passed  | 2254 s
+feature_dersig.py                     | ✓ Passed  | 15 s
+feature_fee_estimation.py             | ✓ Passed  | 333 s
+feature_help.py                       | ✓ Passed  | 1 s
+feature_logging.py                    | ✓ Passed  | 5 s
+feature_maxuploadtarget.py            | ✓ Passed  | 284 s
+feature_minchainwork.py               | ✓ Passed  | 5 s
+feature_notifications.py              | ✓ Passed  | 5 s
+feature_nulldummy.py                  | ✓ Passed  | 4 s
+feature_proxy.py                      | ✓ Passed  | 6 s
+feature_pruning.py                    | ✓ Passed  | 2743 s
+feature_rbf.py                        | ✓ Passed  | 10 s
+feature_reindex.py                    | ✓ Passed  | 7 s
+feature_segwit.py                     | ✓ Passed  | 17 s
+feature_uacomment.py                  | ✓ Passed  | 4 s
+feature_versionbits_warning.py        | ✓ Passed  | 10 s
+interface_bitcoin_cli.py              | ✓ Passed  | 4 s
+interface_http.py                     | ✓ Passed  | 4 s
+interface_rest.py                     | ✓ Passed  | 8 s
+interface_zmq.py                      | ○ Skipped | 2 s
+mempool_limit.py                      | ✓ Passed  | 9 s
+mempool_packages.py                   | ✓ Passed  | 13 s
+mempool_persist.py                    | ✓ Passed  | 12 s
+mempool_reorg.py                      | ✓ Passed  | 4 s
+mempool_resurrect.py                  | ✓ Passed  | 5 s
+mempool_spend_coinbase.py             | ✓ Passed  | 2 s
+mining_basic.py                       | ✓ Passed  | 2 s
+mining_getblocktemplate_longpoll.py   | ✓ Passed  | 68 s
+mining_prioritisetransaction.py       | ✓ Passed  | 25 s
+p2p_compactblocks.py                  | ✓ Passed  | 21 s
+p2p_disconnect_ban.py                 | ✓ Passed  | 8 s
+p2p_feefilter.py                      | ✓ Passed  | 45 s
+p2p_fingerprint.py                    | ✓ Passed  | 8 s
+p2p_invalid_block.py                  | ✓ Passed  | 8 s
+p2p_invalid_tx.py                     | ✓ Passed  | 4 s
+p2p_leak.py                           | ✓ Passed  | 7 s
+p2p_mempool.py                        | ✓ Passed  | 5 s
+p2p_node_network_limited.py           | ✓ Passed  | 3 s
+p2p_segwit.py                         | ✓ Passed  | 199 s
+p2p_sendheaders.py                    | ✓ Passed  | 16 s
+p2p_timeouts.py                       | ✓ Passed  | 64 s
+p2p_unrequested_blocks.py             | ✓ Passed  | 6 s
+rpc_bind.py                           | ✓ Passed  | 8 s
+rpc_blockchain.py                     | ✓ Passed  | 14 s
+rpc_decodescript.py                   | ✓ Passed  | 3 s
+rpc_deprecated.py                     | ✓ Passed  | 5 s
+rpc_fundrawtransaction.py             | ✓ Passed  | 21 s
+rpc_getchaintips.py                   | ✓ Passed  | 6 s
+rpc_invalidateblock.py                | ✓ Passed  | 7 s
+rpc_listtransactions.py               | ✓ Passed  | 22 s
+rpc_named_arguments.py                | ✓ Passed  | 2 s
+rpc_net.py                            | ✓ Passed  | 5 s
+rpc_preciousblock.py                  | ✓ Passed  | 7 s
+rpc_rawtransaction.py                 | ✓ Passed  | 16 s
+rpc_signmessage.py                    | ✓ Passed  | 2 s
+rpc_signrawtransaction.py             | ✓ Passed  | 5 s
+rpc_txoutproof.py                     | ✓ Passed  | 5 s
+rpc_uptime.py                         | ✓ Passed  | 2 s
+rpc_users.py                          | ✓ Passed  | 5 s
+wallet_abandonconflict.py             | ✓ Passed  | 8 s
+wallet_accounts.py                    | ✓ Passed  | 7 s
+wallet_address_types.py               | ✓ Passed  | 44 s
+wallet_backup.py                      | ✓ Passed  | 103 s
+wallet_basic.py                       | ✓ Passed  | 34 s
+wallet_bumpfee.py                     | ✓ Passed  | 14 s
+wallet_disable.py                     | ✓ Passed  | 3 s
+wallet_dump.py                        | ✓ Passed  | 20 s
+wallet_encryption.py                  | ✓ Passed  | 7 s
+wallet_hd.py                          | ✓ Passed  | 46 s
+wallet_import_rescan.py               | ✓ Passed  | 10 s
+wallet_importmulti.py                 | ✓ Passed  | 8 s
+wallet_importprunedfunds.py           | ✓ Passed  | 6 s
+wallet_keypool.py                     | ✓ Passed  | 10 s
+wallet_keypool_topup.py               | ✓ Passed  | 19 s
+wallet_listreceivedby.py              | ✓ Passed  | 11 s
+wallet_listsinceblock.py              | ✓ Passed  | 5 s
+wallet_multiwallet.py                 | ✓ Passed  | 14 s
+wallet_multiwallet.py --usecli        | ✓ Passed  | 21 s
+wallet_resendwallettransactions.py    | ✓ Passed  | 3 s
+wallet_txn_clone.py                   | ✓ Passed  | 8 s
+wallet_txn_clone.py --mineblock       | ✓ Passed  | 4 s
+wallet_txn_clone.py --segwit          | ✓ Passed  | 6 s
+wallet_txn_doublespend.py             | ✓ Passed  | 5 s
+wallet_txn_doublespend.py --mineblock | ✓ Passed  | 10 s
+wallet_zapwallettxes.py               | ✓ Passed  | 6 s
+
+ALL                                   | ✖ Failed  | 8121 s (accumulated) 
+
