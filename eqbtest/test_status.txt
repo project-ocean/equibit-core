@@ -1,6 +1,6 @@
     Version    Date/Time
-DEV 0.0.0      2018-08-24       Total Passed:     90
-QA  0.0.0      12:14:03         Total Failed:      2
+DEV 0.0.0      2018-08-27       Total Passed:     92
+QA  0.0.0      11:35:16         Total Failed:      0
 UAT 0.0.0                       Number of tests:  93
 
 TEST                                    STATUS    
@@ -9,11 +9,11 @@ example_test.py                         Passed
 feature_assumevalid.py                  Passed 
 feature_bip68_sequence.py               Passed 
 feature_bip9_softforks.py               Passed 
-feature_block.py                        Failed 
+feature_block.py                        Passed 
 feature_cltv.py                         Passed 
 feature_config_args.py                  Passed 
 feature_csv_activation.py               Passed 
-feature_dbcrash.py                      Failed 
+feature_dbcrash.py                      Passed 
 feature_dersig.py                       Passed 
 feature_fee_estimation.py               Passed 
 feature_help.py                         Passed 
