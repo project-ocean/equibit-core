@@ -3,29 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbitcoin_consensus", "libbitcoinconsensus\libbitcoinconsensus.vcxproj", "{2B384FA8-9EE1-4544-93CB-0D733C25E8CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libequibit_consensus", "libequibitconsensus\libequibitconsensus.vcxproj", "{2B384FA8-9EE1-4544-93CB-0D733C25E8CE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_libbitcoinconsensus", "testconsensus\testconsensus.vcxproj", "{E78473E9-B850-456C-9120-276301E04C06}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_libequibitconsensus", "testconsensus\testconsensus.vcxproj", "{E78473E9-B850-456C-9120-276301E04C06}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "equibitd", "equibitd\equibitd.vcxproj", "{D4513DDF-6013-44DC-ADCC-12EAF6D1F038}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbitcoin_util", "libbitcoin_util\libbitcoin_util.vcxproj", "{B53A5535-EE9D-4C6F-9A26-F79EE3BC3754}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libequibit_util", "libequibit_util\libequibit_util.vcxproj", "{B53A5535-EE9D-4C6F-9A26-F79EE3BC3754}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbitcoin_common", "libbitcoin_common\libbitcoin_common.vcxproj", "{7C87E378-DF58-482E-AA2F-1BC129BC19CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libequibit_common", "libequibit_common\libequibit_common.vcxproj", "{7C87E378-DF58-482E-AA2F-1BC129BC19CE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbitcoin_crypto", "libbitcoin_crypto\libbitcoin_crypto.vcxproj", "{6190199C-6CF4-4DAD-BFBD-93FA72A760C1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libequibit_crypto", "libequibit_crypto\libequibit_crypto.vcxproj", "{6190199C-6CF4-4DAD-BFBD-93FA72A760C1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbitcoin_server", "libbitcoin_server\libbitcoin_server.vcxproj", "{460FEE33-1FE1-483F-B3BF-931FF8E969A5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libequibit_server", "libequibit_server\libequibit_server.vcxproj", "{460FEE33-1FE1-483F-B3BF-931FF8E969A5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libunivalue", "libunivalue\libunivalue.vcxproj", "{5724BA7D-A09A-4BA8-800B-C4C1561B3D69}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbitcoin_wallet", "libbitcoin_wallet\libbitcoin_wallet.vcxproj", "{93B86837-B543-48A5-A89B-7C87ABB77DF2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libequibit_wallet", "libequibit_wallet\libequibit_wallet.vcxproj", "{93B86837-B543-48A5-A89B-7C87ABB77DF2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbitcoin_zmq", "libbitcoin_zmq\libbitcoin_zmq.vcxproj", "{792D487F-F14C-49FC-A9DE-3FC150F31C3F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libequibit_zmq", "libequibit_zmq\libequibit_zmq.vcxproj", "{792D487F-F14C-49FC-A9DE-3FC150F31C3F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_equibit", "test_equibit\test_equibit.vcxproj", "{A56B73DB-D46D-4882-8374-1FE3FFA08F07}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libbitcoin_cli", "libbitcoin_cli\libbitcoin_cli.vcxproj", "{0667528C-D734-4009-ADF9-C0D6C4A5A5A6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libequibit_cli", "libequibit_cli\libequibit_cli.vcxproj", "{0667528C-D734-4009-ADF9-C0D6C4A5A5A6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "equibit-cli", "equibit-cli\equibit-cli.vcxproj", "{0B2D7431-F876-4A58-87BF-F748338CD3BF}"
 EndProject
