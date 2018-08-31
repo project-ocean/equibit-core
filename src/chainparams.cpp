@@ -75,7 +75,11 @@ class CMainParams : public CChainParams {
 public:
     CMainParams() {
         strNetworkID = "main";
+#ifdef BUILD_BTC
         consensus.nSubsidyHalvingInterval = 210000;
+#else  // BUILD_EQB
+        consensus.nSubsidyAccelerationFactor = 1;
+#endif // END_BUILD
         consensus.BIP16Height = 173805; // 00000000000000ce80a7e057163a4db1d5ad7b20fb6f598c9597b9665c8fb0d4 - April 1, 2012
         consensus.BIP34Height = 227931;
         consensus.BIP34Hash = uint256S("0x000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8");
@@ -120,7 +124,11 @@ public:
         nDefaultPort = 8333;
         nPruneAfterHeight = 100000;
 
+#ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1231006505, 2083236893, 0x1d00ffff, 1, 50 * COIN);
+#else  // BUILD_EQB
+        genesis = CreateGenesisBlock(1231006505, 2083236893, 0x1d00ffff, 1, GENESIS_BLOCK_REWARD);
+#endif // END_BUILD 
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
@@ -186,7 +194,11 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
         strNetworkID = "test";
+#ifdef BUILD_BTC
         consensus.nSubsidyHalvingInterval = 210000;
+#else  // BUILD_EQB
+        consensus.nSubsidyAccelerationFactor = 1;
+#endif // END_BUILD
         consensus.BIP16Height = 514; // 00000000040b4e986385315e14bee30ad876d8b47f748025b26683116d21aa65
         consensus.BIP34Height = 21111;
         consensus.BIP34Hash = uint256S("0x0000000023b3a96d3484e5abb3755c413e7d41500f8e2a5c3f0dd01299cd8ef8");
@@ -226,7 +238,11 @@ public:
         nDefaultPort = 18333;
         nPruneAfterHeight = 1000;
 
+#ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, 50 * COIN);
+#else  // BUILD_EQB
+        genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, GENESIS_BLOCK_REWARD);
+#endif // END_BUILD 
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
@@ -277,7 +293,11 @@ class CRegTestParams : public CChainParams {
 public:
     CRegTestParams() {
         strNetworkID = "regtest";
+#ifdef BUILD_BTC
         consensus.nSubsidyHalvingInterval = 150;
+#else  // BUILD_EQB
+        consensus.nSubsidyAccelerationFactor = 1400;
+#endif // END_BUILD
         consensus.BIP16Height = 0; // always enforce P2SH BIP16 on regtest
         consensus.BIP34Height = 100000000; // BIP34 has not activated on regtest (far in the future so block v1 are not rejected in tests)
         consensus.BIP34Hash = uint256();
@@ -313,7 +333,11 @@ public:
         nDefaultPort = 18444;
         nPruneAfterHeight = 1000;
 
+#ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1296688602, 2, 0x207fffff, 1, 50 * COIN);
+#else  // BUILD_EQB
+        genesis = CreateGenesisBlock(1296688602, 2, 0x207fffff, 1, GENESIS_BLOCK_REWARD);
+#endif // END_BUILD 
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));

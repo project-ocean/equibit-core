@@ -388,7 +388,11 @@ BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
         WalletRescanReserver reserver(&wallet);
         reserver.reserve();
         BOOST_CHECK_EQUAL(nullBlock, wallet.ScanForWalletTransactions(oldTip, nullptr, reserver));
+#ifdef BUILD_BTC
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 100 * COIN);
+#else  // BUILD_EQB
+        BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 2283741896);
+#endif // END_BUILD
     }
 
     // Prune the older block file.
@@ -403,7 +407,11 @@ BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
         WalletRescanReserver reserver(&wallet);
         reserver.reserve();
         BOOST_CHECK_EQUAL(oldTip, wallet.ScanForWalletTransactions(oldTip, nullptr, reserver));
+#ifdef BUILD_BTC
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 50 * COIN);
+#else  // BUILD_EQB
+        BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 1148941487);
+#endif // END_BUILD
     }
 
     // Verify importmulti RPC returns failure for a key whose creation time is
@@ -531,7 +539,11 @@ BOOST_FIXTURE_TEST_CASE(coin_mark_dirty_immature_credit, TestChain100Setup)
     // credit amount is calculated.
     wtx.MarkDirty();
     wallet.AddKeyPubKey(coinbaseKey, coinbaseKey.GetPubKey());
+#ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), 50*COIN);
+#else  // BUILD_EQB
+    BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), 1134800409);
+#endif // END_BUILD
 }
 
 static int64_t AddTx(CWallet& wallet, uint32_t lockTime, int64_t mockTime, int64_t blockTime)
@@ -667,7 +679,11 @@ BOOST_FIXTURE_TEST_CASE(ListCoins, ListCoinsTestingSetup)
     BOOST_CHECK_EQUAL(list.begin()->second.size(), 1);
 
     // Check initial balance from one mature coinbase transaction.
+#ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(50 * COIN, wallet->GetAvailableBalance());
+#else  // BUILD_EQB
+    BOOST_CHECK_EQUAL(wallet->GetAvailableBalance(), 309851350);
+#endif // END_BUILD
 
     // Add a transaction creating a change address, and confirm ListCoins still
     // returns the coin associated with the change address underneath the
