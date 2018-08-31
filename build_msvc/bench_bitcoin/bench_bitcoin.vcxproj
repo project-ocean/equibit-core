@@ -21,7 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\bench\base58.cpp" />
-    <ClCompile Include="..\..\src\bench\bech32.cpp" />
     <ClCompile Include="..\..\src\bench\bench.cpp" />
     <ClCompile Include="..\..\src\bench\bench_bitcoin.cpp" />
     <ClCompile Include="..\..\src\bench\ccoins_caching.cpp" />
@@ -32,7 +31,7 @@
     <ClCompile Include="..\..\src\bench\examples.cpp" />
     <ClCompile Include="..\..\src\bench\lockedpool.cpp" />
     <ClCompile Include="..\..\src\bench\mempool_eviction.cpp" />
-    <ClCompile Include="..\..\src\bench\merkle_root.cpp" />
+    <ClCompile Include="..\..\src\bench\perf.cpp" />
     <ClCompile Include="..\..\src\bench\rollingbloom.cpp" />
     <ClCompile Include="..\..\src\bench\verify_script.cpp" />
   </ItemGroup>
@@ -180,7 +179,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\RezaSoltani\Repositories\microsoft\vcpkg\installed\x64-windows-static\lib;crypt32.lib;Iphlpapi.lib;ws2_32.lib;Shlwapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>crypt32.lib;Iphlpapi.lib;ws2_32.lib;Shlwapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -200,7 +199,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\RezaSoltani\Repositories\microsoft\vcpkg\installed\x64-windows-static\lib;crypt32.lib;Iphlpapi.lib;ws2_32.lib;Shlwapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>crypt32.lib;Iphlpapi.lib;ws2_32.lib;Shlwapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Target Name="RawBenchHeaderGen" BeforeTargets="PrepareForBuild">
