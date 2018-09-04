@@ -6,13 +6,13 @@ import re
 SOURCE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 libs = [
-    'libbitcoin_cli',
-    'libbitcoin_common',
-    'libbitcoin_crypto',
-    'libbitcoin_server',
-    'libbitcoin_util',
-    'libbitcoin_wallet',
-    'libbitcoin_zmq',
+    'libequibit_cli',
+    'libequibit_common',
+    'libequibit_crypto',
+    'libequibit_server',
+    'libequibit_util',
+    'libequibit_wallet',
+    'libequibit_zmq',
 ]
 
 ignore_list = [
@@ -45,6 +45,7 @@ def parse_makefile(makefile):
 
 
 def main():
+    print ("\n Warning: Ensure Makefiles and VS folders have the same file format. (ex. Bitcoin or Equibit) \n")
     for makefile_name in os.listdir(SOURCE_DIR):
         if 'Makefile' in makefile_name:
             parse_makefile(os.path.join(SOURCE_DIR, makefile_name))
