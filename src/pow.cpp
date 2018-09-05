@@ -75,6 +75,31 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
     return bnNew.GetCompact();
 }
 
+unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
+{
+    if (params.fPowNoRetargeting)
+        return pindexLast->nBits;
+
+    // Limit adjustment step
+    int64_t nActualTimespan = pindexLast->GetBlockTime() - nFirstBlockTime;
+    if (nActualTimespan < params.nPowTargetTimespan / 4)
+        nActualTimespan = params.nPowTargetTimespan / 4;
+    if (nActualTimespan > params.nPowTargetTimespan * 4)
+        nActualTimespan = params.nPowTargetTimespan * 4;
+
+    // Retarget
+    const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
+    arith_uint256 bnNew;
+    bnNew.SetCompact(pindexLast->nBits);
+    bnNew *= nActualTimespan;
+    bnNew /= params.nPowTargetTimespan;
+
+    if (bnNew > bnPowLimit)
+        bnNew = bnPowLimit;
+
+    return bnNew.GetCompact();
+}
+
 #else // BUILD_EQB
 
 #include "pow.h"
@@ -92,6 +117,11 @@ unsigned int GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const CBlockH
 {
     assert(pindexLast != nullptr);
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
+
+	// Short circuit
+    if (params.fPowNoRetargeting) {
+        return pindexLast->nBits;
+    }
 
     // Only change once per difficulty adjustment interval
     if ((pindexLast->nHeight + 1) % params.DifficultyAdjustmentInterval() != 0) {
@@ -118,7 +148,7 @@ unsigned int GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const CBlockH
     const CBlockIndex* pindexFirst = pindexLast->GetAncestor(nHeightFirst);
     assert(pindexFirst);
 
-    return CalculateNextWorkRequired(pindexLast, pindexFirst->GetBlockTime(), params);
+    return CalculateNextWorkRequired(pindexLast->nBits, params.powLimit, pindexFirst->GetBlockTime(), pindexLast->GetBlockTime(), params.nPowTargetTimespan);
 }
 
 unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const CBlockHeader* pblock, const Consensus::Params& params)
@@ -191,6 +221,31 @@ unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const 
     return bnNew.GetCompact();
 }
 
+unsigned int CalculateNextWorkRequired(uint32_t nBits, uint256 powLimit, int64_t nFirstBlockTime, int64_t nLastBlockTime, int64_t nPowTargetTimespan)
+{
+    assert(nLastBlockTime > nFirstBlockTime);
+
+    // Limit adjustment step
+    int64_t nActualTimespan = nLastBlockTime - nFirstBlockTime;
+
+    if (nActualTimespan < nPowTargetTimespan / 4)
+        nActualTimespan = nPowTargetTimespan / 4;
+    if (nActualTimespan > nPowTargetTimespan * 4)
+        nActualTimespan = nPowTargetTimespan * 4;
+
+    // Retarget
+    const arith_uint256 bnPowLimit = UintToArith256(powLimit);
+    arith_uint256 bnNew;
+    bnNew.SetCompact(nBits);
+    bnNew *= nActualTimespan;
+    bnNew /= nPowTargetTimespan;
+
+    if (bnNew > bnPowLimit)
+        bnNew = bnPowLimit;
+
+    return bnNew.GetCompact();
+}
+
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock, const Consensus::Params& params)
 {
     int dgw = GetNextWorkRequiredDGW(pindexLast, pblock, params);
@@ -221,29 +276,4 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&
         return false;
 
     return true;
-}
-
-unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
-{
-    if (params.fPowNoRetargeting)
-        return pindexLast->nBits;
-
-    // Limit adjustment step
-    int64_t nActualTimespan = pindexLast->GetBlockTime() - nFirstBlockTime;
-    if (nActualTimespan < params.nPowTargetTimespan / 4)
-        nActualTimespan = params.nPowTargetTimespan / 4;
-    if (nActualTimespan > params.nPowTargetTimespan * 4)
-        nActualTimespan = params.nPowTargetTimespan * 4;
-
-    // Retarget
-    const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
-    arith_uint256 bnNew;
-    bnNew.SetCompact(pindexLast->nBits);
-    bnNew *= nActualTimespan;
-    bnNew /= params.nPowTargetTimespan;
-
-    if (bnNew > bnPowLimit)
-        bnNew = bnPowLimit;
-
-    return bnNew.GetCompact();
 }
