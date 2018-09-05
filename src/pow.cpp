@@ -156,18 +156,23 @@ unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const 
     /* current difficulty formula, dash - DarkGravity v3, written by Evan Duffield - evan@dash.org */
     assert(pindexLast != nullptr);
 
+    // Short circuit
+    if (params.fPowNoRetargeting) {
+        return pindexLast->nBits;
+    }
+
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
-    int64_t nPastBlocks = 180; // ~3hr
+    int64_t nPastBlocks = params.DifficultyAdjustmentInterval();
 
     // make sure we have at least (nPastBlocks + 1) blocks, otherwise just return powLimit
     if (!pindexLast || pindexLast->nHeight < nPastBlocks) {
-        return bnPowLimit.GetCompact();
+        return nProofOfWorkLimit;
     }
 
     if (params.fPowAllowMinDifficultyBlocks && params.fPowNoRetargeting) {
         // Special difficulty rule:
-        // If the new block's timestamp is more than 2 * 1 minutes
+        // If the new block's timestamp is more than 2 * target spacing
         // then allow mining of a min-difficulty block.
         if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing * 2)
             return nProofOfWorkLimit;
@@ -199,26 +204,7 @@ unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const 
         }
     }
 
-    arith_uint256 bnNew(bnPastTargetAvg);
-
-    int64_t nActualTimespan = pindexLast->GetBlockTime() - pindex->GetBlockTime();
-    // NOTE: is this accurate? nActualTimespan counts it for (nPastBlocks - 1) blocks only...
-    int64_t nTargetTimespan = nPastBlocks * params.nPowTargetSpacing;
-
-    if (nActualTimespan < nTargetTimespan / 3)
-        nActualTimespan = nTargetTimespan / 3;
-    if (nActualTimespan > nTargetTimespan * 3)
-        nActualTimespan = nTargetTimespan * 3;
-
-    // Retarget
-    bnNew *= nActualTimespan;
-    bnNew /= nTargetTimespan;
-
-    if (bnNew > bnPowLimit) {
-        bnNew = bnPowLimit;
-    }
-
-    return bnNew.GetCompact();
+	return CalculateNextWorkRequired(bnPastTargetAvg.GetCompact(), params.powLimit, pindex->GetBlockTime(), pindexLast->GetBlockTime(), params.nPowTargetTimespan);
 }
 
 unsigned int CalculateNextWorkRequired(uint32_t nBits, uint256 powLimit, int64_t nFirstBlockTime, int64_t nLastBlockTime, int64_t nPowTargetTimespan)
@@ -254,6 +240,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
     LogPrint(BCLog::NET, "Block %s - version: %s: found next work required using DGW: [%s] (BTC would have been [%s]\t(%+d)\t(%0.3f%%)\t(%s sec))\n",
         pindexLast->nHeight + 1, pblock->nVersion, dgw, btc, btc - dgw, (float)(btc - dgw) * 100.0 / (float)dgw, pindexLast->GetBlockTime() - nPrevBlockTime);
+
     return dgw;
 }
 
