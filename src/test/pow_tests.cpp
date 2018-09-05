@@ -70,49 +70,45 @@ BOOST_AUTO_TEST_CASE(get_next_work_upper_limit_actual)
 /* Test calculation of next difficulty target with no constraints applying */
 BOOST_AUTO_TEST_CASE(get_next_work)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
-    const Consensus::Params& params = chainParams->GetConsensus();
-
+    uint256 powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    int64_t nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
     int64_t nFirstBlockTime = 1261130161;	// Block #30240
     int64_t nLastBlockTime = 1262152739;	// Block #32255
 
-    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1d00ffff, params.powLimit, nFirstBlockTime, nLastBlockTime, params.nPowTargetTimespan), 0x1d00d86a);
+    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1d00ffff, powLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespan), 0x1d00d86a);
 }
 
 /* Test the constraint on the upper bound for next work */
 BOOST_AUTO_TEST_CASE(get_next_work_pow_limit)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
-    const Consensus::Params& params = chainParams->GetConsensus();
-
+    uint256 powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    int64_t nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
     int64_t nFirstBlockTime = 1231006505; // Block #0
     int64_t nLastBlockTime = 1233061996;  // Block #2015
 
-    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1d00ffff, params.powLimit, nFirstBlockTime, nLastBlockTime, params.nPowTargetTimespan), 0x1d00ffff);
+    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1d00ffff, powLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespan), 0x1d00ffff);
 }
 
 /* Test the constraint on the lower bound for actual time taken */
 BOOST_AUTO_TEST_CASE(get_next_work_lower_limit_actual)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
-    const Consensus::Params& params = chainParams->GetConsensus();
-
+    uint256 powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    int64_t nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
     int64_t nFirstBlockTime = 1279008237; // Block #66528
     int64_t nLastBlockTime = 1279297671;  // Block #68543
 
-    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c05a3f4, params.powLimit, nFirstBlockTime, nLastBlockTime, params.nPowTargetTimespan), 0x1c0168fd);
+    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c05a3f4, powLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespan), 0x1c0168fd);
 }
 
 /* Test the constraint on the upper bound for actual time taken */
 BOOST_AUTO_TEST_CASE(get_next_work_upper_limit_actual)
 {
-    const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
-    const Consensus::Params& params = chainParams->GetConsensus();
-
+    uint256 powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    int64_t nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
     int64_t nFirstBlockTime = 1263163443; // NOTE: Not an actual block time
     int64_t nLastBlockTime = 1269211443;  // Block #46367
 
-    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c387f6f, params.powLimit, nFirstBlockTime, nLastBlockTime, params.nPowTargetTimespan), 0x1d00e1fd);
+    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c387f6f, powLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespan), 0x1d00e1fd);
 }
 
 #endif // END_BUILD

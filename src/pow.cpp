@@ -209,7 +209,7 @@ unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const 
 
 unsigned int CalculateNextWorkRequired(uint32_t nBits, uint256 powLimit, int64_t nFirstBlockTime, int64_t nLastBlockTime, int64_t nPowTargetTimespan)
 {
-    assert(nLastBlockTime > nFirstBlockTime);
+    assert(nLastBlockTime >= nFirstBlockTime);
 
     // Limit adjustment step
     int64_t nActualTimespan = nLastBlockTime - nFirstBlockTime;
