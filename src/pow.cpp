@@ -113,7 +113,7 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 #include "util.h"
 #include "validation.h"
 
-unsigned int GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const CBlockHeader* pblock, const Consensus::Params& params)
+unsigned int static GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const CBlockHeader* pblock, const Consensus::Params& params)
 {
     assert(pindexLast != nullptr);
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
@@ -170,7 +170,7 @@ unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const 
         return nProofOfWorkLimit;
     }
 
-    if (params.fPowAllowMinDifficultyBlocks && params.fPowNoRetargeting) {
+    if (params.fPowAllowMinDifficultyBlocks) {
         // Special difficulty rule:
         // If the new block's timestamp is more than 2 * target spacing
         // then allow mining of a min-difficulty block.
