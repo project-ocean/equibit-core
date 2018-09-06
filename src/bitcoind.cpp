@@ -76,8 +76,13 @@ bool AppInit(int argc, char* argv[])
         }
         else
         {
+#ifdef BUILD_BTC
             strUsage += "\n" + _("Usage:") + "\n" +
                   "  bitcoind [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
+#else // BUILD_EQB
+			strUsage += "\n" + _("Usage:") + "\n" +
+                        "  equibitd [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
+#endif // END_BUILD
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
         }

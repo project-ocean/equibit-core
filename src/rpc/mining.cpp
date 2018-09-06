@@ -159,7 +159,11 @@ UniValue generatetoaddress(const JSONRPCRequest& request)
             "\nMine blocks immediately to a specified address (before the RPC call returns)\n"
             "\nArguments:\n"
             "1. nblocks      (numeric, required) How many blocks are generated immediately.\n"
+#ifdef BUILD_BTC
             "2. address      (string, required) The address to send the newly generated bitcoin to.\n"
+#else // BUILD_EQB
+            "2. address      (string, required) The address to send the newly generated equibit to.\n"
+#endif // END_BUILD
             "3. maxtries     (numeric, optional) How many iterations to try (default = 1000000).\n"
             "\nResult:\n"
             "[ blockhashes ]     (array) hashes of blocks generated\n"
@@ -442,11 +446,18 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
 
     if (g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0)
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Bitcoin is not connected!");
+#ifdef BUILD_BTC
+		throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Bitcoin is not connected!");
+#else // BUILD_EQB
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Equibit is not connected!");
+#endif // END_BUILD
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Bitcoin is downloading blocks...");
-
+#ifdef BUILD_BTC
+		throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Bitcoin is downloading blocks...");
+#else // BUILD_EQB
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Equibit is downloading blocks...");
+#endif // END_BUILD
     static unsigned int nTransactionsUpdatedLast;
 
     if (!lpval.isNull())
@@ -794,7 +805,11 @@ UniValue estimatefee(const JSONRPCRequest& request)
 
     if (!IsDeprecatedRPCEnabled("estimatefee")) {
         throw JSONRPCError(RPC_METHOD_DEPRECATED, "estimatefee is deprecated and will be fully removed in v0.17. "
+#ifdef BUILD_BTC
             "To use estimatefee in v0.16, restart bitcoind with -deprecatedrpc=estimatefee.\n"
+#else  // BUILD_EQB
+            "To use estimatefee in v0.16, restart equibitd with -deprecatedrpc=estimatefee.\n"
+#endif // END_BUILD
             "Projects should transition to using estimatesmartfee before upgrading to v0.17");
     }
 

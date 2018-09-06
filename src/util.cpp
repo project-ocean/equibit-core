@@ -82,8 +82,16 @@
 // Application startup time (used for uptime calculation)
 const int64_t nStartupTime = GetTime();
 
+#ifdef BUILD_BTC
 const char * const BITCOIN_CONF_FILENAME = "bitcoin.conf";
+#else // BUILD_EQB
+const char* const BITCOIN_CONF_FILENAME = "equibit.conf";
+#endif // END_BUILD
+#ifdef BUILD_BTC
 const char * const BITCOIN_PID_FILENAME = "bitcoind.pid";
+#else // BUILD_EQB
+const char* const BITCOIN_PID_FILENAME = "equibitd.pid";
+#endif // END_BUILD
 const char * const DEFAULT_DEBUGLOGFILE = "debug.log";
 
 ArgsManager gArgs;
@@ -583,7 +591,11 @@ fs::path GetDefaultDataDir()
     // Unix: ~/.bitcoin
 #ifdef WIN32
     // Windows
+#ifdef BUILD_BTC
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Bitcoin";
+#else // BUILD_EQB
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Equibit";
+#endif // END_BUILD
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -593,10 +605,18 @@ fs::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
+#ifdef BUILD_BTC
     return pathRet / "Library/Application Support/Bitcoin";
+#else  // BUILD_EQB
+    return pathRet / "Library/Application Support/Equibit";
+#endif // END_BUILD
 #else
     // Unix
+#ifdef BUILD_BTC
     return pathRet / ".bitcoin";
+#else  // BUILD_EQB
+    return pathRet / ".equibit";
+#endif // END_BUILD
 #endif
 #endif
 }
@@ -948,8 +968,15 @@ std::string CopyrightHolders(const std::string& strPrefix)
     std::string strCopyrightHolders = strPrefix + strprintf(_(COPYRIGHT_HOLDERS), _(COPYRIGHT_HOLDERS_SUBSTITUTION));
 
     // Check for untranslated substitution to make sure Bitcoin Core copyright is not removed by accident
+#ifdef BUILD_BTC
     if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Bitcoin Core") == std::string::npos) {
         strCopyrightHolders += "\n" + strPrefix + "The Bitcoin Core developers";
+#else // BUILD_EQB
+    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Equibit Core") == std::string::npos) {
+        strCopyrightHolders += "\n" + strPrefix + "The Equibit Core developers";
+#endif // END_BUILD
+
+
     }
     return strCopyrightHolders;
 }

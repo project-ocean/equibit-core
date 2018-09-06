@@ -238,7 +238,11 @@ CTxMemPool mempool(&feeEstimator);
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 
+#ifdef BUILD_BTC
 const std::string strMessageMagic = "Bitcoin Signed Message:\n";
+#else // BUILD_EQB
+const std::string strMessageMagic = "Equibit Signed Message:\n";
+#endif // END_BUILD
 
 // Internal stuff
 namespace {

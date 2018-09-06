@@ -231,13 +231,23 @@ UniValue stop(const JSONRPCRequest& jsonRequest)
 {
     // Accept the deprecated and ignored 'detach' boolean argument
     if (jsonRequest.fHelp || jsonRequest.params.size() > 1)
+#ifdef BUILD_BTC
         throw std::runtime_error(
             "stop\n"
             "\nStop Bitcoin server.");
+#else // BUILD_EQB
+        throw std::runtime_error(
+            "stop\n"
+            "\nStop Equibit server.");
+#endif // END_BUILD
     // Event loop will exit after current HTTP requests have been handled, so
     // this reply will get back to the client.
     StartShutdown();
+#ifdef BUILD_BTC
     return "Bitcoin server stopping";
+#else // BUILD_EQB
+    return "Equibit server stopping";
+#endif // END_BUILD			 
 }
 
 UniValue uptime(const JSONRPCRequest& jsonRequest)
@@ -513,7 +523,11 @@ std::vector<std::string> CRPCTable::listCommands() const
 
 std::string HelpExampleCli(const std::string& methodname, const std::string& args)
 {
+#ifdef BUILD_BTC
     return "> bitcoin-cli " + methodname + " " + args + "\n";
+#else // BUILD_EQB
+    return "> equibit-cli " + methodname + " " + args + "\n";
+#endif // END_BUILD
 }
 
 std::string HelpExampleRpc(const std::string& methodname, const std::string& args)

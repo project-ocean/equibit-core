@@ -120,7 +120,11 @@ UniValue getrawtransaction(const JSONRPCRequest& request)
             "         \"reqSigs\" : n,            (numeric) The required sigs\n"
             "         \"type\" : \"pubkeyhash\",  (string) The type, eg 'pubkeyhash'\n"
             "         \"addresses\" : [           (json array of string)\n"
-            "           \"address\"        (string) bitcoin address\n"
+#ifdef BUILD_BTC
+                            "           \"address\"        (string) bitcoin address\n"
+#else // BUILD_EQB
+                            "           \"address\"        (string) equibit address\n"
+#endif // END_BUILD			 
             "           ,...\n"
             "         ]\n"
             "       }\n"
@@ -342,8 +346,14 @@ UniValue createrawtransaction(const JSONRPCRequest& request)
             "     ]\n"
             "2. \"outputs\"               (object, required) a json object with outputs\n"
             "    {\n"
-            "      \"address\": x.xxx,    (numeric or string, required) The key is the bitcoin address, the numeric value (can be string) is the " + CURRENCY_UNIT + " amount\n"
-            "      \"data\": \"hex\"      (string, required) The key is \"data\", the value is hex encoded data\n"
+#ifdef BUILD_BTC
+            "      \"address\": x.xxx,    (numeric or string, required) The key is the bitcoin address, the numeric value (can be string) is the " +
+            CURRENCY_UNIT + " amount\n"
+#else // BUILD_EQB
+            "      \"address\": x.xxx,    (numeric or string, required) The key is the equibit address, the numeric value (can be string) is the " +
+            CURRENCY_UNIT + " amount\n"
+#endif // END_BUILD
+			"      \"data\": \"hex\"      (string, required) The key is \"data\", the value is hex encoded data\n"
             "      ,...\n"
             "    }\n"
             "3. locktime                  (numeric, optional, default=0) Raw locktime. Non-0 value also locktime-activates inputs\n"
@@ -427,7 +437,11 @@ UniValue createrawtransaction(const JSONRPCRequest& request)
         } else {
             CTxDestination destination = DecodeDestination(name_);
             if (!IsValidDestination(destination)) {
+#ifdef BUILD_BTC
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + name_);
+#else // BUILD_EQB
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Equibit address: ") + name_);
+#endif // END_BUILD
             }
 
             if (!destinations.insert(destination).second) {
@@ -492,7 +506,11 @@ UniValue decoderawtransaction(const JSONRPCRequest& request)
             "         \"reqSigs\" : n,            (numeric) The required sigs\n"
             "         \"type\" : \"pubkeyhash\",  (string) The type, eg 'pubkeyhash'\n"
             "         \"addresses\" : [           (json array of string)\n"
-            "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) bitcoin address\n"
+#ifdef BUILD_BTC
+                            "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) bitcoin address\n"
+#else // BUILD_EQB
+                            "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) equibit address\n"
+#endif // END_BUILD
             "           ,...\n"
             "         ]\n"
             "       }\n"
@@ -539,7 +557,11 @@ UniValue decodescript(const JSONRPCRequest& request)
             "  \"type\":\"type\", (string) The output type\n"
             "  \"reqSigs\": n,    (numeric) The required signatures\n"
             "  \"addresses\": [   (json array of string)\n"
+#ifdef BUILD_BTC
             "     \"address\"     (string) bitcoin address\n"
+#else // BUILD_EQB
+            "     \"address\"     (string) equibit address\n"
+#endif // END_BUILD			 
             "     ,...\n"
             "  ],\n"
             "  \"p2sh\",\"address\" (string) address of P2SH script wrapping this redeem script (not returned if the script is already a P2SH).\n"
