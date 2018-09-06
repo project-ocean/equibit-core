@@ -45,6 +45,7 @@ def parse_makefile(makefile):
 
 
 def main():
+
     print ("\n Warning: Ensure Makefiles and VS folders have the same file format. (ex. Bitcoin or Equibit) \n")
     for makefile_name in os.listdir(SOURCE_DIR):
         if 'Makefile' in makefile_name:
