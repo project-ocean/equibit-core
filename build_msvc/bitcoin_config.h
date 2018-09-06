@@ -343,10 +343,18 @@
 #define PACKAGE_BUGREPORT "https://github.com/bitcoin/bitcoin/issues"
 
 /* Define to the full name of this package. */
+#ifdef BUILD_BTC
 #define PACKAGE_NAME "Bitcoin Core"
+#else // BUILD_EQB
+#define PACKAGE_NAME "Equibit Core"
+#endif // END_BUILD
 
 /* Define to the full name and version of this package. */
+#ifdef BUILD_BTC
 #define PACKAGE_STRING "Bitcoin Core 0.16.2"
+#else // BUILD_EQB
+#define PACKAGE_STRING "Equibit Core 0.16.2"
+#endif // END_BUILD
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "bitcoin"
