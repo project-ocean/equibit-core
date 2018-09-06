@@ -369,6 +369,12 @@ static void AddKey(CWallet& wallet, const CKey& key)
     wallet.AddKeyPubKey(key, key.GetPubKey());
 }
 
+#ifndef BUILD_BTC
+static const CAmount    BLOCK_140000_REWARD = 1134800409;   // Reward for block #100 in RegTest (equivalent to block #140,000 in MainNet)
+static const CAmount    BLOCK_141400_REWARD = 1148941487;   // Reward for block #101 in RegTest (equivalent to block #141,400 in MainNet)
+static const CAmount      BLOCK_1400_REWARD =  309851350;   // Reward for block #  1 in RegTest (equivalent to block #  1,400 in MainNet)
+#endif // END_BUILD
+
 BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
 {
     // Cap last block file size, and mine new block in a new block file.
@@ -391,7 +397,7 @@ BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
 #ifdef BUILD_BTC
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 100 * COIN);
 #else  // BUILD_EQB
-        BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 2283741896);
+        BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), BLOCK_140000_REWARD + BLOCK_141400_REWARD);
 #endif // END_BUILD
     }
 
@@ -410,7 +416,7 @@ BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
 #ifdef BUILD_BTC
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 50 * COIN);
 #else  // BUILD_EQB
-        BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 1148941487);
+        BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), BLOCK_141400_REWARD);
 #endif // END_BUILD
     }
 
@@ -542,7 +548,7 @@ BOOST_FIXTURE_TEST_CASE(coin_mark_dirty_immature_credit, TestChain100Setup)
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), 50*COIN);
 #else  // BUILD_EQB
-    BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), 1134800409);
+    BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), BLOCK_140000_REWARD);
 #endif // END_BUILD
 }
 
@@ -682,7 +688,7 @@ BOOST_FIXTURE_TEST_CASE(ListCoins, ListCoinsTestingSetup)
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(50 * COIN, wallet->GetAvailableBalance());
 #else  // BUILD_EQB
-    BOOST_CHECK_EQUAL(wallet->GetAvailableBalance(), 309851350);
+    BOOST_CHECK_EQUAL(wallet->GetAvailableBalance(), BLOCK_1400_REWARD);
 #endif // END_BUILD
 
     // Add a transaction creating a change address, and confirm ListCoins still
