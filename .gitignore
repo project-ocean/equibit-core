@@ -135,4 +135,4 @@ contrib/devtools/split-debug.sh
 
 # PyCharm specific
 .idea
-eqbtest/.idea
+eqbtest/.idea/*
