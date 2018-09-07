@@ -1,7 +1,7 @@
 dist_man1_MANS=
 
 if BUILD_EQUIBITD
-  dist_man1_MANS+=equibit.1
+  dist_man1_MANS+=equibitd.1
 endif
 
 if ENABLE_QT
