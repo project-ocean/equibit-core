@@ -149,7 +149,7 @@ class BitcoinTestFramework():
                 node.cleanup_on_exit = False
             self.log.info("Note: bitcoinds were not stopped and may still be running")
 
-        if not self.options.nocleanup and not self.options.noshutdown and success != TestStatus.FAILED:
+        if not self.options.nocleanup and not self.options.noshutdown and success != TestStatus.FAILED and not sys.platform == "win32":
             self.log.info("Cleaning up")
             shutil.rmtree(self.options.tmpdir)
         else:

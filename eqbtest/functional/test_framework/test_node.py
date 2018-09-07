@@ -13,6 +13,7 @@ import os
 import re
 import subprocess
 import time
+import sys
 
 from .authproxy import JSONRPCException
 from .util import (
@@ -52,8 +53,12 @@ class TestNode():
         else:
             # Wait for up to 60 seconds for the RPC server to respond
             self.rpc_timeout = 60
+
+        # Executable file extension
+        binary_ext = ".exe" if sys.platform == "win32" else ""
+
         if binary is None:
-            self.binary = os.getenv("BITCOIND", "bitcoind")
+            self.binary = os.getenv("BITCOIND", "bitcoind" + binary_ext)
         else:
             self.binary = binary
         self.stderr = stderr
@@ -62,7 +67,7 @@ class TestNode():
         self.extra_args = extra_args
         self.args = [self.binary, "-datadir=" + self.datadir, "-server", "-keypool=1", "-discover=0", "-rest", "-logtimemicros", "-debug", "-debugexclude=libevent", "-debugexclude=leveldb", "-mocktime=" + str(mocktime), "-uacomment=testnode%d" % i]
 
-        self.cli = TestNodeCLI(os.getenv("BITCOINCLI", "bitcoin-cli"), self.datadir)
+        self.cli = TestNodeCLI(os.getenv("BITCOINCLI", "bitcoin-cli" + binary_ext), self.datadir)
         self.use_cli = use_cli
 
         self.running = False
