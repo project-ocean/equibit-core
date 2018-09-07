@@ -67,48 +67,61 @@ BOOST_AUTO_TEST_CASE(get_next_work_upper_limit_actual)
 
 #else // BUILD_EQB
 
-/* Test calculation of next difficulty target with no constraints applying */
-BOOST_AUTO_TEST_CASE(get_next_work)
-{
-    uint256 powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-    int64_t nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
-    int64_t nFirstBlockTime = 1261130161;	// Block #30240
-    int64_t nLastBlockTime = 1262152739;	// Block #32255
+static uint256 StandardPowLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // From CMainParams
+static uint256 TestPowTarget = uint256S("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff");
 
-    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1d00ffff, powLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespan), 0x1d00d86a);
+static int64_t nPowTargetTimespanBTC = 14 * 24 * 60 * 60;   // two weeks
+static int64_t nPowTargetTimespanDWG = 24 * 60 * 60;        // 1 day
+
+/* Test calculation of next difficulty target with no constraints applying */
+BOOST_AUTO_TEST_CASE(get_next_work_125_percent)
+{
+    int64_t nFirstBlockTime = 1000000000;      // arbitrary start time
+    int64_t nLastBlockTime = nFirstBlockTime + nPowTargetTimespanDWG * 5/4;
+
+    arith_uint256 bnPowInitial = UintToArith256(TestPowTarget);
+    arith_uint256 bnPowExpected = UintToArith256(TestPowTarget) * 5 / 4;
+    uint32_t nBitsExpected = bnPowExpected.GetCompact();
+
+    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);    
+    uint32_t nBitsDiff = abs(int(nBitsExpected - nBitsNew));
+               
+    BOOST_CHECK_LT(nBitsDiff, 2);
+}
+
+BOOST_AUTO_TEST_CASE(get_next_work_btc)
+{
+    int64_t nFirstBlockTime = 1261130161;   // Block #30240
+    int64_t nLastBlockTime = 1262152739;    // Block #32255
+
+    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1d00ffff, StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanBTC), 0x1d00d86a);
 }
 
 /* Test the constraint on the upper bound for next work */
-BOOST_AUTO_TEST_CASE(get_next_work_pow_limit)
+BOOST_AUTO_TEST_CASE(get_next_work_pow_limit_btc)
 {
-    uint256 powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-    int64_t nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
     int64_t nFirstBlockTime = 1231006505; // Block #0
     int64_t nLastBlockTime = 1233061996;  // Block #2015
 
-    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1d00ffff, powLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespan), 0x1d00ffff);
+    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1d00ffff, StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanBTC), 0x1d00ffff);
 }
 
 /* Test the constraint on the lower bound for actual time taken */
-BOOST_AUTO_TEST_CASE(get_next_work_lower_limit_actual)
+BOOST_AUTO_TEST_CASE(get_next_work_lower_limit_actual_btc)
 {
-    uint256 powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-    int64_t nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
     int64_t nFirstBlockTime = 1279008237; // Block #66528
     int64_t nLastBlockTime = 1279297671;  // Block #68543
 
-    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c05a3f4, powLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespan), 0x1c0168fd);
+    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c05a3f4, StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanBTC), 0x1c0168fd);
 }
 
 /* Test the constraint on the upper bound for actual time taken */
-BOOST_AUTO_TEST_CASE(get_next_work_upper_limit_actual)
+BOOST_AUTO_TEST_CASE(get_next_work_upper_limit_actual_btc)
 {
-    uint256 powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-    int64_t nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
     int64_t nFirstBlockTime = 1263163443; // NOTE: Not an actual block time
     int64_t nLastBlockTime = 1269211443;  // Block #46367
 
-    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c387f6f, powLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespan), 0x1d00e1fd);
+    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c387f6f, StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanBTC), 0x1d00e1fd);
 }
 
 #endif // END_BUILD

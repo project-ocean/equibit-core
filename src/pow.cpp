@@ -204,7 +204,7 @@ unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const 
         }
     }
 
-	return CalculateNextWorkRequired(bnPastTargetAvg.GetCompact(), params.powLimit, pindex->GetBlockTime(), pindexLast->GetBlockTime(), params.nPowTargetTimespan);
+    return CalculateNextWorkRequired(bnPastTargetAvg.GetCompact(), params.powLimit, pindex->GetBlockTime(), pindexLast->GetBlockTime(), params.nPowTargetTimespan);
 }
 
 unsigned int CalculateNextWorkRequired(uint32_t nBits, uint256 powLimit, int64_t nFirstBlockTime, int64_t nLastBlockTime, int64_t nPowTargetTimespan)
