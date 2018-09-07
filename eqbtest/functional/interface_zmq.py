@@ -6,6 +6,7 @@
 import configparser
 import os
 import struct
+import sys
 
 from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.mininode import CTransaction
@@ -48,11 +49,12 @@ class ZMQTest (BitcoinTestFramework):
         # Check that bitcoin has been built with ZMQ enabled.
         config = configparser.ConfigParser()
         if not self.options.configfile:
-            self.options.configfile = os.path.abspath(os.path.join(os.path.dirname(__file__), "../config.ini"))
+            dir_separator = "\\" if sys.platform == "win32" else "/"
+            self.options.configfile = os.path.abspath(os.path.join(os.path.dirname(__file__), "..{}config.ini".format(dir_separator)))
         config.read_file(open(self.options.configfile))
 
         if not config["components"].getboolean("ENABLE_ZMQ"):
-            raise SkipTest("bitcoind has not been built with zmq enabled.")
+            raise SkipTest("equibitd has not been built with zmq enabled.")
 
         # Initialize ZMQ context and socket.
         # All messages are received in the same socket which means

@@ -28,7 +28,8 @@ import sys
 def main():
     config = configparser.ConfigParser()
     config.optionxform = str
-    config.readfp(open(os.path.join(os.path.dirname(__file__), "../config.ini")))
+    dir_separator = "\\" if sys.platform == "win32" else "/"
+    config.readfp(open(os.path.join(os.path.dirname(__file__), "..{}config.ini".format(dir_separator))))
     env_conf = dict(config.items('environment'))
 
     parser = argparse.ArgumentParser(description=__doc__)

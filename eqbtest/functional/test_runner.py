@@ -138,11 +138,6 @@ BASE_SCRIPTS= [
     # Put them in a random line within the section that fits their approximate run-time
 ]
 
-BASE_SCRIPTS = [
-    'rpc_net.py',
-    'rpc_uptime.py'
-]
-
 EXTENDED_SCRIPTS = [
     # These tests are not run by the travis build process.
     # Longest test should go first, to favor running tests in parallel
@@ -236,7 +231,7 @@ def main():
         sys.exit(0)
 
     if not (enable_wallet and enable_utils and enable_bitcoind):
-        print("No functional tests to run. Wallet, utils, and bitcoind must all be enabled")
+        print("No functional tests to run. Wallet, utils, and equibitd must all be enabled")
         print("Rerun `configure` with -enable-wallet, -with-utils and -with-daemon and rerun make")
         sys.exit(0)
 
@@ -277,22 +272,22 @@ def main():
     if args.help:
         # Print help for test_runner.py, then print help of the first script (with args removed) and exit.
         parser.print_help()
-        subprocess.check_call([(config["environment"]["SRCDIR"] + '{}test{}functional{}'.format(dir_separator, dir_separator, dir_separator) + test_list[0].split()[0])] + ['-h'])
+        subprocess.check_call([(config["environment"]["SRCDIR"] + '{}eqbtest{}functional{}'.format(dir_separator, dir_separator, dir_separator) + test_list[0].split()[0])] + ['-h'])
         sys.exit(0)
 
     check_script_list(config["environment"]["SRCDIR"])
     check_script_prefixes()
 
     if not args.keepcache:
-        shutil.rmtree("%s/test/cache" % config["environment"]["BUILDDIR"], ignore_errors=True)
+        shutil.rmtree("{}{}eqbtest{}cache".format(config["environment"]["BUILDDIR"], dir_separator, dir_separator), ignore_errors=True)
 
     run_tests(test_list, config["environment"]["SRCDIR"], config["environment"]["BUILDDIR"], config["environment"]["EXEEXT"], tmpdir, args.jobs, args.coverage, passon_args, args.combinedlogslen)
 
 def run_tests(test_list, src_dir, build_dir, exeext, tmpdir, jobs=1, enable_coverage=False, args=[], combined_logs_len=0):
     # Warn if bitcoind is already running (unix only)
     try:
-        if subprocess.check_output(["pidof", "bitcoind"]) is not None:
-            print("%sWARNING!%s There is already a bitcoind process running on this system. Tests may fail unexpectedly due to resource contention!" % (BOLD[1], BOLD[0]))
+        if subprocess.check_output(["pidof", "equibitd"]) is not None:
+            print("%sWARNING!%s There is already an equibitd process running on this system. Tests may fail unexpectedly due to resource contention!" % (BOLD[1], BOLD[0]))
     except (OSError, subprocess.SubprocessError):
         pass
 
@@ -307,8 +302,8 @@ def run_tests(test_list, src_dir, build_dir, exeext, tmpdir, jobs=1, enable_cove
 
     #Set env vars
     if "BITCOIND" not in os.environ:
-        os.environ["BITCOIND"] = build_dir + dir_separator + 'src' + dir_separator + 'bitcoind' + exeext
-        os.environ["BITCOINCLI"] = build_dir + dir_separator + 'src' + dir_separator + 'bitcoin-cli' + exeext
+        os.environ["BITCOIND"] = build_dir + dir_separator + 'src' + dir_separator + 'equibitd' + exeext
+        os.environ["BITCOINCLI"] = build_dir + dir_separator + 'src' + dir_separator + 'equibit-cli' + exeext
 
     tests_dir = src_dir + dir_separator + 'test' + dir_separator + dir_separator + 'functional' + dir_separator
 
@@ -527,7 +522,7 @@ def check_script_list(src_dir):
     # Adjust directory naming format
     dir_separator = "\\" if sys.platform == "win32" else "/"
 
-    script_dir = src_dir + '{}test{}functional{}'.format(dir_separator, dir_separator, dir_separator)
+    script_dir = src_dir + '{}eqbtest{}functional{}'.format(dir_separator, dir_separator, dir_separator)
     python_files = set([t for t in os.listdir(script_dir) if t[-3:] == ".py"])
     missed_tests = list(python_files - set(map(lambda x: x.split()[0], ALL_SCRIPTS + NON_SCRIPTS)))
     if len(missed_tests) != 0:
