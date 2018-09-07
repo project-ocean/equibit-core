@@ -67,6 +67,9 @@ BOOST_AUTO_TEST_CASE(get_next_work_upper_limit_actual)
 
 #else // BUILD_EQB
 
+
+static int64_t FirstBlockTime = 1000000000; // arbitrary start time
+
 static uint256 StandardPowLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // From CMainParams
 static uint256 TestPowTarget = uint256S("0000000000000000ffffffffffffffffffffffffffffffffffffffffffffffff");
 
@@ -79,17 +82,29 @@ static int64_t nPowTargetTimespanDWG = 24 * 60 * 60;        // 1 day
 // https://bitcoin.org/en/developer-reference#target-nbits
 const double DiffThreshold = 1.e-6;
 
-/* Test calculation of next difficulty target with no constraints applying */
+BOOST_AUTO_TEST_CASE(get_next_work_10_percent)
+{
+    int64_t nLastBlockTime = FirstBlockTime + nPowTargetTimespanDWG / 10;
+
+    arith_uint256 bnPowInitial = UintToArith256(TestPowTarget);
+    arith_uint256 bnPowExpected = UintToArith256(TestPowTarget) / 4; // Everything below 1/4 should be treated like 1/4
+    uint32_t nBitsExpected = bnPowExpected.GetCompact();
+
+    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, FirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
+    double bitsDiff = fabs(log(1.0 * nBitsNew / nBitsExpected));
+
+    BOOST_CHECK_LT(bitsDiff, DiffThreshold);
+}
+
 BOOST_AUTO_TEST_CASE(get_next_work_30_percent)
 {
-    int64_t nFirstBlockTime = 1000000000; // arbitrary start time
-    int64_t nLastBlockTime = nFirstBlockTime + nPowTargetTimespanDWG * 3 / 10;
+    int64_t nLastBlockTime = FirstBlockTime + nPowTargetTimespanDWG * 3 / 10;
 
     arith_uint256 bnPowInitial = UintToArith256(TestPowTarget);
     arith_uint256 bnPowExpected = UintToArith256(TestPowTarget) * 3 / 10;
     uint32_t nBitsExpected = bnPowExpected.GetCompact();
 
-    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
+    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, FirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
     uint32_t nBitsDiff = abs(int(nBitsExpected - nBitsNew));
     double bitsDiff = fabs(log(1.0 * nBitsNew / nBitsExpected));
 
@@ -98,14 +113,13 @@ BOOST_AUTO_TEST_CASE(get_next_work_30_percent)
 
 BOOST_AUTO_TEST_CASE(get_next_work_80_percent)
 {
-    int64_t nFirstBlockTime = 1000000000; // arbitrary start time
-    int64_t nLastBlockTime = nFirstBlockTime + nPowTargetTimespanDWG * 4 / 5;
+    int64_t nLastBlockTime = FirstBlockTime + nPowTargetTimespanDWG * 4 / 5;
 
     arith_uint256 bnPowInitial = UintToArith256(TestPowTarget);
     arith_uint256 bnPowExpected = UintToArith256(TestPowTarget) * 4 / 5;
     uint32_t nBitsExpected = bnPowExpected.GetCompact();
 
-    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
+    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, FirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
     double bitsDiff = fabs(log(1.0 * nBitsNew / nBitsExpected));
 
     BOOST_CHECK_LT(bitsDiff, DiffThreshold);
@@ -113,14 +127,13 @@ BOOST_AUTO_TEST_CASE(get_next_work_80_percent)
 
 BOOST_AUTO_TEST_CASE(get_next_work_125_percent)
 {
-    int64_t nFirstBlockTime = 1000000000; // arbitrary start time
-    int64_t nLastBlockTime = nFirstBlockTime + nPowTargetTimespanDWG * 5 / 4;
+    int64_t nLastBlockTime = FirstBlockTime + nPowTargetTimespanDWG * 5 / 4;
 
     arith_uint256 bnPowInitial = UintToArith256(TestPowTarget);
     arith_uint256 bnPowExpected = UintToArith256(TestPowTarget) * 5 / 4;
     uint32_t nBitsExpected = bnPowExpected.GetCompact();
 
-    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
+    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, FirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
     double bitsDiff = fabs(log(1.0 * nBitsNew / nBitsExpected));
 
     BOOST_CHECK_LT(bitsDiff, DiffThreshold);
@@ -128,19 +141,36 @@ BOOST_AUTO_TEST_CASE(get_next_work_125_percent)
 
 BOOST_AUTO_TEST_CASE(get_next_work_300_percent)
 {
-    int64_t nFirstBlockTime = 1000000000; // arbitrary start time
-    int64_t nLastBlockTime = nFirstBlockTime + nPowTargetTimespanDWG * 3;
+    int64_t nLastBlockTime = FirstBlockTime + nPowTargetTimespanDWG * 3;
 
     arith_uint256 bnPowInitial = UintToArith256(TestPowTarget);
     arith_uint256 bnPowExpected = UintToArith256(TestPowTarget) * 3;
     uint32_t nBitsExpected = bnPowExpected.GetCompact();
 
-    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
+    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, FirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
     double bitsDiff = fabs(log(1.0 * nBitsNew / nBitsExpected));
 
     BOOST_CHECK_LT(bitsDiff, DiffThreshold);
 }
 
+BOOST_AUTO_TEST_CASE(get_next_work_500_percent)
+{
+    int64_t nLastBlockTime = FirstBlockTime + nPowTargetTimespanDWG * 5;
+
+    arith_uint256 bnPowInitial = UintToArith256(TestPowTarget);
+    arith_uint256 bnPowExpected = UintToArith256(TestPowTarget) * 4; // Everything above 4x should be treated like 4x
+    uint32_t nBitsExpected = bnPowExpected.GetCompact();
+
+    uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, FirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
+    double bitsDiff = fabs(log(1.0 * nBitsNew / nBitsExpected));
+
+    BOOST_CHECK_LT(bitsDiff, DiffThreshold);
+}
+
+// BTC legacy tests below, functionally idential to the ones in the BUILD_BTC conditional compilation block above
+// but updated with the new function signature.
+
+/* Test calculation of next difficulty target with no constraints applying */
 BOOST_AUTO_TEST_CASE(get_next_work_btc)
 {
     int64_t nFirstBlockTime = 1261130161;   // Block #30240
