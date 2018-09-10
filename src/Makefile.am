@@ -64,12 +64,12 @@ noinst_PROGRAMS =
 TESTS =
 BENCHMARKS =
 
-if BUILD_EQUIBITD
-  bin_PROGRAMS += equibitd
+if BUILD_BITCOIND
+  bin_PROGRAMS += bitcoind
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += equibit-cli equibit-tx
+  bin_PROGRAMS += bitcoin-cli bitcoin-tx
 endif
 
 .PHONY: FORCE check-symbols check-security
@@ -183,7 +183,7 @@ obj/build.h: FORCE
 	  "$(abs_top_srcdir)"
 libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
-# server: shared between equibitd and equibit-qt
+# server: shared between bitcoind and bitcoin-qt
 libbitcoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libbitcoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_server_a_SOURCES = \
@@ -237,7 +237,7 @@ libbitcoin_zmq_a_SOURCES = \
 endif
 
 
-# wallet: shared between equibitd and equibitd-qt, but only linked
+# wallet: shared between bitcoind and bitcoin-qt, but only linked
 # when wallet enabled
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -315,7 +315,7 @@ libbitcoin_consensus_a_SOURCES = \
   utilstrencodings.h \
   version.h
 
-# common: shared between equibitd, and equibit-qt and non-server tools
+# common: shared between bitcoind, and bitcoin-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_common_a_SOURCES = \
@@ -367,7 +367,7 @@ if GLIBC_BACK_COMPAT
 libbitcoin_util_a_SOURCES += compat/glibc_compat.cpp
 endif
 
-# cli: shared between equibit-cli and equibit-qt
+# cli: shared between bitcoin-cli and bitcoin-qt
 libbitcoin_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_cli_a_SOURCES = \
@@ -377,17 +377,17 @@ libbitcoin_cli_a_SOURCES = \
 nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# equibitd binary #
-equibitd_SOURCES = bitcoind.cpp
-equibitd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-equibitd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-equibitd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# bitcoind binary #
+bitcoind_SOURCES = bitcoind.cpp
+bitcoind_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+bitcoind_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+bitcoind_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-equibitd_SOURCES += bitcoind-res.rc
+bitcoind_SOURCES += bitcoind-res.rc
 endif
 
-equibitd_LDADD = \
+bitcoind_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_COMMON) \
   $(LIBUNIVALUE) \
@@ -401,38 +401,38 @@ equibitd_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-equibitd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
+bitcoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
 
-# equibit-cli binary #
-equibit_cli_SOURCES = bitcoin-cli.cpp
-equibit_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-equibit_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-equibit_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# bitcoin-cli binary #
+bitcoin_cli_SOURCES = bitcoin-cli.cpp
+bitcoin_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+bitcoin_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+bitcoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-equibit_cli_SOURCES += bitcoin-cli-res.rc
+bitcoin_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
-equibit_cli_LDADD = \
+bitcoin_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
 
-equibit_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
+bitcoin_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
 
 # bitcoin-tx binary #
-equibit_tx_SOURCES = bitcoin-tx.cpp
-equibit_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-equibit_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-equibit_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+bitcoin_tx_SOURCES = bitcoin-tx.cpp
+bitcoin_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+bitcoin_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+bitcoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-equibit_tx_SOURCES += bitcoin-tx-res.rc
+bitcoin_tx_SOURCES += bitcoin-tx-res.rc
 endif
 
-equibit_tx_LDADD = \
+bitcoin_tx_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UTIL) \
@@ -440,7 +440,7 @@ equibit_tx_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-equibit_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+bitcoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 #
 
 # bitcoinconsensus library #
