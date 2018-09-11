@@ -159,6 +159,27 @@
     <ClCompile Include="..\..\src\crypto\sha1.cpp" />
     <ClCompile Include="..\..\src\crypto\sha256.cpp" />
     <ClCompile Include="..\..\src\crypto\sha512.cpp" />
+    <ClCompile Include="..\..\src\edc\sha3\KeccakHash.cpp" />
+    <ClCompile Include="..\..\src\edc\sha3\KeccakP-1600-opt64.cpp" />
+    <ClCompile Include="..\..\src\edc\sha3\KeccakSpongeWidth1600.cpp" />
+    <ClCompile Include="..\..\src\edc\sha3\SimpleFIPS202.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\edc\sha3\align.h" />
+    <ClInclude Include="..\..\src\edc\sha3\brg_endian.h" />
+    <ClInclude Include="..\..\src\edc\sha3\KeccakHash.h" />
+    <ClInclude Include="..\..\src\edc\sha3\KeccakP-1600-opt64-config.h" />
+    <ClInclude Include="..\..\src\edc\sha3\KeccakP-1600-SnP.h" />
+    <ClInclude Include="..\..\src\edc\sha3\KeccakSponge-common.h" />
+    <ClInclude Include="..\..\src\edc\sha3\KeccakSpongeWidth1600.h" />
+    <ClInclude Include="..\..\src\edc\sha3\sha3.h" />
+    <ClInclude Include="..\..\src\edc\sha3\SimpleFIPS202.h" />
+    <ClInclude Include="..\..\src\edc\sha3\SnP-Relaned.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\edc\sha3\KeccakP-1600-64.macros" />
+    <None Include="..\..\src\edc\sha3\KeccakP-1600-unrolling.macros" />
+    <None Include="..\..\src\edc\sha3\KeccakSponge.inc" />
   </ItemGroup>
   <Import Label="configTarget" Project="..\common.vcxproj" />
 </Project>
