@@ -1,6 +1,6 @@
 dist_man1_MANS=
 
-if BUILD_EQUIBITD
+if BUILD_BITCOIND
   dist_man1_MANS+=equibitd.1
 endif
 
