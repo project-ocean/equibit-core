@@ -305,7 +305,7 @@ def run_tests(test_list, src_dir, build_dir, exeext, tmpdir, jobs=1, enable_cove
         os.environ["BITCOIND"] = build_dir + dir_separator + 'src' + dir_separator + 'equibitd' + exeext
         os.environ["BITCOINCLI"] = build_dir + dir_separator + 'src' + dir_separator + 'equibit-cli' + exeext
 
-    tests_dir = src_dir + dir_separator + 'test' + dir_separator + dir_separator + 'functional' + dir_separator
+    tests_dir = src_dir + dir_separator + 'eqbtest' + dir_separator + 'functional' + dir_separator
 
     flags = ["--srcdir={}{}src".format(build_dir, dir_separator)] + args
     flags.append("--cachedir=%s" % cache_dir)
