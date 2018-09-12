@@ -163,7 +163,7 @@ unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const 
 
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
-    int64_t nPastBlocks = params.DifficultyAdjustmentInterval();
+    int64_t nPastBlocks = params.DifficultyAdjustmentInterval() + 1;
 
     // make sure we have at least (nPastBlocks + 1) blocks, otherwise just return powLimit
     if (!pindexLast || pindexLast->nHeight < nPastBlocks) {
@@ -204,7 +204,7 @@ unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const 
         }
     }
 
-	return CalculateNextWorkRequired(bnPastTargetAvg.GetCompact(), params.powLimit, pindex->GetBlockTime(), pindexLast->GetBlockTime(), params.nPowTargetTimespan);
+    return CalculateNextWorkRequired(bnPastTargetAvg.GetCompact(), params.powLimit, pindex->GetBlockTime(), pindexLast->GetBlockTime(), params.nPowTargetTimespan);
 }
 
 unsigned int CalculateNextWorkRequired(uint32_t nBits, uint256 powLimit, int64_t nFirstBlockTime, int64_t nLastBlockTime, int64_t nPowTargetTimespan)
@@ -223,12 +223,13 @@ unsigned int CalculateNextWorkRequired(uint32_t nBits, uint256 powLimit, int64_t
     const arith_uint256 bnPowLimit = UintToArith256(powLimit);
     arith_uint256 bnNew;
     bnNew.SetCompact(nBits);
+    
     bnNew *= nActualTimespan;
     bnNew /= nPowTargetTimespan;
 
     if (bnNew > bnPowLimit)
         bnNew = bnPowLimit;
-
+    
     return bnNew.GetCompact();
 }
 
