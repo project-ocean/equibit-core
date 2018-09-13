@@ -274,7 +274,25 @@ crypto_libbitcoin_crypto_a_SOURCES = \
   crypto/sha256.cpp \
   crypto/sha256.h \
   crypto/sha512.cpp \
-  crypto/sha512.h
+  crypto/sha512.h \
+  eqb/sha3/align.h \
+  eqb/sha3/brg_endian.h \
+  eqb/sha3/KeccakHash.cpp \
+  eqb/sha3/KeccakHash.h \
+  eqb/sha3/KeccakP-1600-64.macros \
+  eqb/sha3/KeccakP-1600-opt64-config.h \
+  eqb/sha3/KeccakP-1600-opt64.cpp \
+  eqb/sha3/KeccakP-1600-SnP.h \
+  eqb/sha3/KeccakP-1600-unrolling.macros \
+  eqb/sha3/KeccakSponge-common.h \
+  eqb/sha3/KeccakSponge.inc \
+  eqb/sha3/KeccakSpongeWidth1600.cpp \
+  eqb/sha3/KeccakSpongeWidth1600.h \
+  eqb/sha3/sha3.h \
+  eqb/sha3/SimpleFIPS202.cpp \
+  eqb/sha3/SimpleFIPS202.h \
+  eqb/sha3/SnP-Relaned.h
+
 
 if USE_ASM
 crypto_libbitcoin_crypto_a_SOURCES += crypto/sha256_sse4.cpp
