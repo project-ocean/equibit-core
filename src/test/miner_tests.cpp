@@ -150,22 +150,38 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
     tx.vin[0].prevout.hash = txFirst[0]->GetHash();
     tx.vin[0].prevout.n = 0;
     tx.vout.resize(1);
-    tx.vout[0].nValue = (5000000000LL - 1000) *3/50 ; //????
+#ifdef BUILD_BTC
+    tx.vout[0].nValue = 5000000000LL - 1000;
+#else  // BUILD_EQB
+    tx.vout[0].nValue = (5000000000LL - 1000) * 3 / 50;
+#endif // END_BUILD
     // This tx has a low fee: 1000 satoshis
     uint256 hashParentTx = tx.GetHash(); // save this txid for later use
     mempool.addUnchecked(hashParentTx, entry.Fee(1000).Time(GetTime()).SpendsCoinbase(true).FromTx(tx));
 
     // This tx has a medium fee: 10000 satoshis
     tx.vin[0].prevout.hash = txFirst[1]->GetHash();
-    tx.vout[0].nValue = (5000000000LL - 10000) * 3 / 50; //????
+#ifdef BUILD_BTC
+    tx.vout[0].nValue = 5000000000LL - 10000;
+#else  // BUILD_EQB
+    tx.vout[0].nValue = (5000000000LL - 10000) * 3 / 50;
+#endif // END_BUILD
     uint256 hashMediumFeeTx = tx.GetHash();
     mempool.addUnchecked(hashMediumFeeTx, entry.Fee(10000 * 3 / 50).Time(GetTime()).SpendsCoinbase(true).FromTx(tx));
 
     // This tx has a high fee, but depends on the first transaction
     tx.vin[0].prevout.hash = hashParentTx;
-    tx.vout[0].nValue = (5000000000LL - 1000 - 50000) * 3 / 50; // 50k satoshi fee  //????
+#ifdef BUILD_BTC
+    tx.vout[0].nValue = 5000000000LL - 1000 - 50000; // 50k satoshi fee
+#else  // BUILD_EQB
+    tx.vout[0].nValue = (5000000000LL - 1000 - 50000) * 3 / 50; // 50k satoshi fee
+#endif // END_BUILD
     uint256 hashHighFeeTx = tx.GetHash();
+#ifdef BUILD_BTC
+    mempool.addUnchecked(hashHighFeeTx, entry.Fee(50000).Time(GetTime()).SpendsCoinbase(false).FromTx(tx));
+#else  // BUILD_EQB
     mempool.addUnchecked(hashHighFeeTx, entry.Fee(50000 * 3 / 50).Time(GetTime()).SpendsCoinbase(false).FromTx(tx));
+#endif // END_BUILD
 
     std::unique_ptr<CBlockTemplate> pblocktemplate = AssemblerForTest(chainparams).CreateNewBlock(scriptPubKey);
     BOOST_CHECK(pblocktemplate->block.vtx[1]->GetHash() == hashParentTx);
@@ -174,7 +190,11 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
 
     // Test that a package below the block min tx fee doesn't get included
     tx.vin[0].prevout.hash = hashHighFeeTx;
-    tx.vout[0].nValue = (5000000000LL - 1000 - 50000) * 3 / 50; // 0 fee   //????
+#ifdef BUILD_BTC
+    tx.vout[0].nValue = 5000000000LL - 1000 - 50000; // 0 fee
+#else  // BUILD_EQB
+    tx.vout[0].nValue = (5000000000LL - 1000 - 50000) * 3 / 50; // 0 fee
+#endif // END_BUILD
     uint256 hashFreeTx = tx.GetHash();
     mempool.addUnchecked(hashFreeTx, entry.Fee(0).FromTx(tx));
     size_t freeTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
@@ -184,7 +204,11 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
     CAmount feeToUse = blockMinFeeRate.GetFee(2*freeTxSize) - 1;
 
     tx.vin[0].prevout.hash = hashFreeTx;
+#ifdef BUILD_BTC
+    tx.vout[0].nValue = 5000000000LL - 1000 - 50000 - feeToUse;
+#else  // BUILD_EQB
     tx.vout[0].nValue = (5000000000LL - 1000 - 50000) * 3 / 50 - feeToUse;
+#endif // END_BUILD
     uint256 hashLowFeeTx = tx.GetHash();
     mempool.addUnchecked(hashLowFeeTx, entry.Fee(feeToUse).FromTx(tx));
     pblocktemplate = AssemblerForTest(chainparams).CreateNewBlock(scriptPubKey);
@@ -219,7 +243,7 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
     tx.vin[0].prevout.hash = hashFreeTx2;
     tx.vout.resize(1);
     feeToUse = blockMinFeeRate.GetFee(freeTxSize);
-    tx.vout[0].nValue = 300000000LL - 100000000 - feeToUse; //??
+    tx.vout[0].nValue = 5000000000LL - 100000000 - feeToUse;
     uint256 hashLowFeeTx2 = tx.GetHash();
     mempool.addUnchecked(hashLowFeeTx2, entry.Fee(feeToUse).SpendsCoinbase(false).FromTx(tx));
     pblocktemplate = AssemblerForTest(chainparams).CreateNewBlock(scriptPubKey);
@@ -256,7 +280,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
 
     fCheckpointsEnabled = false;
 
-    // EQB_TODO_REMOVE: an attempt to mine 102 blocks fast
+    // EQB_TODO_REMOVE: Trying to mine 102 blocks with lower difficulty
     //Consensus::Params consensusParams = chainparams.GetConsensus();
     //consensusParams.fPowAllowMinDifficultyBlocks = true;
     //consensusParams.fPowNoRetargeting = true;
@@ -273,7 +297,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     {
         CBlock *pblock = &pblocktemplate->block; // pointer for convenience
 
-        // EQB_TODO_REMOVE: an attempt to mine 102 blocks fast
+        // EQB_TODO_REMOVE: Trying to mine 102 blocks with lower difficulty
         //pblock->nBits = 0x207fffff;
         {
             LOCK(cs_main);
@@ -352,12 +376,15 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     BOOST_CHECK(pblocktemplate = AssemblerForTest(chainparams).CreateNewBlock(scriptPubKey));
 #ifdef BUILD_BTC
     const CAmount BLOCKSUBSIDY = 50*COIN;
+    const CAmount LOWFEE = CENT;
+    const CAmount HIGHFEE = COIN;
+    const CAmount HIGHERFEE = 4 * COIN;
 #else  // BUILD_EQB
     const CAmount BLOCKSUBSIDY = 3 * COIN;
-#endif // END_BUILD
     const CAmount LOWFEE = CENT * 3 / 50;
     const CAmount HIGHFEE = COIN * 3 / 50;
-    const CAmount HIGHERFEE = 4*COIN * 3 / 50;
+    const CAmount HIGHERFEE = 4 * COIN * 3 / 50;
+#endif // END_BUILD
 
     // block sigops > limit: 1000 CHECKMULTISIG + 1
     tx.vin.resize(1);
