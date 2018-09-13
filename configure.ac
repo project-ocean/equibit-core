@@ -17,7 +17,7 @@ AC_CONFIG_MACRO_DIR([build-aux/m4])
 BITCOIN_DAEMON_NAME=equibitd
 BITCOIN_GUI_NAME=bitcoind-qt
 BITCOIN_CLI_NAME=equibit-cli
-BITCOIN_TX_NAME=bitcoind-tx
+BITCOIN_TX_NAME=equibit-tx
 
 dnl Unless the user specified ARFLAGS, force it to be cr
 AC_ARG_VAR(ARFLAGS, [Flags for the archiver, defaults to <cr> if not set])
