@@ -16,7 +16,7 @@ AC_CONFIG_MACRO_DIR([build-aux/m4])
 
 BITCOIN_DAEMON_NAME=equibitd
 BITCOIN_GUI_NAME=bitcoind-qt
-BITCOIN_CLI_NAME=bitcoind-cli
+BITCOIN_CLI_NAME=equibit-cli
 BITCOIN_TX_NAME=bitcoind-tx
 
 dnl Unless the user specified ARFLAGS, force it to be cr
