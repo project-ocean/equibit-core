@@ -1,3 +1,4 @@
+// Copyright (c) 2018 Equibit Group AG
 /*
 Implementation by the Keccak, Keyak and Ketje Teams, namely, Guido Bertoni,
 Joan Daemen, Michaël Peeters, Gilles Van Assche and Ronny Van Keer, hereby
@@ -11,14 +12,11 @@ http://ketje.noekeon.org/
 To the extent possible under law, the implementer has waived all copyright
 and related or neighboring rights to the source code in this file.
 http://creativecommons.org/publicdomain/zero/1.0/
-
-Modified by Kiarash Narimani at EquibitGroup:
-https://www.equibitgroup.com/
 */
 #include <stdio.h>
 #include "SimpleFIPS202.h"
 
-#ifdef SingleOutSHA3_256
+#ifdef EQB_ALL_SHA3_VERSIONS
 int SHAKE128(unsigned char *output, size_t outputByteLen, const unsigned char *input, size_t inputByteLen)
 {
     return KeccakWidth1600_Sponge(1344, 256, input, inputByteLen, 0x1F, output, outputByteLen);

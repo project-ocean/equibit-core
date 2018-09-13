@@ -10,9 +10,12 @@
 #include "serialize.h"
 #include "uint256.h"
 #include "version.h"
+#include <iostream>
+#include <string>
+
 #include <vector>
 
-class Sha3
+class SHA3
 {
 private:
     std::vector<char> m_serialization;
@@ -21,7 +24,9 @@ private:
     const int m_version;
 
 public:
-    Sha3(int type, int version) : m_type(type), m_version(version)
+    static const size_t OUTPUT_SIZE = 32;
+
+    SHA3(int type, int version) : m_type(type), m_version(version)
     {
         m_serialization.reserve(128);
     }
@@ -29,10 +34,17 @@ public:
     int GetType() const { return m_type; }
     int GetVersion() const { return m_version; }
 
-    void write(const char* pch, size_t size)
+    SHA3& Write(const unsigned char* pch, size_t size)
     {
         while (size--)
             m_serialization.push_back(*pch++);
+
+        return *this;
+    }
+
+    void Finalize(unsigned char hash[OUTPUT_SIZE])
+    {
+    	// EQB_TODO: Implement Finalize
     }
 
     uint256 GetHash()
@@ -45,7 +57,7 @@ public:
     }
 
     template <typename T>
-    Sha3& operator<<(const T& obj)
+    SHA3& operator<<(const T& obj)
     {
         ::Serialize(*this, obj);
         return (*this);
@@ -54,7 +66,7 @@ public:
     template <typename T>
     static uint256 SerializeHash(const T& obj, int type = SER_GETHASH, int version = PROTOCOL_VERSION)
     {
-        Sha3 sha3(type, version);
+    	SHA3 sha3(type, version);
 
         sha3 << obj;
 

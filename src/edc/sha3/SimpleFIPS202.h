@@ -1,3 +1,4 @@
+// Copyright (c) 2018 Equibit Group AG
 /*
 Implementation by the Keccak, Keyak and Ketje Teams, namely, Guido Bertoni,
 Joan Daemen, Michaël Peeters, Gilles Van Assche and Ronny Van Keer, hereby
@@ -11,9 +12,6 @@ http://ketje.noekeon.org/
 To the extent possible under law, the implementer has waived all copyright
 and related or neighboring rights to the source code in this file.
 http://creativecommons.org/publicdomain/zero/1.0/
-
-Modified by Kiarash Narimani at EquibitGroup:
-https://www.equibitgroup.com/
 */
 
 #ifndef _SimpleFIPS202_h_
@@ -22,7 +20,7 @@ https://www.equibitgroup.com/
 #include "KeccakSpongeWidth1600.h"
 #include <string.h>
 
-#ifdef SingleOutSHA3_256
+#ifdef EQB_ALL_SHA3_VERSIONS
 /** Implementation of the SHAKE128 extendable output function (XOF) [FIPS 202].
   * @param  output          Pointer to the output buffer.
   * @param  outputByteLen   The desired number of output bytes.
