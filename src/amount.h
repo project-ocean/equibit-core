@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -23,7 +24,15 @@ static const CAmount CENT = 1000000;
  * critical; in unusual circumstances like a(nother) overflow bug that allowed
  * for the creation of coins out of thin air modification could lead to a fork.
  * */
+
+#ifdef BUILD_BTC
 static const CAmount MAX_MONEY = 21000000 * COIN;
+#else  // BUILD_EQB
+static const CAmount MAX_MONEY              = 22000000  * COIN;
+static const CAmount GENESIS_BLOCK_REWARD   =       50  * COIN; // EQB_TODO: Keeping reward same as Bitcoin to pass tests. It is unspendable in Bitcoin.
+static const CAmount   FIRST_BLOCK_REWARD   =  131025772228310; // First BLock Reward = 1,000,000 + 2.1 * 10^7 / ( 1 + exp( 4.2 - (10^-5) * t ) ;   where t=1
+#endif // END_BUILD 
+
 inline bool MoneyRange(const CAmount& nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 
 #endif //  BITCOIN_AMOUNT_H

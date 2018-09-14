@@ -1,4 +1,5 @@
 // Copyright (c) 2012-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -369,6 +370,12 @@ static void AddKey(CWallet& wallet, const CKey& key)
     wallet.AddKeyPubKey(key, key.GetPubKey());
 }
 
+#ifndef BUILD_BTC
+static const CAmount    BLOCK_140000_REWARD = 1134800409;   // Reward for block #100 in RegTest (equivalent to block #140,000 in MainNet)
+static const CAmount    BLOCK_141400_REWARD = 1148941487;   // Reward for block #101 in RegTest (equivalent to block #141,400 in MainNet)
+static const CAmount      BLOCK_1400_REWARD =  309851350;   // Reward for block #  1 in RegTest (equivalent to block #  1,400 in MainNet)
+#endif // END_BUILD
+
 BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
 {
     // Cap last block file size, and mine new block in a new block file.
@@ -388,7 +395,11 @@ BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
         WalletRescanReserver reserver(&wallet);
         reserver.reserve();
         BOOST_CHECK_EQUAL(nullBlock, wallet.ScanForWalletTransactions(oldTip, nullptr, reserver));
+#ifdef BUILD_BTC
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 100 * COIN);
+#else  // BUILD_EQB
+        BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), BLOCK_140000_REWARD + BLOCK_141400_REWARD);
+#endif // END_BUILD
     }
 
     // Prune the older block file.
@@ -403,7 +414,11 @@ BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
         WalletRescanReserver reserver(&wallet);
         reserver.reserve();
         BOOST_CHECK_EQUAL(oldTip, wallet.ScanForWalletTransactions(oldTip, nullptr, reserver));
+#ifdef BUILD_BTC
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 50 * COIN);
+#else  // BUILD_EQB
+        BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), BLOCK_141400_REWARD);
+#endif // END_BUILD
     }
 
     // Verify importmulti RPC returns failure for a key whose creation time is
@@ -531,7 +546,11 @@ BOOST_FIXTURE_TEST_CASE(coin_mark_dirty_immature_credit, TestChain100Setup)
     // credit amount is calculated.
     wtx.MarkDirty();
     wallet.AddKeyPubKey(coinbaseKey, coinbaseKey.GetPubKey());
+#ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), 50*COIN);
+#else  // BUILD_EQB
+    BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), BLOCK_140000_REWARD);
+#endif // END_BUILD
 }
 
 static int64_t AddTx(CWallet& wallet, uint32_t lockTime, int64_t mockTime, int64_t blockTime)
@@ -667,7 +686,11 @@ BOOST_FIXTURE_TEST_CASE(ListCoins, ListCoinsTestingSetup)
     BOOST_CHECK_EQUAL(list.begin()->second.size(), 1);
 
     // Check initial balance from one mature coinbase transaction.
+#ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(50 * COIN, wallet->GetAvailableBalance());
+#else  // BUILD_EQB
+    BOOST_CHECK_EQUAL(wallet->GetAvailableBalance(), BLOCK_1400_REWARD);
+#endif // END_BUILD
 
     // Add a transaction creating a change address, and confirm ListCoins still
     // returns the coin associated with the change address underneath the
