@@ -447,14 +447,14 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
 
     if (g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0)
 #ifdef BUILD_BTC
-		throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Bitcoin is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Bitcoin is not connected!");
 #else // BUILD_EQB
         throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Equibit is not connected!");
 #endif // END_BUILD
 
     if (IsInitialBlockDownload())
 #ifdef BUILD_BTC
-		throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Bitcoin is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Bitcoin is downloading blocks...");
 #else // BUILD_EQB
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Equibit is downloading blocks...");
 #endif // END_BUILD

@@ -121,7 +121,7 @@ UniValue getrawtransaction(const JSONRPCRequest& request)
             "         \"type\" : \"pubkeyhash\",  (string) The type, eg 'pubkeyhash'\n"
             "         \"addresses\" : [           (json array of string)\n"
 #ifdef BUILD_BTC
-                            "           \"address\"        (string) bitcoin address\n"
+            "           \"address\"        (string) bitcoin address\n"
 #else // BUILD_EQB
                             "           \"address\"        (string) equibit address\n"
 #endif // END_BUILD			 
@@ -353,7 +353,7 @@ UniValue createrawtransaction(const JSONRPCRequest& request)
             "      \"address\": x.xxx,    (numeric or string, required) The key is the equibit address, the numeric value (can be string) is the " +
             CURRENCY_UNIT + " amount\n"
 #endif // END_BUILD
-			"      \"data\": \"hex\"      (string, required) The key is \"data\", the value is hex encoded data\n"
+            "      \"data\": \"hex\"      (string, required) The key is \"data\", the value is hex encoded data\n"
             "      ,...\n"
             "    }\n"
             "3. locktime                  (numeric, optional, default=0) Raw locktime. Non-0 value also locktime-activates inputs\n"
@@ -507,9 +507,9 @@ UniValue decoderawtransaction(const JSONRPCRequest& request)
             "         \"type\" : \"pubkeyhash\",  (string) The type, eg 'pubkeyhash'\n"
             "         \"addresses\" : [           (json array of string)\n"
 #ifdef BUILD_BTC
-                            "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) bitcoin address\n"
+            "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) bitcoin address\n"
 #else // BUILD_EQB
-                            "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) equibit address\n"
+            "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) equibit address\n"
 #endif // END_BUILD
             "           ,...\n"
             "         ]\n"

@@ -1240,7 +1240,7 @@ bool AppInitMain()
                   "current working directory '%s'. This is fragile, because if equibit is started in the future "
                   "from a different location, it will be unable to locate the current data files. There could "
                   "also be data loss if equibit is started while in a temporary directory.\n",
-		gArgs.GetArg("-datadir", ""), fs::current_path().string());
+        gArgs.GetArg("-datadir", ""), fs::current_path().string());
 #endif // END_BUILD
     }
 
