@@ -25,7 +25,7 @@ env:
     - WINEDEBUG=fixme-all
     - BOOST_TEST_LOG_LEVEL=test_suite
     - BOOST_TEST_BUILD_INFO=yes
-#    - BOOST_TEST_LOG_SINK=stdout
+    - BOOST_TEST_LOG_SINK=stdout
   matrix:
 # ARM
 #    - HOST=arm-linux-gnueabihf PACKAGES="g++-arm-linux-gnueabihf python3-pip" DEP_OPTS="NO_QT=1" CHECK_DOC=1 GOAL="install" BITCOIN_CONFIG="--enable-glibc-back-compat --enable-reduce-exports"
