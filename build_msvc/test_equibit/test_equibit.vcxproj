@@ -21,7 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\test\*_tests.cpp" />
-    <ClCompile Include="..\..\src\wallet\test\*_tests.cpp" />
+    <ClCompile Include="..\..\src\wallet\test\wallet_crypto_tests.cpp" />
     <ClCompile Include="..\..\src\test\test_bitcoin.cpp" />
     <ClCompile Include="..\..\src\test\test_bitcoin_main.cpp" />
     <ClCompile Include="..\..\src\wallet\test\wallet_test_fixture.cpp" />
