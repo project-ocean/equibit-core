@@ -10,6 +10,7 @@
 #include <crypto/sha512.h>
 #include <crypto/hmac_sha256.h>
 #include <crypto/hmac_sha512.h>
+#include <eqb/sha3/sha3.h>
 #include <random.h>
 #include <utilstrencodings.h>
 #include <test/test_bitcoin.h>
@@ -51,6 +52,9 @@ void TestVector(const Hasher &h, const In &in, const Out &out) {
     }
 }
 
+#ifndef BUILD_BTC
+void TestSHA3(const std::string &in, const std::string &hexout) { TestVector(SHA3(0, 0), in, ParseHex(hexout));}
+#endif
 void TestSHA1(const std::string &in, const std::string &hexout) { TestVector(CSHA1(), in, ParseHex(hexout));}
 void TestSHA256(const std::string &in, const std::string &hexout) { TestVector(CSHA256(), in, ParseHex(hexout));}
 void TestSHA512(const std::string &in, const std::string &hexout) { TestVector(CSHA512(), in, ParseHex(hexout));}
@@ -213,6 +217,29 @@ std::string LongTestString(void) {
 }
 
 const std::string test1 = LongTestString();
+#ifndef BUILD_BTC
+
+BOOST_AUTO_TEST_CASE(sha3_testvectors) {
+    BOOST_TEST_MESSAGE("Starting SHA3 Tests..");
+    TestSHA3("", "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a");    
+    TestSHA3("abc", "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532");
+    TestSHA3("message digest",
+               "edcdb2069366e75243860c18c3a11465eca34bce6143d30c8665cefcfd32bffd");
+    TestSHA3("secure hash algorithm",
+               "9154fb6777c0266708f1340ec898626df0bddfdd4c4e1a1459e90018e1a92d09");
+    TestSHA3("SHA3 is considered to be safe",
+               "c9303f8a8e5f0a0c8877cc8956cdaa13b27459270ff5580b412c051df18fc872");
+    TestSHA3("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
+               "41c0dba2a9d6240849100376a8235e2c82e1b9998a999e21db32dd97496d3376");
+    TestSHA3("For this sample, this 63-byte string will be used as input data",
+               "66c3646740ff4c95eb5db97cfae97f954340f54dc22e0f1eb169b7ce0f611881");
+    TestSHA3("This is exactly 64 bytes long, not counting the terminating byte",
+               "d7fcb87d155ffdeb4a9f154a6b241631038cad064e3d4cffc46900fbfb557d4d");
+    TestSHA3("As Bitcoin relies on 80 byte header hashes, we want to have an example for that.",
+               "08415656c0483d997d832e37c98e2f25527e71bee4512a3329e166a828d9fafd");
+    TestSHA3(std::string(1000000, 'a'), "5c8875ae474a3634ba4fd55ec85bffd661f32aca75c6d699d0cdcb6c115891c1");
+}
+#endif // END_BUILD
 
 BOOST_AUTO_TEST_CASE(ripemd160_testvectors) {
     TestRIPEMD160("", "9c1185a5c5e9fc54612808977ee8f548b2258d31");

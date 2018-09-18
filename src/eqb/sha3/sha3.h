@@ -26,14 +26,18 @@ private:
 public:
     static const size_t OUTPUT_SIZE = 32;
 
+    SHA3() : m_type(0), m_version(0)
+    {
+        m_serialization.reserve(OUTPUT_SIZE);
+    }
     SHA3(int type, int version) : m_type(type), m_version(version)
     {
-        m_serialization.reserve(128);
+        m_serialization.reserve(OUTPUT_SIZE);
     }
 
     int GetType() const { return m_type; }
     int GetVersion() const { return m_version; }
-
+   
     SHA3& Write(const unsigned char* pch, size_t size)
     {
         while (size--)
@@ -44,15 +48,14 @@ public:
 
     void Finalize(unsigned char hash[OUTPUT_SIZE])
     {
-    	// EQB_TODO: Implement Finalize
+        uint256 hashresult = GetHash();
+        memcpy(hash, (unsigned char*) &hashresult, OUTPUT_SIZE);
     }
 
     uint256 GetHash()
     {
         uint256 hash;
-
-        SHA3_256((unsigned char*)&hash, (unsigned char*)&m_serialization[0], m_serialization.size());
-
+        SHA3_256((unsigned char*)&hash, (unsigned char *) m_serialization.data(), m_serialization.size());
         return hash;
     }
 
