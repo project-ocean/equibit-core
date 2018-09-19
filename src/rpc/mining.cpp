@@ -458,6 +458,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
 #else // BUILD_EQB
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Equibit is downloading blocks...");
 #endif // END_BUILD
+
     static unsigned int nTransactionsUpdatedLast;
 
     if (!lpval.isNull())
