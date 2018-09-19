@@ -115,6 +115,84 @@ inline uint160 SHA3Hash160(const prevector<N, unsigned char>& vch)
     return SHA3Hash160(vch.begin(), vch.end());
 }
 
+/** A writer stream (for serialization) that computes a 256-bit SHA-3 hash. */
+class CSHA3HashWriter
+{
+private:
+    CSHA3Hash256 ctx;
+
+    const int nType;
+    const int nVersion;
+public:
+
+    CSHA3HashWriter(int nTypeIn, int nVersionIn) : nType(nTypeIn), nVersion(nVersionIn) {}
+
+    int GetType() const { return nType; }
+    int GetVersion() const { return nVersion; }
+
+    void write(const char *pch, size_t size) {
+        ctx.Write((const unsigned char*)pch, size);
+    }
+
+    // invalidates the object
+    uint256 GetHash() {
+        uint256 result;
+        ctx.Finalize((unsigned char*)&result);
+        return result;
+    }
+
+    template<typename T>
+    CSHA3HashWriter& operator<<(const T& obj) {
+        // Serialize to this stream
+        ::Serialize(*this, obj);
+        return (*this);
+    }
+};
+
+/** Reads data from an underlying stream, while hashing the read data. */
+template<typename Source>
+class CSHA3HashVerifier : public CSHA3HashWriter
+{
+private:
+    Source* source;
+
+public:
+    explicit CSHA3HashVerifier(Source* source_) : CSHA3HashWriter(source_->GetType(), source_->GetVersion()), source(source_) {}
+
+    void read(char* pch, size_t nSize)
+    {
+        source->read(pch, nSize);
+        this->write(pch, nSize);
+    }
+
+    void ignore(size_t nSize)
+    {
+        char data[1024];
+        while (nSize > 0) {
+            size_t now = std::min<size_t>(nSize, 1024);
+            read(data, now);
+            nSize -= now;
+        }
+    }
+
+    template<typename T>
+    CSHA3HashVerifier<Source>& operator>>(T& obj)
+    {
+        // Unserialize from this stream
+        ::Unserialize(*this, obj);
+        return (*this);
+    }
+};
+
+/** Compute the 256-bit SHA-3 hash of an object's serialization. */
+template<typename T>
+uint256 SHA3SerializeHash(const T& obj, int nType = SER_GETHASH, int nVersion = PROTOCOL_VERSION)
+{
+    CSHA3HashWriter ss(nType, nVersion);
+    ss << obj;
+    return ss.GetHash();
+}
+
 #endif
 
 typedef uint256 ChainCode;
