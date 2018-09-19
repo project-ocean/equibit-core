@@ -58,17 +58,16 @@ static int AppInitRawTx(int argc, char* argv[])
 #ifdef BUILD_BTC
         std::string strUsage = strprintf(_("%s bitcoin-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
             _("Usage:") + "\n" +
-            "  bitcoin-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded bitcoin transaction") + "\n" +
-            "  bitcoin-tx [options] -create [commands]   " + _("Create hex-encoded bitcoin transaction") + "\n" +
-            "\n";
+              "  bitcoin-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded bitcoin transaction") + "\n" +
+              "  bitcoin-tx [options] -create [commands]   " + _("Create hex-encoded bitcoin transaction") + "\n" +
+              "\n";
 #else // BUILD_EQB
-        std::string strUsage = strprintf(_("%s equibit-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
-            _("Usage:") + "\n" +
-            "  equibit-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded bitcoin transaction") + "\n" +
-            "  equibit-tx [options] -create [commands]   " + _("Create hex-encoded bitcoin transaction") + "\n" +
+        std::string strUsage = strprintf( _( "%s equibit-tx utility version" ), _( PACKAGE_NAME ) ) + " " + FormatFullVersion() + "\n\n" +
+            _( "Usage:" ) + "\n" +
+            "  equibit-tx [options] <hex-tx> [commands]  " + _( "Update hex-encoded equibit transaction" ) + "\n" +
+            "  equibit-tx [options] -create [commands]   " + _( "Create hex-encoded equibit transaction" ) + "\n" +
             "\n";
 #endif // END_BUILD
-      
 
         fprintf(stdout, "%s", strUsage.c_str());
 
