@@ -53,7 +53,7 @@ void TestVector(const Hasher &h, const In &in, const Out &out) {
 }
 
 #ifndef BUILD_BTC
-void TestSHA3(const std::string &in, const std::string &hexout) { TestVector(SHA3(0, 0), in, ParseHex(hexout));}
+void TestSHA3(const std::string &in, const std::string &hexout) { TestVector(SHA3(), in, ParseHex(hexout));}
 #endif
 void TestSHA1(const std::string &in, const std::string &hexout) { TestVector(CSHA1(), in, ParseHex(hexout));}
 void TestSHA256(const std::string &in, const std::string &hexout) { TestVector(CSHA256(), in, ParseHex(hexout));}

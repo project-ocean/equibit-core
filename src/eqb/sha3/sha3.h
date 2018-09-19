@@ -12,7 +12,6 @@
 #include "version.h"
 #include <iostream>
 #include <string>
-
 #include <vector>
 
 class SHA3
@@ -20,24 +19,14 @@ class SHA3
 private:
     std::vector<char> m_serialization;
 
-    const int m_type;
-    const int m_version;
-
 public:
     static const size_t OUTPUT_SIZE = 32;
 
-    SHA3() : m_type(0), m_version(0)
-    {
-        m_serialization.reserve(OUTPUT_SIZE);
-    }
-    SHA3(int type, int version) : m_type(type), m_version(version)
+    SHA3() 
     {
         m_serialization.reserve(OUTPUT_SIZE);
     }
 
-    int GetType() const { return m_type; }
-    int GetVersion() const { return m_version; }
-   
     SHA3& Write(const unsigned char* pch, size_t size)
     {
         while (size--)
@@ -50,6 +39,12 @@ public:
     {
         uint256 hashresult = GetHash();
         memcpy(hash, (unsigned char*) &hashresult, OUTPUT_SIZE);
+    }
+
+    SHA3& Reset()
+    {
+        m_serialization.clear();
+        return *this;
     }
 
     uint256 GetHash()
@@ -70,9 +65,7 @@ public:
     static uint256 SerializeHash(const T& obj, int type = SER_GETHASH, int version = PROTOCOL_VERSION)
     {
     	SHA3 sha3(type, version);
-
         sha3 << obj;
-
         return sha3.GetHash();
     }
 };
