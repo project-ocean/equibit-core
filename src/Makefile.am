@@ -64,7 +64,7 @@ noinst_PROGRAMS =
 TESTS =
 BENCHMARKS =
 
-if BUILD_EQUIBITD
+if BUILD_BITCOIND
   bin_PROGRAMS += equibitd
 endif
 
@@ -183,7 +183,7 @@ obj/build.h: FORCE
 	  "$(abs_top_srcdir)"
 libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
-# server: shared between equibitd and equibit-qt
+# server: shared between bitcoind and bitcoin-qt
 libbitcoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libbitcoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_server_a_SOURCES = \
@@ -237,7 +237,7 @@ libbitcoin_zmq_a_SOURCES = \
 endif
 
 
-# wallet: shared between equibitd and equibitd-qt, but only linked
+# wallet: shared between bitcoind and bitcoin-qt, but only linked
 # when wallet enabled
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -274,7 +274,25 @@ crypto_libbitcoin_crypto_a_SOURCES = \
   crypto/sha256.cpp \
   crypto/sha256.h \
   crypto/sha512.cpp \
-  crypto/sha512.h
+  crypto/sha512.h \
+  eqb/sha3/align.h \
+  eqb/sha3/brg_endian.h \
+  eqb/sha3/KeccakHash.cpp \
+  eqb/sha3/KeccakHash.h \
+  eqb/sha3/KeccakP-1600-64.macros \
+  eqb/sha3/KeccakP-1600-opt64-config.h \
+  eqb/sha3/KeccakP-1600-opt64.cpp \
+  eqb/sha3/KeccakP-1600-SnP.h \
+  eqb/sha3/KeccakP-1600-unrolling.macros \
+  eqb/sha3/KeccakSponge-common.h \
+  eqb/sha3/KeccakSponge.inc \
+  eqb/sha3/KeccakSpongeWidth1600.cpp \
+  eqb/sha3/KeccakSpongeWidth1600.h \
+  eqb/sha3/sha3.h \
+  eqb/sha3/SimpleFIPS202.cpp \
+  eqb/sha3/SimpleFIPS202.h \
+  eqb/sha3/SnP-Relaned.h
+
 
 if USE_ASM
 crypto_libbitcoin_crypto_a_SOURCES += crypto/sha256_sse4.cpp
@@ -315,7 +333,7 @@ libbitcoin_consensus_a_SOURCES = \
   utilstrencodings.h \
   version.h
 
-# common: shared between equibitd, and equibit-qt and non-server tools
+# common: shared between bitcoind, and bitcoin-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_common_a_SOURCES = \
@@ -367,7 +385,7 @@ if GLIBC_BACK_COMPAT
 libbitcoin_util_a_SOURCES += compat/glibc_compat.cpp
 endif
 
-# cli: shared between equibit-cli and equibit-qt
+# cli: shared between bitcoin-cli and bitcoin-qt
 libbitcoin_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_cli_a_SOURCES = \
@@ -377,7 +395,7 @@ libbitcoin_cli_a_SOURCES = \
 nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# equibitd binary #
+# bitcoind binary #
 equibitd_SOURCES = bitcoind.cpp
 equibitd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 equibitd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -403,7 +421,7 @@ equibitd_LDADD = \
 
 equibitd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
 
-# equibit-cli binary #
+# bitcoin-cli binary #
 equibit_cli_SOURCES = bitcoin-cli.cpp
 equibit_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
 equibit_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)

@@ -118,6 +118,8 @@ linux-build
 win32-build
 test/config.ini
 test/cache/*
+eqbtest/config.ini
+eqbtest/cache/*
 
 !src/leveldb*/Makefile
 
@@ -131,3 +133,6 @@ contrib/devtools/split-debug.sh
 .project
 .settings/
 
+# PyCharm specific
+.idea
+eqbtest/.idea/*

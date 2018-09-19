@@ -188,7 +188,7 @@ test_bitcoin_filtered.info: test_bitcoin.info
 	$(LCOV) -a $@ $(LCOV_OPTS) -o $@
 
 functional_test.info: test_bitcoin_filtered.info
-	-@TIMEOUT=15 test/functional/test_runner.py $(EXTENDED_FUNCTIONAL_TESTS)
+	-@TIMEOUT=15 eqbtest/functional/test_runner.py $(EXTENDED_FUNCTIONAL_TESTS)
 	$(LCOV) -c $(LCOV_OPTS) -d $(abs_builddir)/src --t functional-tests -o $@
 	$(LCOV) -z $(LCOV_OPTS) -d $(abs_builddir)/src
 
@@ -216,60 +216,60 @@ endif
 
 dist_noinst_SCRIPTS = autogen.sh
 
-EXTRA_DIST = $(DIST_SHARE) test/functional/test_runner.py test/functional $(DIST_CONTRIB) $(DIST_DOCS) $(WINDOWS_PACKAGING) $(OSX_PACKAGING) $(BIN_CHECKS)
+EXTRA_DIST = $(DIST_SHARE) eqbtest/functional/test_runner.py eqbtest/functional $(DIST_CONTRIB) $(DIST_DOCS) $(WINDOWS_PACKAGING) $(OSX_PACKAGING) $(BIN_CHECKS)
 
 EXTRA_DIST += \
-    test/util/bitcoin-util-test.py \
-    test/util/data/bitcoin-util-test.json \
-    test/util/data/blanktxv1.hex \
-    test/util/data/blanktxv1.json \
-    test/util/data/blanktxv2.hex \
-    test/util/data/blanktxv2.json \
-    test/util/data/tt-delin1-out.hex \
-    test/util/data/tt-delin1-out.json \
-    test/util/data/tt-delout1-out.hex \
-    test/util/data/tt-delout1-out.json \
-    test/util/data/tt-locktime317000-out.hex \
-    test/util/data/tt-locktime317000-out.json \
-    test/util/data/tx394b54bb.hex \
-    test/util/data/txcreate1.hex \
-    test/util/data/txcreate1.json \
-    test/util/data/txcreate2.hex \
-    test/util/data/txcreate2.json \
-    test/util/data/txcreatedata1.hex \
-    test/util/data/txcreatedata1.json \
-    test/util/data/txcreatedata2.hex \
-    test/util/data/txcreatedata2.json \
-    test/util/data/txcreatedata_seq0.hex \
-    test/util/data/txcreatedata_seq0.json \
-    test/util/data/txcreatedata_seq1.hex \
-    test/util/data/txcreatedata_seq1.json \
-    test/util/data/txcreatemultisig1.hex \
-    test/util/data/txcreatemultisig1.json \
-    test/util/data/txcreatemultisig2.hex \
-    test/util/data/txcreatemultisig2.json \
-    test/util/data/txcreatemultisig3.hex \
-    test/util/data/txcreatemultisig3.json \
-    test/util/data/txcreatemultisig4.hex \
-    test/util/data/txcreatemultisig4.json \
-    test/util/data/txcreatemultisig5.json \
-    test/util/data/txcreateoutpubkey1.hex \
-    test/util/data/txcreateoutpubkey1.json \
-    test/util/data/txcreateoutpubkey2.hex \
-    test/util/data/txcreateoutpubkey2.json \
-    test/util/data/txcreateoutpubkey3.hex \
-    test/util/data/txcreateoutpubkey3.json \
-    test/util/data/txcreatescript1.hex \
-    test/util/data/txcreatescript1.json \
-    test/util/data/txcreatescript2.hex \
-    test/util/data/txcreatescript2.json \
-    test/util/data/txcreatescript3.hex \
-    test/util/data/txcreatescript3.json \
-    test/util/data/txcreatescript4.hex \
-    test/util/data/txcreatescript4.json \
-    test/util/data/txcreatesignv1.hex \
-    test/util/data/txcreatesignv1.json \
-    test/util/data/txcreatesignv2.hex
+    eqbtest/util/bitcoin-util-test.py \
+    eqbtest/util/data/bitcoin-util-test.json \
+    eqbtest/util/data/blanktxv1.hex \
+    eqbtest/util/data/blanktxv1.json \
+    eqbtest/util/data/blanktxv2.hex \
+    eqbtest/util/data/blanktxv2.json \
+    eqbtest/util/data/tt-delin1-out.hex \
+    eqbtest/util/data/tt-delin1-out.json \
+    eqbtest/util/data/tt-delout1-out.hex \
+    eqbtest/util/data/tt-delout1-out.json \
+    eqbtest/util/data/tt-locktime317000-out.hex \
+    eqbtest/util/data/tt-locktime317000-out.json \
+    eqbtest/util/data/tx394b54bb.hex \
+    eqbtest/util/data/txcreate1.hex \
+    eqbtest/util/data/txcreate1.json \
+    eqbtest/util/data/txcreate2.hex \
+    eqbtest/util/data/txcreate2.json \
+    eqbtest/util/data/txcreatedata1.hex \
+    eqbtest/util/data/txcreatedata1.json \
+    eqbtest/util/data/txcreatedata2.hex \
+    eqbtest/util/data/txcreatedata2.json \
+    eqbtest/util/data/txcreatedata_seq0.hex \
+    eqbtest/util/data/txcreatedata_seq0.json \
+    eqbtest/util/data/txcreatedata_seq1.hex \
+    eqbtest/util/data/txcreatedata_seq1.json \
+    eqbtest/util/data/txcreatemultisig1.hex \
+    eqbtest/util/data/txcreatemultisig1.json \
+    eqbtest/util/data/txcreatemultisig2.hex \
+    eqbtest/util/data/txcreatemultisig2.json \
+    eqbtest/util/data/txcreatemultisig3.hex \
+    eqbtest/util/data/txcreatemultisig3.json \
+    eqbtest/util/data/txcreatemultisig4.hex \
+    eqbtest/util/data/txcreatemultisig4.json \
+    eqbtest/util/data/txcreatemultisig5.json \
+    eqbtest/util/data/txcreateoutpubkey1.hex \
+    eqbtest/util/data/txcreateoutpubkey1.json \
+    eqbtest/util/data/txcreateoutpubkey2.hex \
+    eqbtest/util/data/txcreateoutpubkey2.json \
+    eqbtest/util/data/txcreateoutpubkey3.hex \
+    eqbtest/util/data/txcreateoutpubkey3.json \
+    eqbtest/util/data/txcreatescript1.hex \
+    eqbtest/util/data/txcreatescript1.json \
+    eqbtest/util/data/txcreatescript2.hex \
+    eqbtest/util/data/txcreatescript2.json \
+    eqbtest/util/data/txcreatescript3.hex \
+    eqbtest/util/data/txcreatescript3.json \
+    eqbtest/util/data/txcreatescript4.hex \
+    eqbtest/util/data/txcreatescript4.json \
+    eqbtest/util/data/txcreatesignv1.hex \
+    eqbtest/util/data/txcreatesignv1.json \
+    eqbtest/util/data/txcreatesignv2.hex
 
 CLEANFILES = $(OSX_DMG) $(BITCOIN_WIN_INSTALLER)
 
@@ -278,5 +278,5 @@ CLEANFILES = $(OSX_DMG) $(BITCOIN_WIN_INSTALLER)
 DISTCHECK_CONFIGURE_FLAGS = --enable-man
 
 clean-local:
-	rm -rf coverage_percent.txt test_bitcoin.coverage/ total.coverage/ test/tmp/ cache/ $(OSX_APP)
-	rm -rf test/functional/__pycache__ test/functional/test_framework/__pycache__ test/cache
+	rm -rf coverage_percent.txt test_bitcoin.coverage/ total.coverage/ eqbtest/tmp/ cache/ $(OSX_APP)
+	rm -rf eqbtest/functional/__pycache__ eqbtest/functional/test_framework/__pycache__ eqbtest/cache
