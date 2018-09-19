@@ -52,7 +52,7 @@ std::string HelpMessageCli()
 #ifdef BUILD_BTC 
     strUsage += HelpMessageOpt("-rpcwallet=<walletname>", _("Send RPC for non-default wallet on RPC server (argument is wallet filename in bitcoind directory, required if bitcoind/-Qt runs with multiple wallets)"));
 #else  // BUILD_EQB
-    strUsage += HelpMessageOpt("-rpcwallet=<walletname>", _("Send RPC for non-default wallet on RPC server (argument is wallet filename in equibitd directory, required if equibitd/-Qt runs with multiple wallets)"));
+    strUsage += HelpMessageOpt( "-rpcwallet=<walletname>", _( "Send RPC for non-default wallet on RPC server (argument is wallet filename in equibitd directory, required if equibitd/-Qt runs with multiple wallets)" ) );
 #endif // END_BUILD
     return strUsage;
 }
@@ -88,23 +88,27 @@ static int AppInitRPC(int argc, char* argv[])
     gArgs.ParseParameters(argc, argv);
     if (argc<2 || gArgs.IsArgSet("-?") || gArgs.IsArgSet("-h") || gArgs.IsArgSet("-help") || gArgs.IsArgSet("-version")) {
         std::string strUsage = strprintf(_("%s RPC client version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n";
+#ifdef BUILD_BTC
         if (!gArgs.IsArgSet("-version")) {
             strUsage += "\n" + _("Usage:") + "\n" +
-#ifdef BUILD_BTC
-                    "  bitcoin-cli [options] <command> [params]  " + strprintf(_("Send command to %s"), _(PACKAGE_NAME)) + "\n" +
-                    "  bitcoin-cli [options] -named <command> [name=value] ... " + strprintf(_("Send command to %s (with named arguments)"), _(PACKAGE_NAME)) + "\n" +
-                    "  bitcoin-cli [options] help                " + _("List commands") + "\n" +
-                    "  bitcoin-cli [options] help <command>      " + _("Get help for a command") + "\n";
-#else // BUILD_EQB
-                    "  equibit-cli [options] <command> [params]  " + strprintf(_("Send command to %s"), _(PACKAGE_NAME)) + "\n" +
-                    "  equibit-cli [options] -named <command> [name=value] ... " + strprintf(_("Send command to %s (with named arguments)"), _(PACKAGE_NAME)) + "\n" +
-                    "  equibit-cli [options] help                " + _("List commands") + "\n" +
-                    "  equibit-cli [options] help <command>      " + _("Get help for a command") + "\n";
-#endif // END_BUILD
+                  "  bitcoin-cli [options] <command> [params]  " + strprintf(_("Send command to %s"), _(PACKAGE_NAME)) + "\n" +
+                  "  bitcoin-cli [options] -named <command> [name=value] ... " + strprintf(_("Send command to %s (with named arguments)"), _(PACKAGE_NAME)) + "\n" +
+                  "  bitcoin-cli [options] help                " + _("List commands") + "\n" +
+                  "  bitcoin-cli [options] help <command>      " + _("Get help for a command") + "\n";
 
             strUsage += "\n" + HelpMessageCli();
         }
+#else // BUILD_EQB
+        if(!gArgs.IsArgSet( "-version" )) {
+            strUsage += "\n" + _( "Usage:" ) + "\n" +
+                "  equibit-cli [options] <command> [params]  " + strprintf( _( "Send command to %s" ), _( PACKAGE_NAME ) ) + "\n" +
+                "  equibit-cli [options] -named <command> [name=value] ... " + strprintf( _( "Send command to %s (with named arguments)" ), _( PACKAGE_NAME ) ) + "\n" +
+                "  equibit-cli [options] help                " + _( "List commands" ) + "\n" +
+                "  equibit-cli [options] help <command>      " + _( "Get help for a command" ) + "\n";
 
+            strUsage += "\n" + HelpMessageCli();
+        }
+#endif // END_BUILD
         fprintf(stdout, "%s", strUsage.c_str());
         if (argc < 2) {
             fprintf(stderr, "Error: too few parameters\n");
