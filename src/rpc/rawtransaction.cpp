@@ -123,8 +123,8 @@ UniValue getrawtransaction(const JSONRPCRequest& request)
 #ifdef BUILD_BTC
             "           \"address\"        (string) bitcoin address\n"
 #else // BUILD_EQB
-                            "           \"address\"        (string) equibit address\n"
-#endif // END_BUILD			 
+            "           \"address\"        (string) equibit address\n"
+#endif // END_BUILD
             "           ,...\n"
             "         ]\n"
             "       }\n"
@@ -347,11 +347,9 @@ UniValue createrawtransaction(const JSONRPCRequest& request)
             "2. \"outputs\"               (object, required) a json object with outputs\n"
             "    {\n"
 #ifdef BUILD_BTC
-            "      \"address\": x.xxx,    (numeric or string, required) The key is the bitcoin address, the numeric value (can be string) is the " +
-            CURRENCY_UNIT + " amount\n"
+            "      \"address\": x.xxx,    (numeric or string, required) The key is the bitcoin address, the numeric value (can be string) is the " + CURRENCY_UNIT + " amount\n"
 #else // BUILD_EQB
-            "      \"address\": x.xxx,    (numeric or string, required) The key is the equibit address, the numeric value (can be string) is the " +
-            CURRENCY_UNIT + " amount\n"
+            "      \"address\": x.xxx,    (numeric or string, required) The key is the equibit address, the numeric value (can be string) is the " + CURRENCY_UNIT + " amount\n"
 #endif // END_BUILD
             "      \"data\": \"hex\"      (string, required) The key is \"data\", the value is hex encoded data\n"
             "      ,...\n"
@@ -561,7 +559,7 @@ UniValue decodescript(const JSONRPCRequest& request)
             "     \"address\"     (string) bitcoin address\n"
 #else // BUILD_EQB
             "     \"address\"     (string) equibit address\n"
-#endif // END_BUILD			 
+#endif // END_BUILD
             "     ,...\n"
             "  ],\n"
             "  \"p2sh\",\"address\" (string) address of P2SH script wrapping this redeem script (not returned if the script is already a P2SH).\n"
