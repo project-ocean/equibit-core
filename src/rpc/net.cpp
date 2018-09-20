@@ -7,8 +7,8 @@
 #include <chainparams.h>
 #include <clientversion.h>
 #include <core_io.h>
-#include <net.h>
 #include <validation.h>
+#include <net.h>
 #include <net_processing.h>
 #include <netbase.h>
 #include <policy/policy.h>
