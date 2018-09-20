@@ -54,6 +54,7 @@ std::string HelpMessageCli()
 #else  // BUILD_EQB
     strUsage += HelpMessageOpt( "-rpcwallet=<walletname>", _( "Send RPC for non-default wallet on RPC server (argument is wallet filename in equibitd directory, required if equibitd/-Qt runs with multiple wallets)" ) );
 #endif // END_BUILD
+
     return strUsage;
 }
 
