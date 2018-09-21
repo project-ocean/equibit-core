@@ -45,7 +45,7 @@ env:
 
 before_install:
     - sudo add-apt-repository -y ppa:deadsnakes/ppa
-    - sudo apt-get update
+    - sudo apt-get update -y
     - sudo apt-get install -y python3.6
     - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
 install:
@@ -88,7 +88,7 @@ script:
     - if [ "$RUN_TESTS" = "true" ]; then travis_wait 30 make $MAKEJOBS check VERBOSE=1; fi
     - if [ "$RUN_TESTS" = "true" ]; then cat src/test/test_bitcoin.log; fi
     - if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then extended="--extended --exclude feature_pruning,feature_dbcrash"; fi
-    - if [ "$RUN_TESTS" = "true" ]; then eqbtest/functional/test_runner.py --combinedlogslen=40 --coverage --quiet ${extended}; fi
+    - if [ "$RUN_TESTS" = "true" ]; then python3.6 eqbtest/functional/test_runner.py --combinedlogslen=40 --coverage --quiet ${extended}; fi
 after_script:
     - echo $TRAVIS_COMMIT_RANGE
     - echo $TRAVIS_COMMIT_LOG
