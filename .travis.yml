@@ -51,6 +51,7 @@ before_install:
 #    - sudo apt-get update -y
 #    - sudo apt-get install -y python3.6
     - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
+    - export PYTHONPATH=/usr/lib/python3.6
 install:
     - if [ -n "$DPKG_ADD_ARCH" ]; then sudo dpkg --add-architecture "$DPKG_ADD_ARCH" ; fi
     - if [ -n "$PACKAGES" ]; then travis_retry sudo apt-get update; fi
