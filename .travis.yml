@@ -3,7 +3,8 @@ dist: trusty
 os: linux
 #language: minimal
 language: generic
-python: 3.6
+python: 
+  - 3.6
 notifications:
   slack: equibit:vlkY7tTE9BPTwi1QnrMIMb6e
 cache:
