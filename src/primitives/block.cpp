@@ -9,10 +9,15 @@
 #include <tinyformat.h>
 #include <utilstrencodings.h>
 #include <crypto/common.h>
+#include <eqb/sha3/sha3.h>
 
 uint256 CBlockHeader::GetHash() const
 {
+#ifdef BUILD_BTC
     return SerializeHash(*this);
+#else  // BUILD_EQB
+    return SHA3::SerializeHash(*this);
+#endif // END_BUILD
 }
 
 std::string CBlock::ToString() const
