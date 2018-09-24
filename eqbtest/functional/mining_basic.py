@@ -64,23 +64,23 @@ class MiningTest(BitcoinTestFramework):
         block.nNonce = 0
         block.vtx = [coinbase_tx]
 
-        # self.log.info("getblocktemplate: Test valid block")
-        # assert_template(node, block, None)
-        #
-        # self.log.info("submitblock: Test block decode failure")
-        # assert_raises_rpc_error(-22, "Block decode failed", node.submitblock, b2x(block.serialize()[:-15]))
-        #
-        # self.log.info("getblocktemplate: Test bad input hash for coinbase transaction")
-        # bad_block = copy.deepcopy(block)
-        # bad_block.vtx[0].vin[0].prevout.hash += 1
-        # bad_block.vtx[0].rehash()
-        # assert_template(node, bad_block, 'bad-cb-missing')
-        #
-        # self.log.info("submitblock: Test invalid coinbase transaction")
-        # assert_raises_rpc_error(-22, "Block does not start with a coinbase", node.submitblock, b2x(bad_block.serialize()))
-        #
-        # self.log.info("getblocktemplate: Test truncated final transaction")
-        # assert_raises_rpc_error(-22, "Block decode failed", node.getblocktemplate, {'data': b2x(block.serialize()[:-1]), 'mode': 'proposal'})
+        self.log.info("getblocktemplate: Test valid block")
+        assert_template(node, block, None)
+
+        self.log.info("submitblock: Test block decode failure")
+        assert_raises_rpc_error(-22, "Block decode failed", node.submitblock, b2x(block.serialize()[:-15]))
+
+        self.log.info("getblocktemplate: Test bad input hash for coinbase transaction")
+        bad_block = copy.deepcopy(block)
+        bad_block.vtx[0].vin[0].prevout.hash += 1
+        bad_block.vtx[0].rehash()
+        assert_template(node, bad_block, 'bad-cb-missing')
+
+        self.log.info("submitblock: Test invalid coinbase transaction")
+        assert_raises_rpc_error(-22, "Block does not start with a coinbase", node.submitblock, b2x(bad_block.serialize()))
+
+        self.log.info("getblocktemplate: Test truncated final transaction")
+        assert_raises_rpc_error(-22, "Block decode failed", node.getblocktemplate, {'data': b2x(block.serialize()[:-1]), 'mode': 'proposal'})
 
         self.log.info("getblocktemplate: Test duplicate transaction")
         bad_block = copy.deepcopy(block)
