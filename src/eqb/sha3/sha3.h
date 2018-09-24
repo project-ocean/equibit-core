@@ -64,7 +64,7 @@ public:
     template <typename T>
     static uint256 SerializeHash(const T& obj, int type = SER_GETHASH, int version = PROTOCOL_VERSION)
     {
-    	SHA3 sha3(type, version);
+    	SHA3 sha3();
         sha3 << obj;
         return sha3.GetHash();
     }
