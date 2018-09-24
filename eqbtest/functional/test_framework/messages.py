@@ -593,6 +593,7 @@ class CBlock(CBlockHeader):
             newhashes = []
             for i in range(0, len(hashes), 2):
                 i2 = min(i+1, len(hashes)-1)
+                # Switch to SHA3_256
                 # newhashes.append(hash256(hashes[i] + hashes[i2]))
                 newhashes.append(hash3_256(hashes[i] + hashes[i2]))
             hashes = newhashes
@@ -601,8 +602,9 @@ class CBlock(CBlockHeader):
     def calc_merkle_root(self):
         hashes = []
         for tx in self.vtx:
-            # tx.calc_sha256()
-            tx.calc_sha3_256()
+            tx.calc_sha256()
+            # TODO: DON'T Swithch Tx hash calculation to SHA3_256 yet
+            # tx.calc_sha3_256()
             hashes.append(ser_uint256(tx.sha256))
         return self.get_merkle_root(hashes)
 
