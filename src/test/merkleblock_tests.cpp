@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_found)
     BOOST_CHECK_EQUAL(vMatched[1].ToString(), txhash1.ToString());
     BOOST_CHECK_EQUAL(vIndex[1], 8);
 #else  // BUILD_EQB
-       // TBD fix unit tests
+       // EQB_TODO fix unit tests
 #endif // END_BUILD
 }
 
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_not_found)
     BOOST_CHECK_EQUAL(merkleBlock.txn.ExtractMatches(vMatched, vIndex).GetHex(), block.hashMerkleRoot.GetHex());
     BOOST_CHECK_EQUAL(vMatched.size(), 0);
 #else  // BUILD_EQB
-       // TBD fix unit tests
+       // EQB_TODO fix unit tests
 #endif // END_BUILD
     BOOST_CHECK_EQUAL(vIndex.size(), 0);
 }
