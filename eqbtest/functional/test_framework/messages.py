@@ -480,8 +480,8 @@ class CTransaction():
             self.sha256 = uint256_from_str(hash256(self.serialize_without_witness()))
         self.hash = encode(hash256(self.serialize_without_witness())[::-1], 'hex_codec').decode('ascii')
 
-    def calc_sha3_256(self, with_witndess=False):
-        if with_witndess:
+    def calc_sha3_256(self, with_witness=False):
+        if with_witness:
             return uint256_from_str(hash3_256(self.serialize_with_witness()))
 
         if self.sha256 is None:
@@ -603,7 +603,7 @@ class CBlock(CBlockHeader):
         hashes = []
         for tx in self.vtx:
             tx.calc_sha256()
-            # TODO: DON'T Swithch Tx hash calculation to SHA3_256 yet
+            # EQB_TODO: DON'T Switch Tx hash calculation to SHA3_256 yet
             # tx.calc_sha3_256()
             hashes.append(ser_uint256(tx.sha256))
         return self.get_merkle_root(hashes)
