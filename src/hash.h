@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -14,6 +15,185 @@
 #include <version.h>
 
 #include <vector>
+
+#ifndef BUILD_BTC
+
+#include <eqb/sha3/sha3.h>
+
+/** A hasher class for Equibit's 256-bit hash (double SHA-3). */
+class CSHA3Hash256 {
+private:
+    SHA3 sha;
+public:
+    static const size_t OUTPUT_SIZE = SHA3::OUTPUT_SIZE;
+
+    void Finalize(unsigned char hash[OUTPUT_SIZE]) {
+        unsigned char buf[SHA3::OUTPUT_SIZE];
+        sha.Finalize(buf);
+        sha.Reset().Write(buf, SHA3::OUTPUT_SIZE).Finalize(hash);
+    }
+
+    CSHA3Hash256& Write(const unsigned char *data, size_t len) {
+        sha.Write(data, len);
+        return *this;
+    }
+
+    CSHA3Hash256& Reset() {
+        sha.Reset();
+        return *this;
+    }
+};
+
+/** A hasher class for Equibit's 160-bit hash (SHA-3 + RIPEMD-160). */
+class CSHA3Hash160 {
+private:
+    SHA3 sha;
+public:
+    static const size_t OUTPUT_SIZE = CRIPEMD160::OUTPUT_SIZE;
+
+    void Finalize(unsigned char hash[OUTPUT_SIZE]) {
+        unsigned char buf[SHA3::OUTPUT_SIZE];
+        sha.Finalize(buf);
+        CRIPEMD160().Write(buf, SHA3::OUTPUT_SIZE).Finalize(hash);
+    }
+
+    CSHA3Hash160& Write(const unsigned char *data, size_t len) {
+        sha.Write(data, len);
+        return *this;
+    }
+
+    CSHA3Hash160& Reset() {
+        sha.Reset();
+        return *this;
+    }
+};
+
+/** Compute the 256-bit SHA-3 hash of an object. */
+template<typename T1>
+inline uint256 SHA3Hash(const T1 pbegin, const T1 pend)
+{
+    static const unsigned char pblank[1] = {};
+    uint256 result;
+    CSHA3Hash256().Write(pbegin == pend ? pblank : (const unsigned char*)&pbegin[0], (pend - pbegin) * sizeof(pbegin[0]))
+        .Finalize((unsigned char*)&result);
+    return result;
+}
+
+/** Compute the 256-bit SHA-3 hash of the concatenation of two objects. */
+template<typename T1, typename T2>
+inline uint256 SHA3Hash(const T1 p1begin, const T1 p1end,
+    const T2 p2begin, const T2 p2end) {
+    static const unsigned char pblank[1] = {};
+    uint256 result;
+    CSHA3Hash256().Write(p1begin == p1end ? pblank : (const unsigned char*)&p1begin[0], (p1end - p1begin) * sizeof(p1begin[0]))
+        .Write(p2begin == p2end ? pblank : (const unsigned char*)&p2begin[0], (p2end - p2begin) * sizeof(p2begin[0]))
+        .Finalize((unsigned char*)&result);
+    return result;
+}
+
+/** Compute the 160-bit SHA-3 hash an object. */
+template<typename T1>
+inline uint160 SHA3Hash160(const T1 pbegin, const T1 pend)
+{
+    static unsigned char pblank[1] = {};
+    uint160 result;
+    CSHA3Hash160().Write(pbegin == pend ? pblank : (const unsigned char*)&pbegin[0], (pend - pbegin) * sizeof(pbegin[0]))
+        .Finalize((unsigned char*)&result);
+    return result;
+}
+
+/** Compute the 160-bit SHA-3 hash of a vector. */
+inline uint160 SHA3Hash160(const std::vector<unsigned char>& vch)
+{
+    return SHA3Hash160(vch.begin(), vch.end());
+}
+
+/** Compute the 160-bit SHA-3 hash of a vector. */
+template<unsigned int N>
+inline uint160 SHA3Hash160(const prevector<N, unsigned char>& vch)
+{
+    return SHA3Hash160(vch.begin(), vch.end());
+}
+
+/** A writer stream (for serialization) that computes a 256-bit SHA-3 hash. */
+class CSHA3HashWriter
+{
+private:
+    CSHA3Hash256 ctx;
+
+    const int nType;
+    const int nVersion;
+public:
+
+    CSHA3HashWriter(int nTypeIn, int nVersionIn) : nType(nTypeIn), nVersion(nVersionIn) {}
+
+    int GetType() const { return nType; }
+    int GetVersion() const { return nVersion; }
+
+    void write(const char *pch, size_t size) {
+        ctx.Write((const unsigned char*)pch, size);
+    }
+
+    // invalidates the object
+    uint256 GetHash() {
+        uint256 result;
+        ctx.Finalize((unsigned char*)&result);
+        return result;
+    }
+
+    template<typename T>
+    CSHA3HashWriter& operator<<(const T& obj) {
+        // Serialize to this stream
+        ::Serialize(*this, obj);
+        return (*this);
+    }
+};
+
+/** Reads data from an underlying stream, while hashing the read data. */
+template<typename Source>
+class CSHA3HashVerifier : public CSHA3HashWriter
+{
+private:
+    Source* source;
+
+public:
+    explicit CSHA3HashVerifier(Source* source_) : CSHA3HashWriter(source_->GetType(), source_->GetVersion()), source(source_) {}
+
+    void read(char* pch, size_t nSize)
+    {
+        source->read(pch, nSize);
+        this->write(pch, nSize);
+    }
+
+    void ignore(size_t nSize)
+    {
+        char data[1024];
+        while (nSize > 0) {
+            size_t now = std::min<size_t>(nSize, 1024);
+            read(data, now);
+            nSize -= now;
+        }
+    }
+
+    template<typename T>
+    CSHA3HashVerifier<Source>& operator>>(T& obj)
+    {
+        // Unserialize from this stream
+        ::Unserialize(*this, obj);
+        return (*this);
+    }
+};
+
+/** Compute the 256-bit SHA-3 hash of an object's serialization. */
+template<typename T>
+uint256 SHA3SerializeHash(const T& obj, int nType = SER_GETHASH, int nVersion = PROTOCOL_VERSION)
+{
+    CSHA3HashWriter ss(nType, nVersion);
+    ss << obj;
+    return ss.GetHash();
+}
+
+#endif
 
 typedef uint256 ChainCode;
 
