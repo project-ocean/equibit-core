@@ -15,6 +15,11 @@
 
 #include <chainparamsseeds.h>
 
+#ifndef BUILD_BTC
+// EQB_TODO Temporary to mine the genesis block below
+#include <pow.h>
+#endif
+
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
     CMutableTransaction txNew;
@@ -54,6 +59,18 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
+#ifndef BUILD_BTC
+
+static CBlock CreateEquibitGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
+{
+    //const char* pszTimestamp = "The Globe And Mail 28/Jun/2018 Blockchain has the pontential to do amazing things, but it needs a reboot";
+    const char* pszTimestamp = "The G&M 28/Jun/2018 Blockchain has the pontential to do amazing things";
+    const CScript genesisOutputScript = CScript() << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f") << OP_CHECKSIG;
+    return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
+}
+
+#endif
+
 void CChainParams::UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
 {
     consensus.vDeployments[d].nStartTime = nStartTime;
@@ -81,7 +98,12 @@ public:
         consensus.BIP34Hash = uint256S("0x000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8");
         consensus.BIP65Height = 388381; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
         consensus.BIP66Height = 363725; // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
+#ifdef BUILD_BTC
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+#else  // BUILD_EQB
+       // EQB_TODO temporary to mine genesis block below
+        consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+#endif // END_BUILD
 #ifdef BUILD_BTC
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
 #else  // BUILD_EQB
@@ -124,13 +146,24 @@ public:
         nDefaultPort = 8333;
         nPruneAfterHeight = 100000;
 
+#ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1231006505, 2083236893, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-#ifdef BUILD_BTC
         assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
-       // EQB_TODO fix asserts
+
+        // EQB_TODO temporarily mine a genesis block just to get the unit tests passing
+        // Replace later with standard difficulty, a new date and a hard-coded nonce
+        uint32_t nonce = 0;
+        do {
+            genesis = CreateEquibitGenesisBlock(1231006505, nonce++, 0x207fffff, 1, 50 * COIN);
+            consensus.hashGenesisBlock = genesis.GetHash();
+            //std::cout << "genesis " << nonce << std::endl;
+        } while (!CheckProofOfWork(consensus.hashGenesisBlock, 0x207fffff, consensus));
+
+        //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
+        //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #endif // END_BUILD
 
         // Note that of those which support the service bits prefix, most only support a subset of

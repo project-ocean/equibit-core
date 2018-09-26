@@ -245,7 +245,21 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
             if (txFirst.size() < 4)
                 txFirst.push_back(pblock->vtx[0]);
             pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
+#ifdef BUILD_BTC
             pblock->nNonce = blockinfo[i].nonce;
+#else  // BUILD_EQB
+            // EQB_TODO temporary to mine blocks
+
+            pblock->nBits = 0x207fffff;
+            for (uint32_t nonce = 0; ; nonce++) {
+                pblock->nNonce = nonce;
+                uint256 hash = pblock->GetHash();
+                //std::cout << "create block " << nonce << " yields " << hash.ToString();
+                if (CheckProofOfWork(hash, pblock->nBits, chainparams.GetConsensus())) {
+                    break;
+                }
+            }
+#endif // END_BUILD
         }
         std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
         BOOST_CHECK(ProcessNewBlock(chainparams, shared_pblock, true, nullptr));
