@@ -451,6 +451,7 @@ equibit_tx_SOURCES += bitcoin-tx-res.rc
 endif
 
 equibit_tx_LDADD = \
+  $(LIBBITCOIN_SERVER) \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UTIL) \
