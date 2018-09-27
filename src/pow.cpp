@@ -102,6 +102,7 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 
 #else // BUILD_EQB
 
+#include <iomanip>
 #include "pow.h"
 
 #include "arith_uint256.h"
@@ -161,9 +162,9 @@ unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const 
         return pindexLast->nBits;
     }
 
-    unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
-    int64_t nPastBlocks = params.DifficultyAdjustmentInterval() + 1;
+    uint32_t nProofOfWorkLimit = bnPowLimit.GetCompact();
+    int64_t nPastBlocks = params.DifficultyAdjustmentInterval();
 
     // make sure we have at least (nPastBlocks + 1) blocks, otherwise just return powLimit
     if (!pindexLast || pindexLast->nHeight < nPastBlocks) {
@@ -189,22 +190,21 @@ unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const 
     const CBlockIndex* pindex = pindexLast;
     arith_uint256 bnPastTargetAvg;
 
-    for (unsigned int nCountBlocks = 1; nCountBlocks <= nPastBlocks; nCountBlocks++) {
-        arith_uint256 bnTarget = arith_uint256().SetCompact(pindex->nBits);
-        if (nCountBlocks == 1) {
-            bnPastTargetAvg = bnTarget;
-        } else {
-            // NOTE: that's not an average really...
-            bnPastTargetAvg = (bnPastTargetAvg * nCountBlocks + bnTarget) / (nCountBlocks + 1);
-        }
-
-        if (nCountBlocks != nPastBlocks) {
-            assert(pindex->pprev); // should never fail
-            pindex = pindex->pprev;
-        }
+    for (unsigned int nCountBlocks = 0; nCountBlocks < nPastBlocks; nCountBlocks++) {
+        arith_uint256 bnTarget;
+        bnTarget.SetCompact(pindex->nBits);
+        bnPastTargetAvg += bnTarget;
+        assert(pindex->pprev); // should never fail
+        pindex = pindex->pprev;
     }
 
-    return CalculateNextWorkRequired(bnPastTargetAvg.GetCompact(), params.powLimit, pindex->GetBlockTime(), pindexLast->GetBlockTime(), params.nPowTargetTimespan);
+    bnPastTargetAvg /= nPastBlocks;
+    uint32_t nBits = bnPastTargetAvg.GetCompact();
+
+    //std::cout << "nBits avg: " << std::hex << nBits << " powLimit: " << nProofOfWorkLimit << std::endl;
+    //std::cout << "nBits == powLimit: " << (nBits == nProofOfWorkLimit) << std::endl;
+    
+    return CalculateNextWorkRequired(nBits, params.powLimit, pindex->GetBlockTime(), pindexLast->GetBlockTime(), params.nPowTargetTimespan);
 }
 
 unsigned int CalculateNextWorkRequired(uint32_t nBits, uint256 powLimit, int64_t nFirstBlockTime, int64_t nLastBlockTime, int64_t nPowTargetTimespan)
@@ -223,13 +223,17 @@ unsigned int CalculateNextWorkRequired(uint32_t nBits, uint256 powLimit, int64_t
     const arith_uint256 bnPowLimit = UintToArith256(powLimit);
     arith_uint256 bnNew;
     bnNew.SetCompact(nBits);
-    
-    bnNew *= nActualTimespan;
     bnNew /= nPowTargetTimespan;
+    bnNew *= nActualTimespan;
 
     if (bnNew > bnPowLimit)
         bnNew = bnPowLimit;
-    
+
+    //uint32_t nNextWork = bnNew.GetCompact();
+    //double ratio = 1.0 * nActualTimespan / nPowTargetTimespan;
+    //std::cout << "next work: " << std::hex << nBits << " -> " << nNextWork << std::endl;
+    //std::cout << "time ratio: " << std::fixed << std::setw(11) << std::setprecision(6) << ratio << std::endl;
+ 
     return bnNew.GetCompact();
 }
 
@@ -254,6 +258,10 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&
     arith_uint256 bnTarget;
 
     bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+
+    arith_uint256 bnHash = UintToArith256(hash);
+    //std::cout << bnHash.ToString() << " > " << std::endl;
+    //std::cout << bnTarget.ToString() << " = " << (bnHash > bnTarget) << std::endl;
 
     // Check range
     if (fNegative || bnTarget == 0 || fOverflow || bnTarget > UintToArith256(params.powLimit))

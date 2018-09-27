@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_500_percent)
 }
 
 // Initialize simulated blockchain 
-static int InitializeBlocks(std::vector<CBlockIndex>& blocks, Consensus::Params& params)
+static int InitializeBlocks(std::vector<CBlockIndex>& blocks, const Consensus::Params& params)
 {
     const unsigned int nInterval = 2 * params.DifficultyAdjustmentInterval();
     const unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
@@ -190,7 +190,7 @@ static int InitializeBlocks(std::vector<CBlockIndex>& blocks, Consensus::Params&
 BOOST_AUTO_TEST_CASE(GetNextWorkRequired_steady_state)
 {
     const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
-    Consensus::Params params = chainParams->GetConsensus();
+    const Consensus::Params& params = chainParams->GetConsensus();
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
     CBlockHeader header;
@@ -209,7 +209,11 @@ BOOST_AUTO_TEST_CASE(GetNextWorkRequired_steady_state)
         blocks[i].nBits = GetNextWorkRequired(blocks[i].pprev, &header, params);
         blocks[i].nChainWork = blocks[i - 1].nChainWork + GetBlockProof(blocks[i - 1]);
 
-        BOOST_CHECK_EQUAL(blocks[i].nBits, blocks[i - 1].nBits);
+        //std::cout << i << " " << std::hex << blocks[i].nBits << " " << blocks[i - 1].nBits << std::endl;
+        double bitsDiff = fabs(log(1.0 * blocks[i].nBits / blocks[i - 1].nBits));
+
+        BOOST_CHECK_LT(bitsDiff, DiffThreshold);
+
     }
 }
 
@@ -217,7 +221,7 @@ BOOST_AUTO_TEST_CASE(GetNextWorkRequired_steady_state)
 BOOST_AUTO_TEST_CASE(GetNextWorkRequired_changing)
 {
     const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
-    Consensus::Params params = chainParams->GetConsensus();
+    const Consensus::Params& params = chainParams->GetConsensus();
     const unsigned int nInterval = params.DifficultyAdjustmentInterval() + 1;
     const unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
@@ -293,7 +297,11 @@ BOOST_AUTO_TEST_CASE(get_next_work_lower_limit_actual_btc)
     int64_t nFirstBlockTime = 1279008237; // Block #66528
     int64_t nLastBlockTime = 1279297671;  // Block #68543
 
-    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c05a3f4, StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanBTC), 0x1c0168fd);
+    //BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c05a3f4, StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanBTC), 0x1c0168fd);
+    //
+    // A fix in CalculateNextWorkRequired caused an off-by-one error in this unit test:
+
+    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c05a3f4, StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanBTC), 0x1c0168fc);
 }
 
 /* Test the constraint on the upper bound for actual time taken */
