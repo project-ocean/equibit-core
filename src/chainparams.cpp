@@ -18,6 +18,7 @@
 #ifndef BUILD_BTC
 // EQB_TODO Temporary to mine the genesis block below
 #include <pow.h>
+#include <arith_uint256.h>
 #endif
 
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
@@ -102,7 +103,8 @@ public:
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #else  // BUILD_EQB
        // EQB_TODO temporary to mine genesis block below
-        consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        //consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #endif // END_BUILD
 #ifdef BUILD_BTC
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
@@ -155,12 +157,18 @@ public:
 
         // EQB_TODO temporarily mine a genesis block just to get the unit tests passing
         // Replace later with standard difficulty, a new date and a hard-coded nonce
-        uint32_t nonce = 0;
-        do {
-            genesis = CreateEquibitGenesisBlock(1231006505, nonce++, 0x207fffff, 1, 50 * COIN);
+
+        unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
+
+        for (uint32_t nonce = 0; ; nonce++) {
+            genesis = CreateEquibitGenesisBlock(1231006505, nonce, nPoWTarget, 1, 50 * COIN);
             consensus.hashGenesisBlock = genesis.GetHash();
             //std::cout << "genesis " << nonce << std::endl;
-        } while (!CheckProofOfWork(consensus.hashGenesisBlock, 0x207fffff, consensus));
+
+            if (CheckProofOfWork(consensus.hashGenesisBlock, nPoWTarget, consensus)) {
+                break;
+            }
+        }
 
         //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
         //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
