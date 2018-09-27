@@ -250,15 +250,20 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
 #else  // BUILD_EQB
             // EQB_TODO temporary to mine blocks
 
-            pblock->nBits = 0x207fffff;
+            const Consensus::Params& consensus = chainparams.GetConsensus();
+            unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
+
+            pblock->nBits = nPoWTarget;
             for (uint32_t nonce = 0; ; nonce++) {
                 pblock->nNonce = nonce;
                 uint256 hash = pblock->GetHash();
                 //std::cout << "create block " << nonce << " yields " << hash.ToString();
-                if (CheckProofOfWork(hash, pblock->nBits, chainparams.GetConsensus())) {
+                if (CheckProofOfWork(hash, pblock->nBits, consensus)) {
                     break;
                 }
             }
+
+            //std::cout << i << " mined new block with nonce " << pblock->nNonce << std::endl;
 #endif // END_BUILD
         }
         std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
