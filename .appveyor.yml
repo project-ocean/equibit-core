@@ -31,7 +31,7 @@ before_build:
 - cmd: if not exist build_msvc\%PLATFORM%\%CONFIGURATION%\ (mkdir build_msvc\%PLATFORM%\%CONFIGURATION%)
 - cmd: if exist build_msvc\cache\*.iobj (move build_msvc\cache\* build_msvc\%PLATFORM%\%CONFIGURATION%\)
 - cmd: clcache -M 2147483648
-- cmd: python build_msvc\msvc-autogen.py
+#- cmd: python build_msvc\msvc-autogen.py
 - ps:  $files = (Get-ChildItem -Recurse | where {$_.extension -eq ".vcxproj"}).FullName
 - ps:  for ($i = 0; $i -lt $files.length; $i++) {
            (Get-Content $files[$i]).Replace("</RuntimeLibrary>", "</RuntimeLibrary><DebugInformationFormat>None</DebugInformationFormat>").Replace("NDEBUG;", "") | Set-Content $files[$i]
