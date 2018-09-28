@@ -168,14 +168,14 @@ BOOST_AUTO_TEST_CASE(get_next_work_500_percent)
 }
 
 // Initialize simulated blockchain 
-static int InitializeBlocks(std::vector<CBlockIndex>& blocks, const Consensus::Params& params)
+static int64_t InitializeBlocks(std::vector<CBlockIndex>& blocks, const Consensus::Params& params)
 {
-    const unsigned int nInterval = 2 * params.DifficultyAdjustmentInterval();
-    const unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
+    const int64_t nInterval = 2 * params.DifficultyAdjustmentInterval();
+    const uint32_t nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
-    assert(blocks.size() > nInterval);
+    assert(blocks.size() > static_cast<size_t>(nInterval));
 
-    for (int i = 0; i < nInterval; i++) {
+    for (auto i = 0; i < nInterval; i++) {
         blocks[i].pprev = i ? &blocks[i - 1] : nullptr;
         blocks[i].nHeight = i;
         blocks[i].nTime = i ? blocks[i - 1].nTime + params.nPowTargetSpacing : 1269211443; // Arbitrary start time copied from GetBlockProofEquivalentTime_test
@@ -194,12 +194,12 @@ BOOST_AUTO_TEST_CASE(GetNextWorkRequired_steady_state)
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
     CBlockHeader header;
-    const int nBlocks = 1000;
+    const uint64_t nBlocks = 1000;
     std::vector<CBlockIndex> blocks(nBlocks);
 
-    int nBlocksInitialized = InitializeBlocks(blocks, params);
+    auto nBlocksInitialized = InitializeBlocks(blocks, params);
 
-    for (int i = nBlocksInitialized; i < nBlocks; i++) {
+    for (auto i = nBlocksInitialized; i < nBlocks; i++) {
         header.nVersion = 1;
         header.nTime = blocks[i - 1].nTime + params.nPowTargetSpacing;
 
@@ -226,10 +226,10 @@ BOOST_AUTO_TEST_CASE(GetNextWorkRequired_changing)
     const unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
     CBlockHeader header;
-    const int nBlocks = 1000;
+    const uint64_t nBlocks = 1000;
     std::vector<CBlockIndex> blocks(nBlocks);
 
-    int nBlocksInitialized = InitializeBlocks(blocks, params);
+    auto nBlocksInitialized = InitializeBlocks(blocks, params);
 
     for (int i = nBlocksInitialized; i < nBlocks; i++) {
         uint32_t blockTime = params.nPowTargetSpacing;

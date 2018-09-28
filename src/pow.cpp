@@ -154,6 +154,7 @@ unsigned int static GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const 
 
 unsigned int static GetNextWorkRequiredDGW(const CBlockIndex* pindexLast, const CBlockHeader* pblock, const Consensus::Params& params)
 {
+    // DarkGravity v4 - based on:
     /* current difficulty formula, dash - DarkGravity v3, written by Evan Duffield - evan@dash.org */
     assert(pindexLast != nullptr);
 
