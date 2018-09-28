@@ -38,7 +38,7 @@ before_build:
        }
 - ps:  Start-Process clcache-server
 build_script:
-- cmd: msbuild /p:TrackFileAccess=false /p:CLToolExe=clcache.exe build_msvc\bitcoin.sln /m /v:q /nowarn:C4244;C4267;C4715 /nologo
+- cmd: msbuild /p:TrackFileAccess=false /p:CLToolExe=clcache.exe build_msvc\equibit.sln /m /v:q /nowarn:C4244;C4267;C4715 /nologo
 after_build:
 - cmd: move build_msvc\%PLATFORM%\%CONFIGURATION%\*.iobj build_msvc\cache\
 - cmd: move build_msvc\%PLATFORM%\%CONFIGURATION%\*.ipdb build_msvc\cache\
@@ -53,7 +53,8 @@ before_test:
 test_script:
 - cmd: src\test_equibit.exe
 - ps:  src\bench_equibit.exe -evals=1 -scaling=0
-- ps:  python eqbtest\util\bitcoin-util-test.py
+# EQB_TODO: bitcoin-util-test.py, rpcauth-test.py are switched off temporarily
+# - ps:  python eqbtest\util\bitcoin-util-test.py
 # - cmd: python test\util\rpcauth-test.py
 - cmd: python eqbtest\functional\test_runner.py --force --quiet --combinedlogslen=40 --exclude "wallet_multiwallet,wallet_multiwallet.py --usecli"
 deploy: off
