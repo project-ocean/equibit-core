@@ -106,7 +106,6 @@ BOOST_AUTO_TEST_CASE(get_next_work_30_percent)
     uint32_t nBitsExpected = bnPowExpected.GetCompact();
 
     uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, FirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
-    uint32_t nBitsDiff = abs(int(nBitsExpected - nBitsNew));
     double bitsDiff = fabs(log(1.0 * nBitsNew / nBitsExpected));
 
     BOOST_CHECK_LT(bitsDiff, DiffThreshold);
@@ -192,15 +191,14 @@ BOOST_AUTO_TEST_CASE(GetNextWorkRequired_steady_state)
 {
     const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
     const Consensus::Params& params = chainParams->GetConsensus();
-    unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
     CBlockHeader header;
     const uint64_t nBlocks = 1000;
     std::vector<CBlockIndex> blocks(nBlocks);
 
-    auto nBlocksInitialized = InitializeBlocks(blocks, params);
+    uint64_t nBlocksInitialized = InitializeBlocks(blocks, params);
 
-    for (auto i = nBlocksInitialized; i < nBlocks; i++) {
+    for (uint64_t i = nBlocksInitialized; i < nBlocks; i++) {
         header.nVersion = 1;
         header.nTime = blocks[i - 1].nTime + params.nPowTargetSpacing;
 
@@ -223,16 +221,15 @@ BOOST_AUTO_TEST_CASE(GetNextWorkRequired_changing)
 {
     const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
     const Consensus::Params& params = chainParams->GetConsensus();
-    const unsigned int nInterval = params.DifficultyAdjustmentInterval() + 1;
     const unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
     CBlockHeader header;
     const uint64_t nBlocks = 1000;
     std::vector<CBlockIndex> blocks(nBlocks);
 
-    auto nBlocksInitialized = InitializeBlocks(blocks, params);
+    uint64_t nBlocksInitialized = InitializeBlocks(blocks, params);
 
-    for (int i = nBlocksInitialized; i < nBlocks; i++) {
+    for (uint64_t i = nBlocksInitialized; i < nBlocks; i++) {
         uint32_t blockTime = params.nPowTargetSpacing;
         
         // In the first phase we'll simulate short block times to increase difficulty
