@@ -1,3 +1,5 @@
+// Copyright (c) 2018 Equibit Group AG
+
 #ifndef BITCOIN_BITCOIN_CONFIG_H
 #define BITCOIN_BITCOIN_CONFIG_H
 
