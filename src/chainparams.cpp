@@ -1,5 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,8 +13,22 @@
 
 #include <assert.h>
 #include <memory>
+#include <pow.h>
 
 #include <chainparamsseeds.h>
+
+#ifndef BUILD_BTC
+void findNonceForGenesisBlock(const CBlock & block) {
+    CBlock &b = const_cast<CBlock&>(block);
+    LogPrintf("Finding Nonce for Genesis Block... \n");
+    while(!CheckProofOfWork(b.GetHash(), b.nBits, Params().GetConsensus())) {
+        ++b.nNonce;
+    }
+    // Founda valid nonce, print them out!
+    LogPrintf(" The nonce is %08X, block hash: %s ", b.nNonce, b.GetHash().ToString().c_str());
+    LogPrintf("%s", b.ToString().c_str());
+}
+#endif
 
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {

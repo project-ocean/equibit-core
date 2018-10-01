@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -92,6 +93,12 @@ protected:
     CCheckpointData checkpointData;
     ChainTxData chainTxData;
 };
+/** 
+* Find Nonce for the Genesis Block
+*/
+#ifndef BUILD_BTC
+void findNonceForGenesisBlock(const CBlock& block);
+#endif
 
 /**
  * Creates and returns a std::unique_ptr<CChainParams> of the chosen chain.

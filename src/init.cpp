@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -88,6 +89,9 @@ static CZMQNotificationInterface* pzmqNotificationInterface = nullptr;
 #define MIN_CORE_FILEDESCRIPTORS 150
 #endif
 
+#ifndef BUILD_BTC
+#include <chainparams.h>
+#endif 
 static const char* FEE_ESTIMATES_FILENAME="fee_estimates.dat";
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1391,6 +1395,18 @@ bool AppInitMain()
     if (gArgs.IsArgSet("-maxuploadtarget")) {
         nMaxOutboundLimit = gArgs.GetArg("-maxuploadtarget", DEFAULT_MAX_UPLOAD_TARGET)*1024*1024;
     }
+
+// ********************************************************** Step 6b : Equibit specific: create a new genesis block 
+// The following block allows the creation of a genesis block based on existing block structure. The  method is only
+// called if the appropriate compilation flag is enabled
+#ifndef BUILD_BTC 
+#ifdef EQB_CREATE_GENESIS 
+    LogPrintf("--------------------------------------------- \n");
+    LogPrintf("Computing the Nonce for the new Genesis block \n");
+    findNonceForGenesisBlock(chainparams.GenesisBlock());
+    LogPrintf("End of computation for new Genesis block \n");
+#endif
+#endif
 
     // ********************************************************* Step 7: load block chain
 
