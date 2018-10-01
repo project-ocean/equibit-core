@@ -166,6 +166,9 @@ enum opcodetype
     OP_CHECKSIGVERIFY = 0xad,
     OP_CHECKMULTISIG = 0xae,
     OP_CHECKMULTISIGVERIFY = 0xaf,
+#ifndef BUILD_BTC
+    OP_SHA3 = 0xc0,
+#endif // END_BUILD
 
     // expansion
     OP_NOP1 = 0xb0,

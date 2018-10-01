@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,6 +11,7 @@
 #include <random.h>
 #include <uint256.h>
 #include <util.h>
+#include <eqb/sha3/sha3.h>
 
 #include <cuckoocache.h>
 #include <boost/thread.hpp>
@@ -25,6 +27,7 @@ class CSignatureCache
 private:
      //! Entries are SHA256(nonce || signature hash || public key || signature):
     uint256 nonce;
+    // EQB_TODO: Update CuckooCache class to support SHA3
     typedef CuckooCache::cache<uint256, SignatureCacheHasher> map_type;
     map_type setValid;
     boost::shared_mutex cs_sigcache;
@@ -38,7 +41,11 @@ public:
     void
     ComputeEntry(uint256& entry, const uint256 &hash, const std::vector<unsigned char>& vchSig, const CPubKey& pubkey)
     {
+#ifndef BUILD_BTC
+        SHA3().Write(nonce.begin(), 32).Write(hash.begin(), 32).Write(&pubkey[0], pubkey.size()).Write(&vchSig[0], vchSig.size()).Finalize(entry.begin());
+#else  // BUILD_EQB
         CSHA256().Write(nonce.begin(), 32).Write(hash.begin(), 32).Write(&pubkey[0], pubkey.size()).Write(&vchSig[0], vchSig.size()).Finalize(entry.begin());
+#endif // END_BUILD
     }
 
     bool
