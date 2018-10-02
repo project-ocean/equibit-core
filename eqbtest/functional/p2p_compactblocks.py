@@ -132,7 +132,7 @@ class CompactBlocksTest(BitcoinTestFramework):
         block2.solve()
         self.test_node.send_and_ping(msg_block(block2))
         assert_equal(int(self.nodes[0].getbestblockhash(), 16), block2.sha256)
-        self.utxos.extend([[tx.sha256, i, out_value] for i in range(10)])
+        self.utxos.extend([[tx.sha256, i, out_value] for i in range(10)])  # EQB_TODO OCT-02
         return
 
     # Test "sendcmpct" (between peers preferring the same version):
@@ -289,7 +289,7 @@ class CompactBlocksTest(BitcoinTestFramework):
         # Store the raw block in our internal format.
         block = FromHex(CBlock(), node.getblock("%02x" % block_hash, False))
         for tx in block.vtx:
-            tx.calc_sha256()
+            tx.calc_sha3_256()  # EQB_TODO OCT-02
         block.rehash()
 
         # Wait until the block was announced (via compact blocks)
@@ -330,14 +330,14 @@ class CompactBlocksTest(BitcoinTestFramework):
 
         # Check that all prefilled_txn entries match what's in the block.
         for entry in header_and_shortids.prefilled_txn:
-            entry.tx.calc_sha256()
+            entry.tx.calc_sha3_256()  # EQB_TODO OCT-02
             # This checks the non-witness parts of the tx agree
             assert_equal(entry.tx.sha256, block.vtx[entry.index].sha256)
 
             # And this checks the witness
-            wtxid = entry.tx.calc_sha256(True)
+            wtxid = entry.tx.calc_sha3_256(True)  # EQB_TODO OCT-02
             if version == 2:
-                assert_equal(wtxid, block.vtx[entry.index].calc_sha256(True))
+                assert_equal(wtxid, block.vtx[entry.index].calc_sha3_256(True))  # EQB_TODO OCT-02
             else:
                 # Shouldn't have received a witness
                 assert(entry.tx.wit.is_null())
@@ -358,7 +358,7 @@ class CompactBlocksTest(BitcoinTestFramework):
             else:
                 tx_hash = block.vtx[index].sha256
                 if version == 2:
-                    tx_hash = block.vtx[index].calc_sha256(True)
+                    tx_hash = block.vtx[index].calc_sha3_256(True)  # EQB_TODO OCT-02
                 shortid = calculate_shortid(k0, k1, tx_hash)
                 assert_equal(shortid, header_and_shortids.shortids[0])
                 header_and_shortids.shortids.pop(0)
@@ -592,20 +592,20 @@ class CompactBlocksTest(BitcoinTestFramework):
             test_node.send_message(msg)
             wait_until(lambda: "blocktxn" in test_node.last_message, timeout=10, lock=mininode_lock)
 
-            [tx.calc_sha256() for tx in block.vtx]
+            [tx.calc_sha3_256() for tx in block.vtx]  # EQB_TODO OCT-02
             with mininode_lock:
                 assert_equal(test_node.last_message["blocktxn"].block_transactions.blockhash, int(block_hash, 16))
                 all_indices = msg.block_txn_request.to_absolute()
                 for index in all_indices:
                     tx = test_node.last_message["blocktxn"].block_transactions.transactions.pop(0)
-                    tx.calc_sha256()
+                    tx.calc_sha3_256()  # EQB_TODO OCT-02
                     assert_equal(tx.sha256, block.vtx[index].sha256)
                     if version == 1:
                         # Witnesses should have been stripped
                         assert(tx.wit.is_null())
                     else:
                         # Check that the witness matches
-                        assert_equal(tx.calc_sha256(True), block.vtx[index].calc_sha256(True))
+                        assert_equal(tx.calc_sha3_256(True), block.vtx[index].calc_sha3_256(True))  # EQB_TODO OCT-02
                 test_node.last_message.pop("blocktxn", None)
             current_height -= 1
 

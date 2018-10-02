@@ -467,7 +467,8 @@ class CTransaction():
     # Recalculate the txid (transaction hash without witness)
     def rehash(self):
         self.sha256 = None
-        self.calc_sha256()
+        # self.calc_sha256()  # EQB_TODO OCT-02
+        self.calc_sha3_256()
 
     # We will only cache the serialization without witness in
     # self.sha256 and self.hash -- those are expected to be the txid.
@@ -560,6 +561,7 @@ class CBlockHeader():
     def rehash(self):
         self.sha256 = None
         self.calc_sha256()
+        #self.calc_sha3_256()  # EQB_TODO OCT-02
         return self.sha256
 
     def __repr__(self):
@@ -602,9 +604,9 @@ class CBlock(CBlockHeader):
     def calc_merkle_root(self):
         hashes = []
         for tx in self.vtx:
-            tx.calc_sha256()
+            #tx.calc_sha256()
             # EQB_TODO: DON'T Switch Tx hash calculation to SHA3_256 yet
-            # tx.calc_sha3_256()
+            tx.calc_sha3_256()  # EQB_TODO OCT-02
             hashes.append(ser_uint256(tx.sha256))
         return self.get_merkle_root(hashes)
 
@@ -779,7 +781,7 @@ class HeaderAndShortIDs():
             if i not in prefill_list:
                 tx_hash = block.vtx[i].sha256
                 if use_witness:
-                    tx_hash = block.vtx[i].calc_sha256(with_witness=True)
+                    tx_hash = block.vtx[i].calc_sha3_256(with_witness=True)  # EQB_TODO OCT-02
                 self.shortids.append(calculate_shortid(k0, k1, tx_hash))
 
     def __repr__(self):
