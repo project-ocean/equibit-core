@@ -137,7 +137,7 @@ def witness_script(use_p2wsh, pubkey):
     else:
         # 1-of-1 multisig
         witness_program = CScript([OP_1, hex_str_to_bytes(pubkey), OP_1, OP_CHECKMULTISIG])
-        scripthash = sha256(witness_program)  ##########################################################
+        scripthash = sha256(witness_program)
         pkscript = CScript([OP_0, scripthash])
     return bytes_to_hex_str(pkscript)
 
