@@ -80,7 +80,11 @@ static void MerkleComputation(const std::vector<uint256>& leaves, uint256* proot
                 }
             }
             mutated |= (inner[level] == h);
+#ifdef BUILD_BTC
             CHash256().Write(inner[level].begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
+#else  // BUILD_EQB
+            CSHA3Hash256().Write(inner[level].begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
+#endif // END_BUILD
         }
         // Store the resulting hash at inner position level.
         inner[level] = h;
@@ -106,7 +110,11 @@ static void MerkleComputation(const std::vector<uint256>& leaves, uint256* proot
         if (pbranch && matchh) {
             pbranch->push_back(h);
         }
+#ifdef BUILD_BTC
         CHash256().Write(h.begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
+#else  // BUILD_EQB
+        CSHA3Hash256().Write(h.begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
+#endif // END_BUILD
         // Increment count to the value it would have if two entries at this
         // level had existed.
         count += (((uint32_t)1) << level);
@@ -121,7 +129,11 @@ static void MerkleComputation(const std::vector<uint256>& leaves, uint256* proot
                     matchh = true;
                 }
             }
+#ifdef BUILD_BTC
             CHash256().Write(inner[level].begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
+#else  // BUILD_EQB
+            CSHA3Hash256().Write(inner[level].begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
+#endif // END_BUILD
             level++;
         }
     }
@@ -145,11 +157,19 @@ std::vector<uint256> ComputeMerkleBranch(const std::vector<uint256>& leaves, uin
 uint256 ComputeMerkleRootFromBranch(const uint256& leaf, const std::vector<uint256>& vMerkleBranch, uint32_t nIndex) {
     uint256 hash = leaf;
     for (std::vector<uint256>::const_iterator it = vMerkleBranch.begin(); it != vMerkleBranch.end(); ++it) {
+#ifdef BUILD_BTC
         if (nIndex & 1) {
             hash = Hash(BEGIN(*it), END(*it), BEGIN(hash), END(hash));
         } else {
             hash = Hash(BEGIN(hash), END(hash), BEGIN(*it), END(*it));
         }
+#else  // BUILD_EQB
+        if (nIndex & 1) {
+            hash = SHA3Hash(BEGIN(*it), END(*it), BEGIN(hash), END(hash));
+        } else {
+            hash = SHA3Hash(BEGIN(hash), END(hash), BEGIN(*it), END(*it));
+        }
+#endif // END_BUILD
         nIndex >>= 1;
     }
     return hash;

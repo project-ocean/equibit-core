@@ -46,13 +46,19 @@ NODE_NETWORK_LIMITED = (1 << 10)
 
 # Serialization/deserialization tools
 def sha256(s):
-    return hashlib.new('sha256', s).digest()
+    return hashlib.new('sha256', s).digest() #sha3_256 sha256
+
+def sha3_256(s):
+    return hashlib.new('sha3_256', s).digest()
 
 def ripemd160(s):
     return hashlib.new('ripemd160', s).digest()
 
 def hash256(s):
     return sha256(sha256(s))
+
+def hash3_256(s):
+    return sha3_256(sha3_256(s))
 
 def ser_compact_size(l):
     r = b""
@@ -474,6 +480,14 @@ class CTransaction():
             self.sha256 = uint256_from_str(hash256(self.serialize_without_witness()))
         self.hash = encode(hash256(self.serialize_without_witness())[::-1], 'hex_codec').decode('ascii')
 
+    def calc_sha3_256(self, with_witness=False):
+        if with_witness:
+            return uint256_from_str(hash3_256(self.serialize_with_witness()))
+
+        if self.sha256 is None:
+            self.sha256 = uint256_from_str(hash3_256(self.serialize_without_witness()))
+        self.hash = encode(hash3_256(self.serialize_without_witness())[::-1], 'hex_codec').decode('ascii')
+
     def is_valid(self):
         self.calc_sha256()
         for tout in self.vout:
@@ -579,7 +593,9 @@ class CBlock(CBlockHeader):
             newhashes = []
             for i in range(0, len(hashes), 2):
                 i2 = min(i+1, len(hashes)-1)
-                newhashes.append(hash256(hashes[i] + hashes[i2]))
+                # Switch to SHA3_256
+                # newhashes.append(hash256(hashes[i] + hashes[i2]))
+                newhashes.append(hash3_256(hashes[i] + hashes[i2]))
             hashes = newhashes
         return uint256_from_str(hashes[0])
 
@@ -587,6 +603,8 @@ class CBlock(CBlockHeader):
         hashes = []
         for tx in self.vtx:
             tx.calc_sha256()
+            # EQB_TODO: DON'T Switch Tx hash calculation to SHA3_256 yet
+            # tx.calc_sha3_256()
             hashes.append(ser_uint256(tx.sha256))
         return self.get_merkle_root(hashes)
 
