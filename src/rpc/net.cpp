@@ -296,7 +296,11 @@ UniValue getaddednodeinfo(const JSONRPCRequest& request)
             "    \"connected\" : true|false,          (boolean) If connected\n"
             "    \"addresses\" : [                    (list of objects) Only when connected = true\n"
             "       {\n"
+#ifdef BUILD_BTC
             "         \"address\" : \"192.168.0.201:8333\",  (string) The bitcoin server IP and port we're connected to\n"
+#else // BUILD_EQB
+            "         \"address\" : \"192.168.0.201:8333\",  (string) The equibit server IP and port we're connected to\n"
+#endif // END_BUILD
             "         \"connected\" : \"outbound\"           (string) connection, inbound or outbound\n"
             "       }\n"
             "     ]\n"

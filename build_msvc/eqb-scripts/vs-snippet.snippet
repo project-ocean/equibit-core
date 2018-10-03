@@ -1,0 +1,25 @@
+<!-- Copyright (c) 2018 Equibit Group AG -->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This snippet provides a shortcut for creating the equibit specific preprocessor directives. 
+For more information about how to install this snippet on Visual Studio see: https://docs.microsoft.com/en-us/visualstudio/ide/walkthrough-creating-a-code-snippet?view=vs-2017
+-->
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+    <CodeSnippet Format="1.0.0">
+      <Header>
+    <Title>Apply Equibit Code</Title>
+    <Author>Equibit Group</Author>
+    <Description>Apply #ifdef </Description>
+	   <Shortcut>eqb</Shortcut>
+</Header>
+        <Snippet>
+            <Code Language="cpp">
+             <![CDATA[#ifdef BUILD_BTC
+			
+			#else // BUILD_EQB
+			
+			#endif // END_BUILD
+			 ]]>
+            </Code>
+        </Snippet>
+    </CodeSnippet>
+</CodeSnippets>

@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -76,8 +77,13 @@ bool AppInit(int argc, char* argv[])
         }
         else
         {
+#ifdef BUILD_BTC
             strUsage += "\n" + _("Usage:") + "\n" +
                   "  bitcoind [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
+#else // BUILD_EQB
+			strUsage += "\n" + _("Usage:") + "\n" +
+                        "  equibitd [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
+#endif // END_BUILD
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
         }
