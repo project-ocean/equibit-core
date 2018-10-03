@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2016-2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the SegWit changeover logic."""
@@ -249,7 +250,7 @@ class SegWitTest(BitcoinTestFramework):
         assert(txid3 in template_txids)
 
         # Check that wtxid is properly reported in mempool entry
-        assert_equal(int(self.nodes[0].getmempoolentry(txid3)["wtxid"], 16), tx.calc_sha3_256(True))  # EQB_TODO OCT-02
+        assert_equal(int(self.nodes[0].getmempoolentry(txid3)["wtxid"], 16), tx.calc_sha3_256(True))  # Switched to sha3
 
         # Mine a block to clear the gbt cache again.
         self.nodes[0].generate(1)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2016-2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test segwit transactions and blocks on P2P network."""
@@ -169,7 +170,7 @@ class SegWitTest(BitcoinTestFramework):
         tx = CTransaction()
         tx.vin.append(CTxIn(COutPoint(txid, 0), b""))
         tx.vout.append(CTxOut(49 * 100000000, CScript([OP_TRUE, OP_DROP] * 15 + [OP_TRUE])))
-        tx.calc_sha256()
+        tx.calc_sha3_256()  # Switched to sha3
 
         # Check that serializing it with or without witness is the same
         # This is a sanity check of our testing framework.
@@ -200,7 +201,7 @@ class SegWitTest(BitcoinTestFramework):
         # Verify the hash with witness differs from the txid
         # (otherwise our testing framework must be broken!)
         tx.rehash()
-        assert(tx.sha256 != tx.calc_sha256(with_witness=True))
+        assert(tx.sha256 != tx.calc_sha3_256(with_witness=True))  # Switched to sha3
 
         # Construct a segwit-signaling block that includes the transaction.
         block = self.build_next_block(nVersion=(VB_TOP_BITS|(1 << VB_WITNESS_BIT)))
@@ -928,7 +929,7 @@ class SegWitTest(BitcoinTestFramework):
         # Test that getrawtransaction returns correct witness information
         # hash, size, vsize
         raw_tx = self.nodes[0].getrawtransaction(tx3.hash, 1)
-        assert_equal(int(raw_tx["hash"], 16), tx3.calc_sha256(True))
+        assert_equal(int(raw_tx["hash"], 16), tx3.calc_sha3_256(True))  # Switched to sha3
         assert_equal(raw_tx["size"], len(tx3.serialize_with_witness()))
         vsize = (len(tx3.serialize_with_witness()) + 3*len(tx3.serialize_without_witness()) + 3) / 4
         assert_equal(raw_tx["vsize"], vsize)
