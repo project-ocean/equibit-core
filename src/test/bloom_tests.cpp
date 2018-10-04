@@ -1,4 +1,5 @@
 // Copyright (c) 2012-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -123,12 +124,22 @@ BOOST_AUTO_TEST_CASE(bloom_match)
 
     CBloomFilter filter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(uint256S("0xb4749f017444b051c44dfd2720e88f314ff94f3dd6d56d40ef65854fcd7fff6b"));
+#ifdef BUILD_BTC
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match tx hash");
+#else
+       // BUILD_EQB
+       // EQB_TODO fix unit tests
+#endif // END_BUILD
 
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     // byte-reversed tx hash
     filter.insert(ParseHex("6bff7fcd4f8565ef406dd5d63d4ff94f318fe82027fd4dc451b04474019f74b4"));
+#ifdef BUILD_BTC
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match manually serialized tx hash");
+#else
+// BUILD_EQB
+// EQB_TODO fix unit tests
+#endif // END_BUILD
 
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(ParseHex("30450220070aca44506c5cef3a16ed519d7c3c39f8aab192c4e1c90d065f37b8a4af6141022100a8e160b856c2d43d27d8fba71e5aef6405b8643ac4cb7cb3c462aced7f14711a01"));
@@ -141,7 +152,12 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(ParseHex("04943fdd508053c75000106d3bc6e2754dbcff19"));
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match output address");
+#ifdef BUILD_BTC
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(spendingTx), "Simple Bloom filter didn't add output");
+#else
+// BUILD_EQB
+// EQB_TODO fix unit tests
+#endif // END_BUILD
 
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(ParseHex("a266436d2965547608b9e15d9032a7b9d64fa431"));
@@ -180,6 +196,7 @@ BOOST_AUTO_TEST_CASE(bloom_match)
 
 BOOST_AUTO_TEST_CASE(merkle_block_1)
 {
+#ifdef BUILD_BTC
     CBlock block = getBlock13b8a();
     CBloomFilter filter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     // Match the last transaction
@@ -196,12 +213,10 @@ BOOST_AUTO_TEST_CASE(merkle_block_1)
 
     std::vector<uint256> vMatched;
     std::vector<unsigned int> vIndex;
-#ifdef BUILD_BTC
+
     BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
-#else  // BUILD_EQB
-       // EQB_TODO fix unit tests
-#endif // END_BUILD
+
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 
@@ -217,18 +232,18 @@ BOOST_AUTO_TEST_CASE(merkle_block_1)
     BOOST_CHECK(merkleBlock.vMatchedTxn[0].second == uint256S("0xdd1fd2a6fc16404faf339881a90adbde7f4f728691ac62e8f168809cdfae1053"));
     BOOST_CHECK(merkleBlock.vMatchedTxn[0].first == 7);
 
-#ifdef BUILD_BTC
     BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
+    for (unsigned int i = 0; i < vMatched.size(); i++)
+        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #else  // BUILD_EQB
        // EQB_TODO fix unit tests
 #endif // END_BUILD
-    for (unsigned int i = 0; i < vMatched.size(); i++)
-        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 }
 
 BOOST_AUTO_TEST_CASE(merkle_block_2)
 {
+#ifdef BUILD_BTC
     // Random real block (000000005a4ded781e667e06ceefafb71410b511fe0d5adc3e5a27ecbec34ae6)
     // With 4 txes
     CBlock block;
@@ -250,12 +265,9 @@ BOOST_AUTO_TEST_CASE(merkle_block_2)
 
     std::vector<uint256> vMatched;
     std::vector<unsigned int> vIndex;
-#ifdef BUILD_BTC
+
     BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
-#else  // BUILD_EQB
-       // EQB_TODO fix unit tests
-#endif // END_BUILD
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 
@@ -280,18 +292,18 @@ BOOST_AUTO_TEST_CASE(merkle_block_2)
     BOOST_CHECK(merkleBlock.vMatchedTxn[3].second == uint256S("0x3c1d7e82342158e4109df2e0b6348b6e84e403d8b4046d7007663ace63cddb23"));
     BOOST_CHECK(merkleBlock.vMatchedTxn[3].first == 3);
 
-#ifdef BUILD_BTC
     BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
+    for (unsigned int i = 0; i < vMatched.size(); i++)
+        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #else  // BUILD_EQB
        // EQB_TODO fix unit tests
 #endif // END_BUILD
-    for (unsigned int i = 0; i < vMatched.size(); i++)
-        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 }
 
 BOOST_AUTO_TEST_CASE(merkle_block_2_with_update_none)
 {
+#ifdef BUILD_BTC
     // Random real block (000000005a4ded781e667e06ceefafb71410b511fe0d5adc3e5a27ecbec34ae6)
     // With 4 txes
     CBlock block;
@@ -313,12 +325,9 @@ BOOST_AUTO_TEST_CASE(merkle_block_2_with_update_none)
 
     std::vector<uint256> vMatched;
     std::vector<unsigned int> vIndex;
-#ifdef BUILD_BTC
+
     BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
-#else  // BUILD_EQB
-       // EQB_TODO fix unit tests
-#endif // END_BUILD
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 
@@ -340,18 +349,19 @@ BOOST_AUTO_TEST_CASE(merkle_block_2_with_update_none)
     BOOST_CHECK(merkleBlock.vMatchedTxn[2].second == uint256S("0x3c1d7e82342158e4109df2e0b6348b6e84e403d8b4046d7007663ace63cddb23"));
     BOOST_CHECK(merkleBlock.vMatchedTxn[2].first == 3);
 
-#ifdef BUILD_BTC
     BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
+
+    for (unsigned int i = 0; i < vMatched.size(); i++)
+        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #else  // BUILD_EQB
        // EQB_TODO fix unit tests
 #endif // END_BUILD
-    for (unsigned int i = 0; i < vMatched.size(); i++)
-        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 }
 
 BOOST_AUTO_TEST_CASE(merkle_block_3_and_serialize)
 {
+#ifdef BUILD_BTC
     // Random real block (000000000000dab0130bbcc991d3d7ae6b81aa6f50a798888dfe62337458dc45)
     // With one tx
     CBlock block;
@@ -387,10 +397,14 @@ BOOST_AUTO_TEST_CASE(merkle_block_3_and_serialize)
         expected[i] = (char)vch[i];
 
     BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(), merkleStream.begin(), merkleStream.end());
+#else  // BUILD_EQB
+// EQB_TODO fix unit tests
+#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_CASE(merkle_block_4)
 {
+#ifdef BUILD_BTC
     // Random real block (000000000000b731f2eef9e8c63173adfb07e41bd53eb0ef0a6b720d6cb6dea4)
     // With 7 txes
     CBlock block;
@@ -412,12 +426,10 @@ BOOST_AUTO_TEST_CASE(merkle_block_4)
 
     std::vector<uint256> vMatched;
     std::vector<unsigned int> vIndex;
-#ifdef BUILD_BTC
+
     BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
-#else  // BUILD_EQB
-       // EQB_TODO fix unit tests
-#endif // END_BUILD
+
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 
@@ -433,18 +445,19 @@ BOOST_AUTO_TEST_CASE(merkle_block_4)
 
     BOOST_CHECK(merkleBlock.vMatchedTxn[1] == pair);
 
-#ifdef BUILD_BTC
     BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
+
+    for (unsigned int i = 0; i < vMatched.size(); i++)
+        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #else  // BUILD_EQB
        // EQB_TODO fix unit tests
 #endif // END_BUILD
-    for (unsigned int i = 0; i < vMatched.size(); i++)
-        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 }
 
 BOOST_AUTO_TEST_CASE(merkle_block_4_test_p2pubkey_only)
 {
+#ifdef BUILD_BTC
     // Random real block (000000000000b731f2eef9e8c63173adfb07e41bd53eb0ef0a6b720d6cb6dea4)
     // With 7 txes
     CBlock block;
@@ -464,10 +477,14 @@ BOOST_AUTO_TEST_CASE(merkle_block_4_test_p2pubkey_only)
     BOOST_CHECK(filter.contains(COutPoint(uint256S("0x147caa76786596590baa4e98f5d9f48b86c7765e489f7a6ff3360fe5c674360b"), 0)));
     // ... but not the 4th transaction's output (its not pay-2-pubkey)
     BOOST_CHECK(!filter.contains(COutPoint(uint256S("0x02981fa052f0481dbc5868f4fc2166035a10f27a03cfd2de67326471df5bc041"), 0)));
+#else  // BUILD_EQB
+       // EQB_TODO fix unit tests
+#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_CASE(merkle_block_4_test_update_none)
 {
+#ifdef BUILD_BTC
     // Random real block (000000000000b731f2eef9e8c63173adfb07e41bd53eb0ef0a6b720d6cb6dea4)
     // With 7 txes
     CBlock block;
@@ -486,6 +503,9 @@ BOOST_AUTO_TEST_CASE(merkle_block_4_test_update_none)
     // We shouldn't match any outpoints (UPDATE_NONE)
     BOOST_CHECK(!filter.contains(COutPoint(uint256S("0x147caa76786596590baa4e98f5d9f48b86c7765e489f7a6ff3360fe5c674360b"), 0)));
     BOOST_CHECK(!filter.contains(COutPoint(uint256S("0x02981fa052f0481dbc5868f4fc2166035a10f27a03cfd2de67326471df5bc041"), 0)));
+#else  // BUILD_EQB
+       // EQB_TODO fix unit tests
+#endif // END_BUILD
 }
 
 static std::vector<unsigned char> RandomData()
