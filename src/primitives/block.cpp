@@ -12,7 +12,11 @@
 
 uint256 CBlockHeader::GetHash() const
 {
+#ifdef BUILD_BTC
     return SerializeHash(*this);
+#else  // BUILD_EQB
+    return SHA3SerializeHash(*this);
+#endif // END_BUILD
 }
 
 std::string CBlock::ToString() const
