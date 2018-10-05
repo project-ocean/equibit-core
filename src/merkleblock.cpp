@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -53,7 +54,11 @@ uint256 CPartialMerkleTree::CalcHash(int height, unsigned int pos, const std::ve
         else
             right = left;
         // combine subhashes
+#ifdef BUILD_BTC
         return Hash(BEGIN(left), END(left), BEGIN(right), END(right));
+#else  // BUILD_EQB
+        return SHA3Hash(BEGIN(left), END(left), BEGIN(right), END(right));
+#endif // END_BUILD
     }
 }
 
@@ -109,7 +114,11 @@ uint256 CPartialMerkleTree::TraverseAndExtract(int height, unsigned int pos, uns
             right = left;
         }
         // and combine them before returning
+#ifdef BUILD_BTC
         return Hash(BEGIN(left), END(left), BEGIN(right), END(right));
+#else  // BUILD_EQB
+        return SHA3Hash(BEGIN(left), END(left), BEGIN(right), END(right));
+#endif // END_BUILD
     }
 }
 

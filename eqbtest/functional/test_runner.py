@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Run regression test suite.
@@ -376,6 +377,8 @@ def print_results(test_results, max_len_name, runtime):
     test_results.sort(key=lambda result: result.name.lower())
     all_passed = True
     time_sum = 0
+    test_pass_cnt = 0
+    test_fail_cnt = 0
 
     for test_result in test_results:
         all_passed = all_passed and test_result.was_successful
@@ -383,8 +386,18 @@ def print_results(test_results, max_len_name, runtime):
         test_result.padding = max_len_name
         results += str(test_result)
 
+        # Summarize the numbers of passed and failed tests
+        if test_result.status == "Passed":
+            test_pass_cnt += 1
+        elif test_result.status == "Failed":
+            test_fail_cnt += 1
+
     status = TICK + "Passed" if all_passed else CROSS + "Failed"
     results += BOLD[1] + "\n%s | %s | %s s (accumulated) \n" % ("ALL".ljust(max_len_name), status.ljust(9), time_sum) + BOLD[0]
+    results += "\n"
+    results += "Total Passed: %s\n" % test_pass_cnt
+    results += "Total Failed: %s\n" % test_fail_cnt
+    results += "Number of tests: %s\n\n" % len(test_results)
     results += "Runtime: %s s\n" % (runtime)
     print(results)
 

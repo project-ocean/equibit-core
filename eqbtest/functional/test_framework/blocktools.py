@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2015-2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Utilities for manipulating blocks and transactions."""
@@ -97,7 +98,7 @@ def create_coinbase(height, pubkey = None):
     else:
         coinbaseoutput.scriptPubKey = CScript([OP_TRUE])
     coinbase.vout = [ coinbaseoutput ]
-    coinbase.calc_sha256()
+    coinbase.calc_sha3_256()  # Switched to sha3
     return coinbase
 
 # Create a transaction.
@@ -107,7 +108,7 @@ def create_transaction(prevtx, n, sig, value, scriptPubKey=CScript()):
     assert(n < len(prevtx.vout))
     tx.vin.append(CTxIn(COutPoint(prevtx.sha256, n), sig, 0xffffffff))
     tx.vout.append(CTxOut(value, scriptPubKey))
-    tx.calc_sha256()
+    tx.calc_sha3_256()   # Switched to sha3
     return tx
 
 def get_legacy_sigopcount_block(block, fAccurate=True):

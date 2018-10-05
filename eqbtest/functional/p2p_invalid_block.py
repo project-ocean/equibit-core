@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2015-2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test node responses to invalid blocks.
@@ -105,7 +106,8 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         self.block_time += 1
         block3.vtx[0].vout[0].nValue = 100 * COIN # Too high!
         block3.vtx[0].sha256=None
-        block3.vtx[0].calc_sha256()
+        # block3.vtx[0].calc_sha256()
+        block3.vtx[0].calc_sha3_256()  # Switched to sha3
         block3.hashMerkleRoot = block3.calc_merkle_root()
         block3.rehash()
         block3.solve()

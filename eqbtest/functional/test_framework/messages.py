@@ -2,6 +2,7 @@
 # Copyright (c) 2010 ArtForz -- public domain half-a-node
 # Copyright (c) 2012 Jeff Garzik
 # Copyright (c) 2010-2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Bitcoin test framework primitive and message strcutures
@@ -46,13 +47,19 @@ NODE_NETWORK_LIMITED = (1 << 10)
 
 # Serialization/deserialization tools
 def sha256(s):
-    return hashlib.new('sha256', s).digest()
+    return hashlib.new('sha256', s).digest() #sha3_256 sha256
+
+def sha3_256(s):
+    return hashlib.new('sha3_256', s).digest()
 
 def ripemd160(s):
     return hashlib.new('ripemd160', s).digest()
 
 def hash256(s):
     return sha256(sha256(s))
+
+def hash3_256(s):
+    return sha3_256(sha3_256(s))
 
 def ser_compact_size(l):
     r = b""
@@ -461,7 +468,7 @@ class CTransaction():
     # Recalculate the txid (transaction hash without witness)
     def rehash(self):
         self.sha256 = None
-        self.calc_sha256()
+        self.calc_sha3_256()  # Switched to sha3
 
     # We will only cache the serialization without witness in
     # self.sha256 and self.hash -- those are expected to be the txid.
@@ -474,8 +481,16 @@ class CTransaction():
             self.sha256 = uint256_from_str(hash256(self.serialize_without_witness()))
         self.hash = encode(hash256(self.serialize_without_witness())[::-1], 'hex_codec').decode('ascii')
 
+    def calc_sha3_256(self, with_witness=False):
+        if with_witness:
+            return uint256_from_str(hash3_256(self.serialize_with_witness()))
+
+        if self.sha256 is None:
+            self.sha256 = uint256_from_str(hash3_256(self.serialize_without_witness()))
+        self.hash = encode(hash3_256(self.serialize_without_witness())[::-1], 'hex_codec').decode('ascii')
+
     def is_valid(self):
-        self.calc_sha256()
+        self.calc_sha3_256()  # Switched to sha3
         for tout in self.vout:
             if tout.nValue < 0 or tout.nValue > 21000000 * COIN:
                 return False
@@ -543,9 +558,23 @@ class CBlockHeader():
             self.sha256 = uint256_from_str(hash256(r))
             self.hash = encode(hash256(r)[::-1], 'hex_codec').decode('ascii')
 
+    # EQB_TODO: not being used yet
+    def calc_sha3_256(self):
+        if self.sha256 is None:
+            r = b""
+            r += struct.pack("<i", self.nVersion)
+            r += ser_uint256(self.hashPrevBlock)
+            r += ser_uint256(self.hashMerkleRoot)
+            r += struct.pack("<I", self.nTime)
+            r += struct.pack("<I", self.nBits)
+            r += struct.pack("<I", self.nNonce)
+            self.sha256 = uint256_from_str(hash3_256(r))
+            self.hash = encode(hash3_256(r)[::-1], 'hex_codec').decode('ascii')
+
     def rehash(self):
         self.sha256 = None
         self.calc_sha256()
+        # self.calc_sha3_256()  # EQB_TODO: Not yet, it's block header related
         return self.sha256
 
     def __repr__(self):
@@ -579,14 +608,16 @@ class CBlock(CBlockHeader):
             newhashes = []
             for i in range(0, len(hashes), 2):
                 i2 = min(i+1, len(hashes)-1)
-                newhashes.append(hash256(hashes[i] + hashes[i2]))
+                # Switch to SHA3_256
+                # newhashes.append(hash256(hashes[i] + hashes[i2]))
+                newhashes.append(hash3_256(hashes[i] + hashes[i2]))
             hashes = newhashes
         return uint256_from_str(hashes[0])
 
     def calc_merkle_root(self):
         hashes = []
         for tx in self.vtx:
-            tx.calc_sha256()
+            tx.calc_sha3_256()  # Switched to sha3
             hashes.append(ser_uint256(tx.sha256))
         return self.get_merkle_root(hashes)
 
@@ -597,7 +628,7 @@ class CBlock(CBlockHeader):
 
         for tx in self.vtx[1:]:
             # Calculate the hashes with witness data
-            hashes.append(ser_uint256(tx.calc_sha256(True)))
+            hashes.append(ser_uint256(tx.calc_sha3_256(True)))  # Switched to sha3
 
         return self.get_merkle_root(hashes)
 
@@ -761,7 +792,7 @@ class HeaderAndShortIDs():
             if i not in prefill_list:
                 tx_hash = block.vtx[i].sha256
                 if use_witness:
-                    tx_hash = block.vtx[i].calc_sha256(with_witness=True)
+                    tx_hash = block.vtx[i].calc_sha3_256(with_witness=True)  # Switched to sha3
                 self.shortids.append(calculate_shortid(k0, k1, tx_hash))
 
     def __repr__(self):

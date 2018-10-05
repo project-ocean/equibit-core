@@ -1,4 +1,5 @@
 // Copyright (c) 2015-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -27,8 +28,13 @@ static uint256 BlockBuildMerkleTree(const CBlock& block, bool* fMutated, std::ve
                 // Two identical hashes at the end of the list at a particular level.
                 mutated = true;
             }
+#ifdef BUILD_BTC
             vMerkleTree.push_back(Hash(vMerkleTree[j+i].begin(), vMerkleTree[j+i].end(),
                                        vMerkleTree[j+i2].begin(), vMerkleTree[j+i2].end()));
+#else  // BUILD_EQB
+            vMerkleTree.push_back(SHA3Hash(vMerkleTree[j+i].begin(), vMerkleTree[j+i].end(),
+                                           vMerkleTree[j+i2].begin(), vMerkleTree[j+i2].end()));
+#endif // END_BUILD
         }
         j += nSize;
     }
