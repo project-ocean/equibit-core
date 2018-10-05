@@ -3,6 +3,8 @@
 # Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
+# EQB_TODO: remove this line next time
+
 """Run regression test suite.
 
 This module calls down into individual test cases via subprocess. It will
