@@ -638,7 +638,7 @@ class FullBlockTest(ComparisonTestFramework):
         b45.nBits = 0x207fffff
         b45.vtx.append(non_coinbase)
         b45.hashMerkleRoot = b45.calc_merkle_root()
-        b45.calc_sha256()
+        b45.calc_sha3_256()
         b45.solve()
         self.block_heights[b45.sha256] = self.block_heights[self.tip.sha256]+1
         self.tip = b45
@@ -812,7 +812,7 @@ class FullBlockTest(ComparisonTestFramework):
         assert(len(out[17].tx.vout) < 42)
         tx.vin.append(CTxIn(COutPoint(out[17].tx.sha256, 42), CScript([OP_TRUE]), 0xffffffff))
         tx.vout.append(CTxOut(0, b""))
-        tx.calc_sha256()
+        tx.calc_sha3_256()
         b58 = update_block(58, [tx])
         yield rejected(RejectResult(16, b'bad-txns-inputs-missingorspent'))
 
@@ -860,7 +860,7 @@ class FullBlockTest(ComparisonTestFramework):
         tx.vin.append(CTxIn(COutPoint(out[18].tx.sha256, out[18].n))) # don't set nSequence
         tx.vout.append(CTxOut(0, CScript([OP_TRUE])))
         assert(tx.vin[0].nSequence < 0xffffffff)
-        tx.calc_sha256()
+        tx.calc_sha3_256()
         b62 = update_block(62, [tx])
         yield rejected(RejectResult(16, b'bad-txns-nonfinal'))
 
@@ -1204,7 +1204,7 @@ class FullBlockTest(ComparisonTestFramework):
         tx1.vout.append(CTxOut(0, CScript([OP_TRUE])))
         tx1.vout.append(CTxOut(0, CScript([OP_TRUE])))
         tx1.vout.append(CTxOut(0, CScript([OP_TRUE])))
-        tx1.calc_sha256()
+        tx1.calc_sha3_256()
         self.sign_tx(tx1, out[29].tx, out[29].n)
         tx1.rehash()
         tx2 = create_tx(tx1, 1, 0, CScript([OP_RETURN]))
