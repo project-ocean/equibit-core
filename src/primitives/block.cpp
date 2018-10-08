@@ -10,14 +10,16 @@
 #include <tinyformat.h>
 #include <utilstrencodings.h>
 #include <crypto/common.h>
+#ifndef BUILD_BTC
 #include <eqb/sha3/sha3.h>
+#endif // BUILD_EQB
 
 uint256 CBlockHeader::GetHash() const
 {
 #ifdef BUILD_BTC
     return SerializeHash(*this);
 #else  // BUILD_EQB
-    return SHA3::SerializeHash(*this);
+    return SHA3SerializeHash(*this);
 #endif // END_BUILD
 }
 
