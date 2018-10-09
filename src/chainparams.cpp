@@ -1,6 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
-// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,12 +15,6 @@
 
 #include <chainparamsseeds.h>
 
-#ifndef BUILD_BTC
-// EQB_TODO Temporary to mine the genesis block below
-#include <pow.h>
-#include <arith_uint256.h>
-#endif
-
 static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesisOutputScript, uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
     CMutableTransaction txNew;
@@ -33,9 +26,9 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
     txNew.vout[0].scriptPubKey = genesisOutputScript;
 
     CBlock genesis;
-    genesis.nTime = nTime;
-    genesis.nBits = nBits;
-    genesis.nNonce = nNonce;
+    genesis.nTime    = nTime;
+    genesis.nBits    = nBits;
+    genesis.nNonce   = nNonce;
     genesis.nVersion = nVersion;
     genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
     genesis.hashPrevBlock.SetNull();
@@ -61,18 +54,6 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
-#ifndef BUILD_BTC
-
-static CBlock CreateEquibitGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
-{
-    //const char* pszTimestamp = "The Globe And Mail 28/Jun/2018 Blockchain has the pontential to do amazing things, but it needs a reboot";
-    const char* pszTimestamp = "The G&M 28/Jun/2018 Blockchain has the pontential to do amazing things";
-    const CScript genesisOutputScript = CScript() << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f") << OP_CHECKSIG;
-    return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
-}
-
-#endif
-
 void CChainParams::UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
 {
     consensus.vDeployments[d].nStartTime = nStartTime;
@@ -82,13 +63,13 @@ void CChainParams::UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64
 /**
  * Main network
  */
- /**
-  * What makes a good checkpoint block?
-  * + Is surrounded by blocks with reasonable timestamps
-  *   (no blocks before with a timestamp after, none after with
-  *    timestamp before)
-  * + Contains no strange transactions
-  */
+/**
+ * What makes a good checkpoint block?
+ * + Is surrounded by blocks with reasonable timestamps
+ *   (no blocks before with a timestamp after, none after with
+ *    timestamp before)
+ * + Contains no strange transactions
+ */
 
 class CMainParams : public CChainParams {
 public:
@@ -100,13 +81,7 @@ public:
         consensus.BIP34Hash = uint256S("0x000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8");
         consensus.BIP65Height = 388381; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
         consensus.BIP66Height = 363725; // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
-#ifdef BUILD_BTC
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-#else  // BUILD_EQB
-       // EQB_TODO temporary to mine genesis block below
-        //consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-#endif // END_BUILD
 #ifdef BUILD_BTC
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
 #else  // BUILD_EQB
@@ -149,31 +124,10 @@ public:
         nDefaultPort = 8333;
         nPruneAfterHeight = 100000;
 
-#ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1231006505, 2083236893, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
-#else  // BUILD_EQB
-
-        // EQB_TODO temporarily mine a genesis block just to get the unit tests passing
-        // Replace later with standard difficulty, a new date and a hard-coded nonce
-
-        unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
-
-        for(uint32_t nonce = 0; ; nonce++) {
-            genesis = CreateEquibitGenesisBlock(1231006505, nonce, nPoWTarget, 1, 50 * COIN);
-            consensus.hashGenesisBlock = genesis.GetHash();
-            //std::cout << "genesis " << nonce << std::endl;
-
-            if(CheckProofOfWork(consensus.hashGenesisBlock, nPoWTarget, consensus)) {
-                break;
-            }
-        }
-
-        //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
-        //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
-#endif // END_BUILD
 
         // Note that of those which support the service bits prefix, most only support a subset of
         // possible options.
@@ -187,11 +141,11 @@ public:
         vSeeds.emplace_back("seed.bitcoin.jonasschnelli.ch"); // Jonas Schnelli, only supports x1, x5, x9, and xd
         vSeeds.emplace_back("seed.btc.petertodd.org"); // Peter Todd, only supports x1, x5, x9, and xd
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 0);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 5);
-        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128);
-        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x88, 0xB2, 0x1E };
-        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x88, 0xAD, 0xE4 };
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,0);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,128);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
 
         bech32_hrp = "bc";
 
@@ -282,12 +236,8 @@ public:
 
         genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-#ifdef BUILD_BTC
         assert(consensus.hashGenesisBlock == uint256S("0x000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
-#else  // BUILD_EQB
-        // EQB_TODO fix asserts
-#endif // END_BUILD
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -297,11 +247,11 @@ public:
         vSeeds.emplace_back("seed.testnet.bitcoin.sprovoost.nl");
         vSeeds.emplace_back("testnet-seed.bluematt.me"); // Just a static list of stable node(s), only supports x9
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 196);
-        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 239);
-        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };
-        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
         bech32_hrp = "tb";
 
@@ -377,12 +327,8 @@ public:
 
         genesis = CreateGenesisBlock(1296688602, 2, 0x207fffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-#ifdef BUILD_BTC
         assert(consensus.hashGenesisBlock == uint256S("0x0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
-#else  // BUILD_EQB
-        // EQB_TODO fix asserts
-#endif // END_BUILD
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds.
@@ -403,11 +349,11 @@ public:
             0
         };
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 196);
-        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 239);
-        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };
-        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
         bech32_hrp = "bcrt";
     }
@@ -422,11 +368,11 @@ const CChainParams &Params() {
 
 std::unique_ptr<CChainParams> CreateChainParams(const std::string& chain)
 {
-    if(chain == CBaseChainParams::MAIN)
+    if (chain == CBaseChainParams::MAIN)
         return std::unique_ptr<CChainParams>(new CMainParams());
-    else if(chain == CBaseChainParams::TESTNET)
+    else if (chain == CBaseChainParams::TESTNET)
         return std::unique_ptr<CChainParams>(new CTestNetParams());
-    else if(chain == CBaseChainParams::REGTEST)
+    else if (chain == CBaseChainParams::REGTEST)
         return std::unique_ptr<CChainParams>(new CRegTestParams());
     throw std::runtime_error(strprintf("%s: Unknown chain %s.", __func__, chain));
 }
