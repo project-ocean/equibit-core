@@ -297,8 +297,14 @@ BOOST_AUTO_TEST_CASE(netbase_getgroup)
     BOOST_CHECK(ResolveIP("2001:470:abcd:9999:9999:9999:9999:9999").GetGroup() == std::vector<unsigned char>({(unsigned char)NET_IPV6, 32, 1, 4, 112, 175})); //he.net
     BOOST_CHECK(ResolveIP("2001:2001:9999:9999:9999:9999:9999:9999").GetGroup() == std::vector<unsigned char>({(unsigned char)NET_IPV6, 32, 1, 32, 1})); //IPv6
 
+#ifdef BUILD_BTC
     // baz.net sha256 hash: 12929400eb4607c4ac075f087167e75286b179c693eb059a01774b864e8fe505
     std::vector<unsigned char> internal_group = {NET_INTERNAL, 0x12, 0x92, 0x94, 0x00, 0xeb, 0x46, 0x07, 0xc4, 0xac, 0x07};
+#else // BUILD_EQB
+    // baz.net sha-3 hash: caf77d10aed77b2e2ec6b43ac3e4b68137ac312f0e0760b51bcf3460edcde1c9
+    // generated using https://emn178.github.io/online-tools/sha3_256.html
+    std::vector<unsigned char> internal_group = {NET_INTERNAL, 0xca, 0xf7, 0x7d, 0x10, 0xae, 0xd7, 0x7b, 0x2e, 0x2e, 0xc6};
+#endif // END_BUILD
     BOOST_CHECK(CreateInternal("baz.net").GetGroup() == internal_group);
 }
 
