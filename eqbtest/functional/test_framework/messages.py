@@ -514,7 +514,7 @@ class CBlockHeader():
             self.nNonce = header.nNonce
             self.sha256 = header.sha256
             self.hash = header.hash
-            self.calc_sha256()
+            self.calc_sha3_256()  # Switched to sha3
 
     def set_null(self):
         self.nVersion = 1
@@ -558,7 +558,6 @@ class CBlockHeader():
             self.sha256 = uint256_from_str(hash256(r))
             self.hash = encode(hash256(r)[::-1], 'hex_codec').decode('ascii')
 
-    # EQB_TODO: not being used yet
     def calc_sha3_256(self):
         if self.sha256 is None:
             r = b""
@@ -573,8 +572,7 @@ class CBlockHeader():
 
     def rehash(self):
         self.sha256 = None
-        self.calc_sha256()
-        # self.calc_sha3_256()  # EQB_TODO: Not yet, it's block header related
+        self.calc_sha3_256()  # Switched to sha3
         return self.sha256
 
     def __repr__(self):
@@ -633,7 +631,7 @@ class CBlock(CBlockHeader):
         return self.get_merkle_root(hashes)
 
     def is_valid(self):
-        self.calc_sha256()
+        self.calc_sha256()  # EQB_TODO: oct-09
         target = uint256_from_compact(self.nBits)
         if self.sha256 > target:
             return False

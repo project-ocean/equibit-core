@@ -3,8 +3,6 @@
 # Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-# EQB_TODO: remove this line next time
-
 """Run regression test suite.
 
 This module calls down into individual test cases via subprocess. It will
@@ -299,7 +297,7 @@ def run_tests(test_list, src_dir, build_dir, exeext, tmpdir, jobs=1, enable_cove
 
     # Warn if there is a cache directory
     #cache_dir = "%s/test/cache" % build_dir
-    cache_dir = build_dir + dir_separator + "test" + dir_separator + "cache"
+    cache_dir = build_dir + dir_separator + "eqbtest" + dir_separator + "cache"
     if os.path.isdir(cache_dir):
         print("%sWARNING!%s There is a cache directory here: %s. If tests fail unexpectedly, try deleting the cache directory." % (BOLD[1], BOLD[0], cache_dir))
 
