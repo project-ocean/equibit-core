@@ -995,8 +995,11 @@ BOOST_AUTO_TEST_CASE(script_json_test)
         CScript scriptPubKey = ParseScript(scriptPubKeyString);
         unsigned int scriptflags = ParseScriptFlags(test[pos++].get_str());
         int scriptError = ParseScriptError(test[pos++].get_str());
-
+#ifdef BUILD_BTC
         DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
+#else // BUILD_EQB
+      // EQB_TODO: Implement Unit Test specific to SHA3 based OP codes 
+#endif // END_BUILD
     }
 }
 
