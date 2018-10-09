@@ -10,9 +10,6 @@
 #include <tinyformat.h>
 #include <utilstrencodings.h>
 #include <crypto/common.h>
-#ifndef BUILD_BTC
-#include <eqb/sha3/sha3.h>
-#endif // BUILD_EQB
 
 uint256 CBlockHeader::GetHash() const
 {
