@@ -326,7 +326,11 @@ bool CWallet::AddCScript(const CScript& redeemScript)
 {
     if (!CCryptoKeyStore::AddCScript(redeemScript))
         return false;
+#ifdef BUILD_BTC
     return CWalletDB(*dbw).WriteCScript(Hash160(redeemScript), redeemScript);
+#else // BUILD_EQB
+    return CWalletDB(*dbw).WriteCScript(SHA3Hash160(redeemScript), redeemScript);
+#endif // END_BUILD
 }
 
 bool CWallet::LoadCScript(const CScript& redeemScript)
