@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test various command line arguments and configuration file parameters."""
@@ -28,7 +29,7 @@ class ConfArgsTest(BitcoinTestFramework):
         self.assert_start_raises_init_error(0, ['-datadir='+new_data_dir], 'Error: Specified data directory "' + new_data_dir + '" does not exist.')
 
         # Check that using non-existent datadir in conf file fails
-        conf_file = os.path.join(default_data_dir, "bitcoin.conf")
+        conf_file = os.path.join(default_data_dir, "equibit.conf")
         with open(conf_file, 'a', encoding='utf8') as f:
             f.write("datadir=" + new_data_dir + "\n")
         self.assert_start_raises_init_error(0, ['-conf='+conf_file], 'Error reading configuration file: specified data directory "' + new_data_dir + '" does not exist.')

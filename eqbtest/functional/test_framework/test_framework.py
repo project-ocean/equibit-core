@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Base class for RPC testing."""
@@ -435,7 +436,7 @@ class BitcoinTestFramework():
             from_dir = get_datadir_path(self.options.cachedir, i)
             to_dir = get_datadir_path(self.options.tmpdir, i)
             shutil.copytree(from_dir, to_dir)
-            initialize_datadir(self.options.tmpdir, i)  # Overwrite port/rpcport in bitcoin.conf
+            initialize_datadir(self.options.tmpdir, i)  # Overwrite port/rpcport in equibit.conf
 
     def _initialize_chain_clean(self):
         """Initialize empty blockchain for use by the test.

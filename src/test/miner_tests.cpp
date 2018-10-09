@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -245,7 +246,26 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
             if (txFirst.size() < 4)
                 txFirst.push_back(pblock->vtx[0]);
             pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
+#ifdef BUILD_BTC
             pblock->nNonce = blockinfo[i].nonce;
+#else  // BUILD_EQB
+            // EQB_TODO temporary to mine blocks
+
+            const Consensus::Params& consensus = chainparams.GetConsensus();
+            unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
+
+            pblock->nBits = nPoWTarget;
+            for (uint32_t nonce = 0; ; nonce++) {
+                pblock->nNonce = nonce;
+                uint256 hash = pblock->GetHash();
+                //std::cout << "create block " << nonce << " yields " << hash.ToString();
+                if (CheckProofOfWork(hash, pblock->nBits, consensus)) {
+                    break;
+                }
+            }
+
+            //std::cout << i << " mined new block with nonce " << pblock->nNonce << std::endl;
+#endif // END_BUILD
         }
         std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
         BOOST_CHECK(ProcessNewBlock(chainparams, shared_pblock, true, nullptr));
