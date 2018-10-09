@@ -573,8 +573,8 @@ class CBlockHeader():
 
     def rehash(self):
         self.sha256 = None
-        self.calc_sha256()
-        # self.calc_sha3_256()  # EQB_TODO: Not yet, it's block header related
+        # self.calc_sha256()
+        self.calc_sha3_256()  # EQB_TODO: oct-09
         return self.sha256
 
     def __repr__(self):
