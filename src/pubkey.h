@@ -148,13 +148,21 @@ public:
     //! Get the KeyID of this public key (hash of its serialization)
     CKeyID GetID() const
     {
+#ifdef BUILD_BTC
         return CKeyID(Hash160(vch, vch + size()));
+#else  // BUILD_EQB
+        return CKeyID(SHA3Hash160(vch, vch + size()));
+#endif // END_BUILD
     }
 
     //! Get the 256-bit hash of this public key.
     uint256 GetHash() const
     {
+#ifdef BUILD_BTC
         return Hash(vch, vch + size());
+#else  // BUILD_EQB
+        return SHA3Hash(vch, vch + size());
+#endif // END_BUILD
     }
 
     /*
