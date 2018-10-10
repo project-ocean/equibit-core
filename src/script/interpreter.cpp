@@ -12,7 +12,7 @@
 #include <pubkey.h>
 #include <script/script.h>
 #include <uint256.h>
-#include <eqb/sha3/sha3.h>
+
 
 typedef std::vector<unsigned char> valtype;
 
