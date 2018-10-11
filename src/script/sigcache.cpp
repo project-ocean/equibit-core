@@ -11,6 +11,7 @@
 #include <random.h>
 #include <uint256.h>
 #include <util.h>
+#include <eqb/sha3/sha3.h>
 
 #include <cuckoocache.h>
 #include <boost/thread.hpp>
@@ -26,6 +27,7 @@ class CSignatureCache
 private:
      //! Entries are SHA256(nonce || signature hash || public key || signature):
     uint256 nonce;
+    // EQB_TODO: Update CuckooCache class to support SHA3
     typedef CuckooCache::cache<uint256, SignatureCacheHasher> map_type;
     map_type setValid;
     boost::shared_mutex cs_sigcache;
