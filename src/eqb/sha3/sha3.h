@@ -35,12 +35,6 @@ public:
         return *this;
     }
 
-    SHA3& write(char* pch, size_t size)
-    {
-        return Write((const unsigned char*) pch, size);
-    }
-
-
     void Finalize(unsigned char hash[OUTPUT_SIZE])
     {
         uint256 hashresult = GetHash();
@@ -60,19 +54,5 @@ public:
         return hash;
     }
 
-    template <typename T>
-    SHA3& operator<<(const T& obj)
-    {
-        ::Serialize(*this, obj);
-        return (*this);
-    }
-
-    template <typename T>
-    static uint256 SerializeHash(const T& obj, int type = SER_GETHASH, int version = PROTOCOL_VERSION)
-    {
-    	SHA3 sha3;
-        sha3 << obj;
-        return sha3.GetHash();
-    }
 };
 #endif // END_BUILD
