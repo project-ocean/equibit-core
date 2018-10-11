@@ -773,7 +773,7 @@ class HeaderAndShortIDs():
     def get_siphash_keys(self):
         header_nonce = self.header.serialize()
         header_nonce += struct.pack("<Q", self.nonce)
-        hash_header_nonce_as_str = sha256(header_nonce)
+        hash_header_nonce_as_str = sha3_256(header_nonce)  # Switched to sha3
         key0 = struct.unpack("<Q", hash_header_nonce_as_str[0:8])[0]
         key1 = struct.unpack("<Q", hash_header_nonce_as_str[8:16])[0]
         return [ key0, key1 ]

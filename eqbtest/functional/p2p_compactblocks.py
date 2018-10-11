@@ -32,7 +32,7 @@ class TestNode(P2PInterface):
 
     def on_cmpctblock(self, message):
         self.block_announced = True
-        self.last_message["cmpctblock"].header_and_shortids.header.calc_sha3_256()  # EQB_TODO: oct-09
+        self.last_message["cmpctblock"].header_and_shortids.header.calc_sha3_256()  # Switched to sha3
         self.announced_blockhashes.add(self.last_message["cmpctblock"].header_and_shortids.header.sha256)
 
     def on_headers(self, message):
@@ -619,7 +619,7 @@ class CompactBlocksTest(BitcoinTestFramework):
             test_node.last_message.pop("blocktxn", None)
         test_node.send_and_ping(msg)
         with mininode_lock:
-            test_node.last_message["block"].block.calc_sha256()  # EQB_TODO: oct-09
+            test_node.last_message["block"].block.calc_sha3_256()  # Switched to sha3
             assert_equal(test_node.last_message["block"].block.sha256, int(block_hash, 16))
             assert "blocktxn" not in test_node.last_message
 
@@ -645,7 +645,7 @@ class CompactBlocksTest(BitcoinTestFramework):
         test_node.send_message(msg_getdata([CInv(4, int(new_blocks[0], 16))]))
         wait_until(lambda: "block" in test_node.last_message, timeout=30, lock=mininode_lock)
         with mininode_lock:
-            test_node.last_message["block"].block.calc_sha256()  # EQB_TODO: oct-09
+            test_node.last_message["block"].block.calc_sha3_256()  # Switched to sha3
             assert_equal(test_node.last_message["block"].block.sha256, int(new_blocks[0], 16))
 
         # Generate an old compactblock, and verify that it's not accepted.
@@ -789,7 +789,6 @@ class CompactBlocksTest(BitcoinTestFramework):
         assert_equal(int(node.getbestblockhash(), 16), block.sha256)
 
     def run_test(self):
-        raise SkipTest("This test can only be run on linux.")  # EQB_TODO: this test suite is disabled
         # Setup the p2p connections and start up the network thread.
         self.test_node = self.nodes[0].add_p2p_connection(TestNode())
         self.segwit_node = self.nodes[1].add_p2p_connection(TestNode(), services=NODE_NETWORK|NODE_WITNESS)
