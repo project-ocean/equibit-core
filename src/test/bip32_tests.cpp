@@ -36,8 +36,6 @@ struct TestVector {
     }
 };
 
-#ifdef BUILD_BTC
-
 TestVector test1 =
   TestVector("000102030405060708090a0b0c0d0e0f")
     ("xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8",
@@ -88,61 +86,6 @@ TestVector test3 =
     ("xpub68NZiKmJWnxxS6aaHmn81bvJeTESw724CRDs6HbuccFQN9Ku14VQrADWgqbhhTHBaohPX4CjNLf9fq9MYo6oDaPPLPxSb7gwQN3ih19Zm4Y",
      "xprv9uPDJpEQgRQfDcW7BkF7eTya6RPxXeJCqCJGHuCJ4GiRVLzkTXBAJMu2qaMWPrS7AANYqdq6vcBcBUdJCVVFceUvJFjaPdGZ2y9WACViL4L",
       0);
-
-#else  // BUILD_EQB
-
-TestVector test1 =
-  TestVector("000102030405060708090a0b0c0d0e0f")
-    ("xpub661MyMwAqRbcGX6igyVeB748CxUT3KkFLFeLACZpVMCkCgVAPSC113nC7BcPB9XYSusEchKUhun7tLE1uSvNMiQxTHXotyBzXMzsiu9xXWm",
-     "xprv9s21ZrQH143K432Fawxdoy7Pevdxds2Py2ijMpACw1fmKtA1qtskTFTiFw4CcCuxKWUujfGsWYvFr1GDKqbERErAiY37GrSRS7xoB2q2XCo",
-     0x80000000)
-    ("xpub68UBKmzZiq6Neaj7bhkV4o4JVTNWxAL9ueHDJYF2QTakeedvY6tGmztiTUADpwa5x1USj3S3SBkX7Kj7GjqrPQ1c2tSuULrMPBS2W7CMCqd",
-     "xprv9uUpvGTftTY5S6eeVgDUhf7ZwRY2YhcJYRMcW9qQr83mmrJmzZa2ECaEcC6tnw9JUBi3i3H2NGKXkaNZtXjynR35BK5rJFn2qE3SmqjVcTq",
-     1)
-    ("xpub6BJKZV1xdbbSwYvPBUKeb6aM48BWVFyaHK6pZgEC9RwuaXMP9yNw2Vn5dQFyHo1TBAusoDs5dPLpNcWTLpMgSv89D7LG5Mn4qiw231rSSx4",
-     "xprv9xJy9yV4oE39j4qv5SneDxdcW6M25oFiv6BDmHpab6Qvhj2EcS4gUhTbn77nVfWpWBbtEVdk15UcidJmKiTZjtTrnN6LCvas85G5G2BUq5p",
-     0x80000002)
-    ("xpub6BfXRwG5dgJv113zbpSZKMcWMJTNapmgrzSw1t7akpdvngBbRZjRGYL3vi5EE8Lk8k6VvyaxrEHDqCiZdqfyxQosF4zz9xSKz3TiURsPRkf",
-     "xprv9xgB2RjBoJkcnWyXVnuYxDfmoGctBN3qVmXLDVhyCV6wusrSt2RAik1a5R2864CbPo8NFTCp9hb9QxyPXc2ntxx5dQsKLqodHLbSPrpBFjc",
-     2)
-    ("xpub6Dh2UAm5FWQV1BtnRWQakKh1cM62ZLG4Udpe6Gx8PDhT7XrvSBunLCFHknrQPE1qKEnUKTzNeSQuFLzQKisTXE99Ub1vDxVjGsbFybJAq3d",
-     "xprv9zhg4fEBR8rBnhpKKUsaPBkH4KFY9sYD7Qu3HtYWptAUEjXmtebXnPvouZ9484qH2kYKfNXo7BJusZSEkQEUP3CLfN3JDB5ShHyJvc9o8FF",
-     1000000000)
-    ("xpub6G7N3xCh9wrbff8MbdupFh9X4Q6qRHHJnFLLRYgcQMouMsGbEVS8VLXRuGNCETygc25xHC7nHKS4Ph8jGfGzaKKLUZBHPiJ7gktuXFJmEyo",
-     "xprvA381eSfoKaJJTB3tVcNotZCnWNGM1pZTR2QjdAGzr2GvV4wSgx7swYCx3y7ZLvg6x4BH9ZbhNRwG462TpKbJ1HyitUrQPBJg459boMvGKhA",
-     0);
-
-TestVector test2 =
-  TestVector("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542")
-    ("xpub661MyMwAqRbcFicanfPjizCD5AHzEX5zXPtoxwYSGx3P5vRoS4dQsyVMkn9x68JUyYxkEtxzZc1uVettMrgxz1QAPD3kYcdPAwduihoyjRi",
-     "xprv9s21ZrQH143K3EY7gdrjMrFUX8TVq4N9AAyDAZ8picWQD86etXKALBAsuUNBcmej1baPDTwXraQ51tVfL74wd8S5xJoCCTSqvas3YZwikG7",
-     0)
-    ("xpub68oaZV5XjxMXCHL1QnFPJZ1MG22RsRdrjwEckFiYyLZW67vQHWtvjY7xEEui5dbTbUX3vWcjaKFpSQNXRkgXN2Kg5HScGdy4TPsiu8BqyTF",
-     "xprv9upE9yYduaoDyoFYJkiNwR4chzBwTxv1NiK1wsJwR12XDKbFjyagBjoUNyrXXTs1j4X6kzoyBmR9y8vQfZh1hhtu1MBsqyx7qxSdZKkWbn8",
-     0xFFFFFFFF)
-    ("xpub6ARYwz46ofHCCvu3eLogFyxEM4hTucbziNm36RRrfnrLP1JQeLNoiVCrfN27Mjw3YvxRX7biPBWubwfGsqbvaVemVugfmpbTXmEz8g4WzJk",
-     "xprv9wSCYUXCyHitzSpaYKGftr1Vo2ryW9t9M9qSJ32F7TKMWCyG6o4ZAgtNp6aPHkK632ceV1dFyiBm5m6Ndyhj7eSLyDyAQbFgbB11id24RRi",
-     1)
-    ("xpub6CXXBVoFDkMoVahf3uTFfLXy59j7PWiYHt9w2EKZzQZs9bFtSgmh7DUTnNXKEWtsa9TdEhtfaXYfv2pqW7oPCgEXLQTmzVHdV8stw9KaRh8",
-     "xprv9yYAmzGMPNoWH6dBwsvFJCbEX7tcz3zgvfELDquxS52tGnvju9TSZR9yw7jMwMaRvFiLAMZ1K2nLumX7HwrePHkgZzBVNamFKqPDr9jQBtq",
-     0xFFFFFFFE)
-    ("xpub6FQuE1qLv2g4ngZwhMLiNRJ7XH4Yca2dzJqxjtQqFYRa82Ngmcm6j2Ett6DnXVXNNWtoS5EkqHVNmiqAESjyWXfiRWs1eNyUWi47aQwMgHQ",
-     "xprvA2RYpWJT5f7maCVUbKoi1HMNyFE4D7Jnd5vMwW1DhCtbFE3YE5SrBDvR2pvPjhUQgM9eW2hovLR42jGvtrGkA8FTLRoDmaKNBvabAfjkGE5",
-     2)
-    ("xpub6GrWpFeJybS3t3rxxegHXPNPpnRDxJtZKEkpzTvUVGLkn75Vef2j8bKXQZRe4aq4hVgVhSr9rtdvXXkayPnRAVuf4zFeEutcWwv8pWhNB9q",
-     "xprvA3sAQk7R9DskfZnVrd9HAFRfGkajYrAhx1qEC5WrvvomuJkM77iUao13ZGZg7cBSHuF91AxuEdzmejEFn4KdvCAzh6W3tnHgeEU46xDcqtY",
-     0);
-
-TestVector test3 =
-  TestVector("4b381541583be4423346c643850da4b320e46a87ae3d2a4e6da11eba819cd4acba45d239319ac14f863b8d5ab5a0d0c64d2e8a1e7d1457df2e5a3c51c73235be")
-    ("xpub661MyMwAqRbcH67oyNT8SMJBZp8sovtbjs8k555MCy9r5ihLQSCJBJstFiqTzN5Ek6EAgJNDLWaMXbwiVU7aGfyykF6qYqnxJpvP5EsJuQJ",
-     "xprv9s21ZrQH143K4c3LsLv85DMT1nJPQUAkNeD9GgfjedcsCvNBrtt3dWZQQTokDHLQv1NKeid3yoJCdk2hCATJjvhrM5DjyK332pU133fENvT",
-    0x80000000)
-    ("xpub69aqk6TAsLPaR9QG9k31njketbWD6RZVHQ7FRNJwFLAqyUN6EUZvByGnnx6CKUq5P7oaUPmCETDkh7zheWgm6wWjxmtNtdeN7czfLww8nPk",
-     "xprv9vbVLavH2xqHCfKo3iW1RbovLZfigxqdvBBecyuKgzds6g2wgwFfeAxJwfGJoA41HW2A14JZfv7vboP74HjrBMDFwqLJaJ2wz5ADLzeNUrr",
-     0);
-
-#endif // END_BUILD
 
 void RunTest(const TestVector &test) {
     std::vector<unsigned char> seed = ParseHex(test.strHexMaster);
