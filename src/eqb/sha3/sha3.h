@@ -53,5 +53,6 @@ public:
         SHA3_256((unsigned char*)&hash, (unsigned char *) m_serialization.data(), m_serialization.size());
         return hash;
     }
+
 };
 #endif // END_BUILD
