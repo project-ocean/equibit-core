@@ -4253,11 +4253,11 @@ CTxDestination CWallet::AddAndGetDestinationForScript(const CScript& script, Out
     case OUTPUT_TYPE_P2SH_SEGWIT:
     case OUTPUT_TYPE_BECH32: {
         WitnessV0ScriptHash hash;
-#ifdef BUILD_BTC
+//#ifdef BUILD_BTC
         CSHA256().Write(script.data(), script.size()).Finalize(hash.begin());
-#else  // BUILD_EQB
-        SHA3().Write(script.data(), script.size()).Finalize(hash.begin());
-#endif // END_BUILD
+//#else  // BUILD_EQB
+//        SHA3().Write(script.data(), script.size()).Finalize(hash.begin());
+//#endif // END_BUILD
         CTxDestination witdest = hash;
         CScript witprog = GetScriptForDestination(witdest);
         // Check if the resulting program is solvable (i.e. doesn't use an uncompressed key)
