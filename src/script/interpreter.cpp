@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,6 +12,7 @@
 #include <pubkey.h>
 #include <script/script.h>
 #include <uint256.h>
+
 
 typedef std::vector<unsigned char> valtype;
 
@@ -846,6 +848,9 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                 // Crypto
                 //
                 case OP_RIPEMD160:
+#ifndef BUILD_BTC
+                case OP_SHA3:
+#endif // END_BUILD
                 case OP_SHA1:
                 case OP_SHA256:
                 case OP_HASH160:
@@ -858,6 +863,10 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                     valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160) ? 20 : 32);
                     if (opcode == OP_RIPEMD160)
                         CRIPEMD160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+#ifndef BUILD_BTC
+                    else if(opcode == OP_SHA3)
+                        SHA3().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+#endif // END_BUILD
                     else if (opcode == OP_SHA1)
                         CSHA1().Write(vch.data(), vch.size()).Finalize(vchHash.data());
                     else if (opcode == OP_SHA256)
@@ -865,7 +874,11 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                     else if (opcode == OP_HASH160)
                         CHash160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
                     else if (opcode == OP_HASH256)
+#ifdef BUILD_BTC
                         CHash256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+#else // BUILD_EQB
+                        CSHA3Hash256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+#endif // END_BUILD
                     popstack(stack);
                     stack.push_back(vchHash);
                 }
