@@ -631,7 +631,7 @@ class CBlock(CBlockHeader):
         return self.get_merkle_root(hashes)
 
     def is_valid(self):
-        self.calc_sha256()  # EQB_TODO: oct-09
+        self.calc_sha256()
         target = uint256_from_compact(self.nBits)
         if self.sha256 > target:
             return False
