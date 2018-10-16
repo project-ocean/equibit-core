@@ -119,6 +119,7 @@ const char* GetOpName(opcodetype opcode)
     // crypto
 #ifndef BUILD_BTC
     case OP_SHA3                   : return "OP_SHA3";
+    case OP_SHA3HASH160            : return "OP_SHA3HASH160";
 #endif // END_BUILD
     case OP_RIPEMD160              : return "OP_RIPEMD160";
     case OP_SHA1                   : return "OP_SHA1";
@@ -135,8 +136,10 @@ const char* GetOpName(opcodetype opcode)
     case OP_NOP1                   : return "OP_NOP1";
     case OP_CHECKLOCKTIMEVERIFY    : return "OP_CHECKLOCKTIMEVERIFY";
     case OP_CHECKSEQUENCEVERIFY    : return "OP_CHECKSEQUENCEVERIFY";
+#ifdef BUILD_BTC
     case OP_NOP4                   : return "OP_NOP4";
     case OP_NOP5                   : return "OP_NOP5";
+#endif
     case OP_NOP6                   : return "OP_NOP6";
     case OP_NOP7                   : return "OP_NOP7";
     case OP_NOP8                   : return "OP_NOP8";

@@ -157,6 +157,8 @@ CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CSc
 
 void DoTest(const CScript& scriptPubKey, const CScript& scriptSig, const CScriptWitness& scriptWitness, int flags, const std::string& message, int scriptError, CAmount nValue = 0)
 {
+    std::cout << "DoTest " << message << std::endl;
+
     bool expect = (scriptError == SCRIPT_ERR_OK);
     if (flags & SCRIPT_VERIFY_CLEANSTACK) {
         flags |= SCRIPT_VERIFY_P2SH;
@@ -495,12 +497,21 @@ BOOST_AUTO_TEST_CASE(script_build)
                                 "P2PK, bad sig", 0
                                ).PushSig(keys.key0).DamagePush(10).ScriptError(SCRIPT_ERR_EVAL_FALSE));
 
+#ifdef BUILD_BTC
     tests.push_back(TestBuilder(CScript() << OP_DUP << OP_HASH160 << ToByteVector(keys.pubkey1C.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG,
                                 "P2PKH", 0
                                ).PushSig(keys.key1).Push(keys.pubkey1C));
     tests.push_back(TestBuilder(CScript() << OP_DUP << OP_HASH160 << ToByteVector(keys.pubkey2C.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG,
                                 "P2PKH, bad pubkey", 0
                                ).PushSig(keys.key2).Push(keys.pubkey2C).DamagePush(5).ScriptError(SCRIPT_ERR_EQUALVERIFY));
+#else // BUILD_EQB
+    tests.push_back(TestBuilder(CScript() << OP_DUP << OP_SHA3HASH160 << ToByteVector(keys.pubkey1C.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG,
+                                "P2PKH", 0
+                               ).PushSig(keys.key1).Push(keys.pubkey1C));
+    tests.push_back(TestBuilder(CScript() << OP_DUP << OP_SHA3HASH160 << ToByteVector(keys.pubkey2C.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG,
+                                "P2PKH, bad pubkey", 0
+                               ).PushSig(keys.key2).Push(keys.pubkey2C).DamagePush(5).ScriptError(SCRIPT_ERR_EQUALVERIFY));
+#endif // END_BUILD
 
     tests.push_back(TestBuilder(CScript() << ToByteVector(keys.pubkey1) << OP_CHECKSIG,
                                 "P2PK anyonecanpay", 0
@@ -515,7 +526,8 @@ BOOST_AUTO_TEST_CASE(script_build)
     tests.push_back(TestBuilder(CScript() << ToByteVector(keys.pubkey0C) << OP_CHECKSIG,
                                 "P2SH(P2PK), bad redeemscript", SCRIPT_VERIFY_P2SH, true
                                ).PushSig(keys.key0).PushRedeem().DamagePush(10).ScriptError(SCRIPT_ERR_EVAL_FALSE));
-    
+
+#ifdef BUILD_BTC
     tests.push_back(TestBuilder(CScript() << OP_DUP << OP_HASH160 << ToByteVector(keys.pubkey0.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG,
                                 "P2SH(P2PKH)", SCRIPT_VERIFY_P2SH, true
                                ).PushSig(keys.key0).Push(keys.pubkey0).PushRedeem());
@@ -525,6 +537,17 @@ BOOST_AUTO_TEST_CASE(script_build)
     tests.push_back(TestBuilder(CScript() << OP_DUP << OP_HASH160 << ToByteVector(keys.pubkey1.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG,
                                 "P2SH(P2PKH), bad sig", SCRIPT_VERIFY_P2SH, true
                                ).PushSig(keys.key0).DamagePush(10).PushRedeem().ScriptError(SCRIPT_ERR_EQUALVERIFY));
+#else // BUILD_EQB
+    tests.push_back(TestBuilder(CScript() << OP_DUP << OP_SHA3HASH160 << ToByteVector(keys.pubkey0.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG,
+                                "P2SH(P2PKH)", SCRIPT_VERIFY_P2SH, true
+                               ).PushSig(keys.key0).Push(keys.pubkey0).PushRedeem());
+    tests.push_back(TestBuilder(CScript() << OP_DUP << OP_SHA3HASH160 << ToByteVector(keys.pubkey1.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG,
+                                "P2SH(P2PKH), bad sig but no VERIFY_P2SH", 0, true
+                               ).PushSig(keys.key0).DamagePush(10).PushRedeem());
+    tests.push_back(TestBuilder(CScript() << OP_DUP << OP_SHA3HASH160 << ToByteVector(keys.pubkey1.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG,
+                                "P2SH(P2PKH), bad sig", SCRIPT_VERIFY_P2SH, true
+                               ).PushSig(keys.key0).DamagePush(10).PushRedeem().ScriptError(SCRIPT_ERR_EQUALVERIFY));
+#endif // END_BUILD
 
     tests.push_back(TestBuilder(CScript() << OP_3 << ToByteVector(keys.pubkey0C) << ToByteVector(keys.pubkey1C) << ToByteVector(keys.pubkey2C) << OP_3 << OP_CHECKMULTISIG,
                                 "3-of-3", 0

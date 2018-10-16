@@ -429,7 +429,11 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                     break;
                 }
 
+#ifdef BUILD_BTC
                 case OP_NOP1: case OP_NOP4: case OP_NOP5:
+#else // BUILD_EQB
+                case OP_NOP1:
+#endif // END_BUILD
                 case OP_NOP6: case OP_NOP7: case OP_NOP8: case OP_NOP9: case OP_NOP10:
                 {
                     if (flags & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS)
@@ -850,6 +854,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                 case OP_RIPEMD160:
 #ifndef BUILD_BTC
                 case OP_SHA3:
+                case OP_SHA3HASH160:
 #endif // END_BUILD
                 case OP_SHA1:
                 case OP_SHA256:
@@ -860,12 +865,18 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                     if (stack.size() < 1)
                         return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
                     valtype& vch = stacktop(-1);
+#ifdef BUILD_BTC
                     valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160) ? 20 : 32);
+#else // BUILD_EQB
+                    valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160 || OP_SHA3HASH160) ? 20 : 32);
+#endif // END_BUILD
                     if (opcode == OP_RIPEMD160)
                         CRIPEMD160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
 #ifndef BUILD_BTC
-                    else if(opcode == OP_SHA3)
+                    else if (opcode == OP_SHA3)
                         SHA3().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_SHA3HASH160)
+                        CSHA3Hash160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
 #endif // END_BUILD
                     else if (opcode == OP_SHA1)
                         CSHA1().Write(vch.data(), vch.size()).Finalize(vchHash.data());
