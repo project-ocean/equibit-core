@@ -63,7 +63,11 @@ template <typename Stream, typename Data>
 bool DeserializeDB(Stream& stream, Data& data, bool fCheckSum = true)
 {
     try {
+#ifdef BUILD_BTC
         CHashVerifier<Stream> verifier(&stream);
+#else // BUILD_EQB
+        CSHA3HashVerifier<Stream> verifier(&stream);
+#endif // END_BUILD
         // de-serialize file header (network specific magic number) and ..
         unsigned char pchMsgTmp[4];
         verifier >> FLATDATA(pchMsgTmp);
