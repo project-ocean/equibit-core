@@ -868,7 +868,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
 #ifdef BUILD_BTC
                     valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160) ? 20 : 32);
 #else // BUILD_EQB
-                    valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160 || OP_SHA3HASH160) ? 20 : 32);
+                    valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160 || opcode == OP_SHA3HASH160) ? 20 : 32);
 #endif // END_BUILD
                     if (opcode == OP_RIPEMD160)
                         CRIPEMD160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
@@ -885,11 +885,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                     else if (opcode == OP_HASH160)
                         CHash160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
                     else if (opcode == OP_HASH256)
-#ifdef BUILD_BTC
                         CHash256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
-#else // BUILD_EQB
-                        CSHA3Hash256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
-#endif // END_BUILD
                     popstack(stack);
                     stack.push_back(vchHash);
                 }
