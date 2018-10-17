@@ -1167,7 +1167,11 @@ public:
 };
 
 uint256 GetPrevoutHash(const CTransaction& txTo) {
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     for (const auto& txin : txTo.vin) {
         ss << txin.prevout;
     }
@@ -1175,7 +1179,11 @@ uint256 GetPrevoutHash(const CTransaction& txTo) {
 }
 
 uint256 GetSequenceHash(const CTransaction& txTo) {
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     for (const auto& txin : txTo.vin) {
         ss << txin.nSequence;
     }
@@ -1183,7 +1191,11 @@ uint256 GetSequenceHash(const CTransaction& txTo) {
 }
 
 uint256 GetOutputsHash(const CTransaction& txTo) {
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     for (const auto& txout : txTo.vout) {
         ss << txout;
     }
@@ -1225,12 +1237,20 @@ uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsig
         if ((nHashType & 0x1f) != SIGHASH_SINGLE && (nHashType & 0x1f) != SIGHASH_NONE) {
             hashOutputs = cacheready ? cache->hashOutputs : GetOutputsHash(txTo);
         } else if ((nHashType & 0x1f) == SIGHASH_SINGLE && nIn < txTo.vout.size()) {
+#ifdef BUILD_BTC
             CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+            CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
             ss << txTo.vout[nIn];
             hashOutputs = ss.GetHash();
         }
 
+#ifdef BUILD_BTC
         CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+        CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
         // Version
         ss << txTo.nVersion;
         // Input prevouts/nSequence (none/all, depending on flags)
@@ -1267,7 +1287,11 @@ uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsig
     CTransactionSignatureSerializer txTmp(txTo, scriptCode, nIn, nHashType);
 
     // Serialize and hash
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     ss << txTmp << nHashType;
     return ss.GetHash();
 }
@@ -1387,14 +1411,22 @@ static bool VerifyWitnessProgram(const CScriptWitness& witness, int witversion, 
 
     if (witversion == 0) {
         if (program.size() == 32) {
+#ifdef BUILD_BTC
             // Version 0 segregated witness program: SHA256(CScript) inside the program, CScript + inputs in witness
+#else // BUILD_EQB
+            // Version 0 segregated witness program: SHA3(CScript) inside the program, CScript + inputs in witness
+#endif // END_BUILD
             if (witness.stack.size() == 0) {
                 return set_error(serror, SCRIPT_ERR_WITNESS_PROGRAM_WITNESS_EMPTY);
             }
             scriptPubKey = CScript(witness.stack.back().begin(), witness.stack.back().end());
             stack = std::vector<std::vector<unsigned char> >(witness.stack.begin(), witness.stack.end() - 1);
             uint256 hashScriptPubKey;
+#ifdef BUILD_BTC
             CSHA256().Write(&scriptPubKey[0], scriptPubKey.size()).Finalize(hashScriptPubKey.begin());
+#else // BUILD_EQB
+            SHA3().Write(&scriptPubKey[0], scriptPubKey.size()).Finalize(hashScriptPubKey.begin());
+#endif // END_BUILD
             if (memcmp(hashScriptPubKey.begin(), program.data(), 32)) {
                 return set_error(serror, SCRIPT_ERR_WITNESS_PROGRAM_MISMATCH);
             }

@@ -157,6 +157,8 @@ CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CSc
 
 void DoTest(const CScript& scriptPubKey, const CScript& scriptSig, const CScriptWitness& scriptWitness, int flags, const std::string& message, int scriptError, CAmount nValue = 0)
 {
+    // std::cout << "DoTest " << message << std::endl;
+
     bool expect = (scriptError == SCRIPT_ERR_OK);
     if (flags & SCRIPT_VERIFY_CLEANSTACK) {
         flags |= SCRIPT_VERIFY_P2SH;
@@ -315,18 +317,31 @@ public:
         CScript scriptPubKey = script;
         if (wm == WITNESS_PKH) {
             uint160 hash;
+#ifdef BUILD_BTC
             CHash160().Write(&script[1], script.size() - 1).Finalize(hash.begin());
             script = CScript() << OP_DUP << OP_HASH160 << ToByteVector(hash) << OP_EQUALVERIFY << OP_CHECKSIG;
+#else // BUILD_EQB
+            CSHA3Hash160().Write(&script[1], script.size() - 1).Finalize(hash.begin());
+            script = CScript() << OP_DUP << OP_SHA3HASH160 << ToByteVector(hash) << OP_EQUALVERIFY << OP_CHECKSIG;
+#endif // END_BUILD
             scriptPubKey = CScript() << witnessversion << ToByteVector(hash);
         } else if (wm == WITNESS_SH) {
             witscript = scriptPubKey;
             uint256 hash;
+#ifdef BUILD_BTC
             CSHA256().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
+#else // BUILD_EQB
+            SHA3().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
+#endif // END_BUILD
             scriptPubKey = CScript() << witnessversion << ToByteVector(hash);
         }
         if (P2SH) {
             redeemscript = scriptPubKey;
+#ifdef BUILD_BTC
             scriptPubKey = CScript() << OP_HASH160 << ToByteVector(CScriptID(redeemscript)) << OP_EQUAL;
+#else // BUILD_EQB
+            scriptPubKey = CScript() << OP_SHA3HASH160 << ToByteVector(CScriptID(redeemscript)) << OP_EQUAL;
+#endif // END_BUILD
         }
         creditTx = MakeTransactionRef(BuildCreditingTransaction(scriptPubKey, nValue));
         spendTx = BuildSpendingTransaction(CScript(), CScriptWitness(), *creditTx);
@@ -1021,6 +1036,7 @@ BOOST_AUTO_TEST_CASE(script_json_test)
         DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
 #else // BUILD_EQB
         // EQB_TODO: Implement Unit Test specific to SHA3 based OP codes 
+        //std::cout << "DoTest " << idx << " " << strTest << std::endl;
         DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
 #endif // END_BUILD
     }
