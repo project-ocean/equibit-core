@@ -10,7 +10,7 @@ Version 2 compact blocks are post-segwit (wtxids)
 """
 
 from test_framework.mininode import *
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.util import *
 from test_framework.blocktools import create_block, create_coinbase, add_witness_commitment
 from test_framework.script import CScript, OP_TRUE, OP_DROP
@@ -32,7 +32,7 @@ class TestNode(P2PInterface):
 
     def on_cmpctblock(self, message):
         self.block_announced = True
-        self.last_message["cmpctblock"].header_and_shortids.header.calc_sha256()
+        self.last_message["cmpctblock"].header_and_shortids.header.calc_sha3_256()  # Switched to sha3
         self.announced_blockhashes.add(self.last_message["cmpctblock"].header_and_shortids.header.sha256)
 
     def on_headers(self, message):
@@ -619,7 +619,7 @@ class CompactBlocksTest(BitcoinTestFramework):
             test_node.last_message.pop("blocktxn", None)
         test_node.send_and_ping(msg)
         with mininode_lock:
-            test_node.last_message["block"].block.calc_sha256()
+            test_node.last_message["block"].block.calc_sha3_256()  # Switched to sha3
             assert_equal(test_node.last_message["block"].block.sha256, int(block_hash, 16))
             assert "blocktxn" not in test_node.last_message
 
@@ -645,7 +645,7 @@ class CompactBlocksTest(BitcoinTestFramework):
         test_node.send_message(msg_getdata([CInv(4, int(new_blocks[0], 16))]))
         wait_until(lambda: "block" in test_node.last_message, timeout=30, lock=mininode_lock)
         with mininode_lock:
-            test_node.last_message["block"].block.calc_sha256()
+            test_node.last_message["block"].block.calc_sha3_256()  # Switched to sha3
             assert_equal(test_node.last_message["block"].block.sha256, int(new_blocks[0], 16))
 
         # Generate an old compactblock, and verify that it's not accepted.

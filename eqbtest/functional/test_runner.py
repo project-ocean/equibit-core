@@ -297,7 +297,7 @@ def run_tests(test_list, src_dir, build_dir, exeext, tmpdir, jobs=1, enable_cove
 
     # Warn if there is a cache directory
     #cache_dir = "%s/test/cache" % build_dir
-    cache_dir = build_dir + dir_separator + "test" + dir_separator + "cache"
+    cache_dir = build_dir + dir_separator + "eqbtest" + dir_separator + "cache"
     if os.path.isdir(cache_dir):
         print("%sWARNING!%s There is a cache directory here: %s. If tests fail unexpectedly, try deleting the cache directory." % (BOLD[1], BOLD[0], cache_dir))
 
