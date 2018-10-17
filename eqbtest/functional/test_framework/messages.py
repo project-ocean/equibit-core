@@ -514,7 +514,7 @@ class CBlockHeader():
             self.nNonce = header.nNonce
             self.sha256 = header.sha256
             self.hash = header.hash
-            self.calc_sha256()
+            self.calc_sha3_256()  # Switched to sha3
 
     def set_null(self):
         self.nVersion = 1
@@ -558,7 +558,6 @@ class CBlockHeader():
             self.sha256 = uint256_from_str(hash256(r))
             self.hash = encode(hash256(r)[::-1], 'hex_codec').decode('ascii')
 
-    # EQB_TODO: not being used yet
     def calc_sha3_256(self):
         if self.sha256 is None:
             r = b""
@@ -573,8 +572,7 @@ class CBlockHeader():
 
     def rehash(self):
         self.sha256 = None
-        self.calc_sha256()
-        # self.calc_sha3_256()  # EQB_TODO: Not yet, it's block header related
+        self.calc_sha3_256()  # Switched to sha3
         return self.sha256
 
     def __repr__(self):
@@ -775,7 +773,7 @@ class HeaderAndShortIDs():
     def get_siphash_keys(self):
         header_nonce = self.header.serialize()
         header_nonce += struct.pack("<Q", self.nonce)
-        hash_header_nonce_as_str = sha256(header_nonce)
+        hash_header_nonce_as_str = sha3_256(header_nonce)  # Switched to sha3
         key0 = struct.unpack("<Q", hash_header_nonce_as_str[0:8])[0]
         key1 = struct.unpack("<Q", hash_header_nonce_as_str[8:16])[0]
         return [ key0, key1 ]
