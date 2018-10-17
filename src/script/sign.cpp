@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -161,7 +162,11 @@ bool ProduceSignature(const BaseSignatureCreator& creator, const CScript& fromPu
     if (solved && whichType == TX_WITNESS_V0_KEYHASH)
     {
         CScript witnessscript;
+#ifdef BUILD_BTC
         witnessscript << OP_DUP << OP_HASH160 << ToByteVector(result[0]) << OP_EQUALVERIFY << OP_CHECKSIG;
+#else // BUILD_EQB
+        witnessscript << OP_DUP << OP_SHA3HASH160 << ToByteVector(result[0]) << OP_EQUALVERIFY << OP_CHECKSIG;
+#endif // END_BUILD
         txnouttype subType;
         solved = solved && SignStep(creator, witnessscript, result, subType, SIGVERSION_WITNESS_V0);
         sigdata.scriptWitness.stack = result;

@@ -1403,7 +1403,11 @@ static bool VerifyWitnessProgram(const CScriptWitness& witness, int witversion, 
             if (witness.stack.size() != 2) {
                 return set_error(serror, SCRIPT_ERR_WITNESS_PROGRAM_MISMATCH); // 2 items in witness
             }
+#ifdef BUILD_BTC
             scriptPubKey << OP_DUP << OP_HASH160 << program << OP_EQUALVERIFY << OP_CHECKSIG;
+#else // BUILD_EQB
+            scriptPubKey << OP_DUP << OP_SHA3HASH160 << program << OP_EQUALVERIFY << OP_CHECKSIG;
+#endif // END_BUILD
             stack = witness.stack;
         } else {
             return set_error(serror, SCRIPT_ERR_WITNESS_PROGRAM_WRONG_LENGTH);
