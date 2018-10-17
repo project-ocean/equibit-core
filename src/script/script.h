@@ -173,21 +173,20 @@ enum opcodetype
     OP_NOP2 = OP_CHECKLOCKTIMEVERIFY,
     OP_CHECKSEQUENCEVERIFY = 0xb2,
     OP_NOP3 = OP_CHECKSEQUENCEVERIFY,
-#ifdef BUILD_BTC
     OP_NOP4 = 0xb3,
     OP_NOP5 = 0xb4,
-#else  // BUILD_EQB
-    OP_SHA3 = 0xb3,
-    OP_NOP4 = OP_SHA3,
-    OP_SHA3HASH160 = 0xb4,
-    OP_NOP5 = OP_SHA3HASH160,
-#endif // END_BUILD
     OP_NOP6 = 0xb5,
     OP_NOP7 = 0xb6,
     OP_NOP8 = 0xb7,
     OP_NOP9 = 0xb8,
     OP_NOP10 = 0xb9,
 
+#ifndef BUILD_BTC
+    // Equibit ops
+    OP_SHA3 = 0xc0,
+    OP_SHA3HASH160 = 0xc1,
+    OP_LAST = 0xc1,
+#endif // END_BUILD
 
     // template matching params
     OP_SMALLINTEGER = 0xfa,
@@ -199,7 +198,11 @@ enum opcodetype
 };
 
 // Maximum value that an opcode can be
+#ifdef BUILD_BTC
 static const unsigned int MAX_OPCODE = OP_NOP10;
+#else // BUILD_EQB
+static const unsigned int MAX_OPCODE = OP_LAST;
+#endif // END_BUILD
 
 const char* GetOpName(opcodetype opcode);
 

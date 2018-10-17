@@ -157,8 +157,6 @@ CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CSc
 
 void DoTest(const CScript& scriptPubKey, const CScript& scriptSig, const CScriptWitness& scriptWitness, int flags, const std::string& message, int scriptError, CAmount nValue = 0)
 {
-    std::cout << "DoTest " << message << std::endl;
-
     bool expect = (scriptError == SCRIPT_ERR_OK);
     if (flags & SCRIPT_VERIFY_CLEANSTACK) {
         flags |= SCRIPT_VERIFY_P2SH;
@@ -1022,7 +1020,8 @@ BOOST_AUTO_TEST_CASE(script_json_test)
 #ifdef BUILD_BTC
         DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
 #else // BUILD_EQB
-      // EQB_TODO: Implement Unit Test specific to SHA3 based OP codes 
+        // EQB_TODO: Implement Unit Test specific to SHA3 based OP codes 
+        DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
 #endif // END_BUILD
     }
 }
@@ -1487,7 +1486,11 @@ BOOST_AUTO_TEST_CASE(script_HasValidOps)
     BOOST_CHECK(script.HasValidOps());
     script = ScriptFromHex("ff88ac"); // Script with OP_INVALIDOPCODE explicit
     BOOST_CHECK(!script.HasValidOps());
+#ifdef BUILD_BTC
     script = ScriptFromHex("88acc0"); // Script with undefined opcode
+#else // BUILD_EQB
+    script = ScriptFromHex("88acc9"); // Script with undefined opcode
+#endif // END_BUILD
     BOOST_CHECK(!script.HasValidOps());
 }
 

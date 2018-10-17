@@ -429,11 +429,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                     break;
                 }
 
-#ifdef BUILD_BTC
                 case OP_NOP1: case OP_NOP4: case OP_NOP5:
-#else // BUILD_EQB
-                case OP_NOP1:
-#endif // END_BUILD
                 case OP_NOP6: case OP_NOP7: case OP_NOP8: case OP_NOP9: case OP_NOP10:
                 {
                     if (flags & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS)
