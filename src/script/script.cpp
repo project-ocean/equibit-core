@@ -117,13 +117,14 @@ const char* GetOpName(opcodetype opcode)
     case OP_WITHIN                 : return "OP_WITHIN";
 
     // crypto
-#ifndef BUILD_BTC
-    case OP_SHA3                   : return "OP_SHA3";
-    case OP_SHA3HASH160            : return "OP_SHA3HASH160";
-#endif // END_BUILD
     case OP_RIPEMD160              : return "OP_RIPEMD160";
     case OP_SHA1                   : return "OP_SHA1";
+#ifdef BUILD_BTC
     case OP_SHA256                 : return "OP_SHA256";
+#else  // BUILD_EQB
+    case OP_SHA2                   : return "OP_SHA2";
+    case OP_SHA3                   : return "OP_SHA3";
+#endif // END_BUILD
     case OP_HASH160                : return "OP_HASH160";
     case OP_HASH256                : return "OP_HASH256";
     case OP_CODESEPARATOR          : return "OP_CODESEPARATOR";
@@ -211,7 +212,7 @@ bool CScript::IsPayToScriptHash() const
 #ifdef BUILD_BTC
             (*this)[0] == OP_HASH160 &&
 #else // BUILD_EQB
-            (*this)[0] == OP_SHA3HASH160 &&
+            (*this)[0] == OP_HASH160 &&
 #endif // END_BUILD
             (*this)[1] == 0x14 &&
             (*this)[22] == OP_EQUAL);

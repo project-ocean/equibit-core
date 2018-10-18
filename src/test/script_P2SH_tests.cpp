@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(is)
 #ifdef BUILD_BTC
     p2sh << OP_HASH160 << ToByteVector(dummy) << OP_EQUAL;
 #else // BUILD_EQB
-    p2sh << OP_SHA3HASH160 << ToByteVector(dummy) << OP_EQUAL;
+    p2sh << OP_HASH160 << ToByteVector(dummy) << OP_EQUAL;
 #endif // END_BUILD
     BOOST_CHECK(p2sh.IsPayToScriptHash());
 
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE(is)
 #ifdef BUILD_BTC
     static const unsigned char direct[] =    { OP_HASH160, 20, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, OP_EQUAL };
 #else // BUILD_EQB
-    static const unsigned char direct[] =    { OP_SHA3HASH160, 20, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, OP_EQUAL };
+    static const unsigned char direct[] =    { OP_HASH160, 20, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, OP_EQUAL };
 #endif // END_BUILD
     BOOST_CHECK(CScript(direct, direct+sizeof(direct)).IsPayToScriptHash());
     static const unsigned char pushdata1[] = { OP_HASH160, OP_PUSHDATA1, 20, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, OP_EQUAL };

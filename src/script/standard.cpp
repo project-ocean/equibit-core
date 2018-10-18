@@ -53,7 +53,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<std::v
 #ifdef BUILD_BTC
         mTemplates.insert(std::make_pair(TX_PUBKEYHASH, CScript() << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG));
 #else // BUILD_EQB
-        mTemplates.insert(std::make_pair(TX_PUBKEYHASH, CScript() << OP_DUP << OP_SHA3HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG));
+        mTemplates.insert(std::make_pair(TX_PUBKEYHASH, CScript() << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG));
 #endif // END_BUILD
 
         // Sender provides N pubkeys, receivers provides M signatures
@@ -295,7 +295,7 @@ public:
 #ifdef BUILD_BTC
         *script << OP_DUP << OP_HASH160 << ToByteVector(keyID) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-        *script << OP_DUP << OP_SHA3HASH160 << ToByteVector(keyID) << OP_EQUALVERIFY << OP_CHECKSIG;
+        *script << OP_DUP << OP_HASH160 << ToByteVector(keyID) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
         return true;
     }
@@ -305,7 +305,7 @@ public:
 #ifdef BUILD_BTC
         *script << OP_HASH160 << ToByteVector(scriptID) << OP_EQUAL;
 #else // BUILD_EQB
-        *script << OP_SHA3HASH160 << ToByteVector(scriptID) << OP_EQUAL;
+        *script << OP_HASH160 << ToByteVector(scriptID) << OP_EQUAL;
 #endif // END_BUILD
         return true;
     }

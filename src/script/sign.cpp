@@ -165,7 +165,7 @@ bool ProduceSignature(const BaseSignatureCreator& creator, const CScript& fromPu
 #ifdef BUILD_BTC
         witnessscript << OP_DUP << OP_HASH160 << ToByteVector(result[0]) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-        witnessscript << OP_DUP << OP_SHA3HASH160 << ToByteVector(result[0]) << OP_EQUALVERIFY << OP_CHECKSIG;
+        witnessscript << OP_DUP << OP_HASH160 << ToByteVector(result[0]) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
         txnouttype subType;
         solved = solved && SignStep(creator, witnessscript, result, subType, SIGVERSION_WITNESS_V0);

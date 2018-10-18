@@ -158,7 +158,11 @@ enum opcodetype
     // crypto
     OP_RIPEMD160 = 0xa6,
     OP_SHA1 = 0xa7,
+#ifdef BUILD_BTC
     OP_SHA256 = 0xa8,
+#else  // BUILD_EQB
+    OP_SHA2 = 0xa8,
+#endif // END_BUILD
     OP_HASH160 = 0xa9,
     OP_HASH256 = 0xaa,
     OP_CODESEPARATOR = 0xab,
@@ -183,9 +187,9 @@ enum opcodetype
 
 #ifndef BUILD_BTC
     // Equibit ops
+    // EQB_TODO Investigate whether it is feasible to use OP_NOP4 for OP_SHA3
     OP_SHA3 = 0xc0,
-    OP_SHA3HASH160 = 0xc1,
-    OP_LAST = 0xc1,
+    OP_LAST = 0xc0,
 #endif // END_BUILD
 
     // template matching params

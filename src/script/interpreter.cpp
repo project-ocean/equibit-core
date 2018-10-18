@@ -848,12 +848,13 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                 // Crypto
                 //
                 case OP_RIPEMD160:
-#ifndef BUILD_BTC
-                case OP_SHA3:
-                case OP_SHA3HASH160:
-#endif // END_BUILD
                 case OP_SHA1:
+#ifdef BUILD_BTC
                 case OP_SHA256:
+#else  // BUILD_EQB
+                case OP_SHA2:
+                case OP_SHA3:
+#endif // END_BUILD
                 case OP_HASH160:
                 case OP_HASH256:
                 {
@@ -861,19 +862,10 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                     if (stack.size() < 1)
                         return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
                     valtype& vch = stacktop(-1);
-#ifdef BUILD_BTC
                     valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160) ? 20 : 32);
-#else // BUILD_EQB
-                    valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160 || opcode == OP_SHA3HASH160) ? 20 : 32);
-#endif // END_BUILD
+#ifdef BUILD_BTC
                     if (opcode == OP_RIPEMD160)
                         CRIPEMD160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
-#ifndef BUILD_BTC
-                    else if (opcode == OP_SHA3)
-                        SHA3().Write(vch.data(), vch.size()).Finalize(vchHash.data());
-                    else if (opcode == OP_SHA3HASH160)
-                        CSHA3Hash160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
-#endif // END_BUILD
                     else if (opcode == OP_SHA1)
                         CSHA1().Write(vch.data(), vch.size()).Finalize(vchHash.data());
                     else if (opcode == OP_SHA256)
@@ -882,6 +874,20 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                         CHash160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
                     else if (opcode == OP_HASH256)
                         CHash256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+#else  // BUILD_EQB
+                    if (opcode == OP_RIPEMD160)
+                        CRIPEMD160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_SHA1)
+                        CSHA1().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_SHA2)
+                        CSHA256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_SHA3)
+                        SHA3().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_HASH160)
+                        CSHA3Hash160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_HASH256)
+                        CSHA3Hash256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+#endif // END_BUILD
                     popstack(stack);
                     stack.push_back(vchHash);
                 }
@@ -1438,7 +1444,7 @@ static bool VerifyWitnessProgram(const CScriptWitness& witness, int witversion, 
 #ifdef BUILD_BTC
             scriptPubKey << OP_DUP << OP_HASH160 << program << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-            scriptPubKey << OP_DUP << OP_SHA3HASH160 << program << OP_EQUALVERIFY << OP_CHECKSIG;
+            scriptPubKey << OP_DUP << OP_HASH160 << program << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
             stack = witness.stack;
         } else {

@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(script_standard_Solver_success)
 #ifdef BUILD_BTC
     s << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-    s << OP_DUP << OP_SHA3HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
+    s << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
     BOOST_CHECK(Solver(s, whichType, solutions));
     BOOST_CHECK_EQUAL(whichType, TX_PUBKEYHASH);
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(script_standard_Solver_success)
 #ifdef BUILD_BTC
     s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #else // BUILD_EQB
-    s << OP_SHA3HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
+    s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #endif // END_BUILD
     BOOST_CHECK(Solver(s, whichType, solutions));
     BOOST_CHECK_EQUAL(whichType, TX_SCRIPTHASH);
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(script_standard_Solver_failure)
 #ifdef BUILD_BTC
     s << OP_DUP << OP_HASH160 << ToByteVector(pubkey) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-    s << OP_DUP << OP_SHA3HASH160 << ToByteVector(pubkey) << OP_EQUALVERIFY << OP_CHECKSIG;
+    s << OP_DUP << OP_HASH160 << ToByteVector(pubkey) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
     BOOST_CHECK(!Solver(s, whichType, solutions));
 
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(script_standard_Solver_failure)
 #ifdef BUILD_BTC
     s << OP_HASH160 << std::vector<unsigned char>(21, 0x01) << OP_EQUAL;
 #else // BUILD_EQB
-    s << OP_SHA3HASH160 << std::vector<unsigned char>(21, 0x01) << OP_EQUAL;
+    s << OP_HASH160 << std::vector<unsigned char>(21, 0x01) << OP_EQUAL;
 #endif // END_BUILD
     BOOST_CHECK(!Solver(s, whichType, solutions));
 
@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(script_standard_ExtractDestination)
 #ifdef BUILD_BTC
     s << OP_DUP << OP_HASH160 << ToByteVector(pubkey.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-    s << OP_DUP << OP_SHA3HASH160 << ToByteVector(pubkey.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
+    s << OP_DUP << OP_HASH160 << ToByteVector(pubkey.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
     BOOST_CHECK(ExtractDestination(s, address));
     BOOST_CHECK(boost::get<CKeyID>(&address) &&
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(script_standard_ExtractDestination)
 #ifdef BUILD_BTC
     s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #else // BUILD_EQB
-    s << OP_SHA3HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
+    s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #endif // END_BUILD
     BOOST_CHECK(ExtractDestination(s, address));
     BOOST_CHECK(boost::get<CScriptID>(&address) &&
@@ -311,7 +311,7 @@ BOOST_AUTO_TEST_CASE(script_standard_ExtractDestinations)
 #ifdef BUILD_BTC
     s << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-    s << OP_DUP << OP_SHA3HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
+    s << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
     BOOST_CHECK(ExtractDestinations(s, whichType, addresses, nRequired));
     BOOST_CHECK_EQUAL(whichType, TX_PUBKEYHASH);
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE(script_standard_ExtractDestinations)
 #ifdef BUILD_BTC
     s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #else // BUILD_EQB
-    s << OP_SHA3HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
+    s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #endif // END_BUILD
     BOOST_CHECK(ExtractDestinations(s, whichType, addresses, nRequired));
     BOOST_CHECK_EQUAL(whichType, TX_SCRIPTHASH);
@@ -372,7 +372,7 @@ BOOST_AUTO_TEST_CASE(script_standard_GetScriptFor_)
 #ifdef BUILD_BTC
     expected << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-    expected << OP_DUP << OP_SHA3HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
+    expected << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
     result = GetScriptForDestination(pubkeys[0].GetID());
     BOOST_CHECK(result == expected);
@@ -383,7 +383,7 @@ BOOST_AUTO_TEST_CASE(script_standard_GetScriptFor_)
 #ifdef BUILD_BTC
     expected << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #else // BUILD_EQB
-    expected << OP_SHA3HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
+    expected << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #endif // END_BUILD
     result = GetScriptForDestination(CScriptID(redeemScript));
     BOOST_CHECK(result == expected);
@@ -422,7 +422,7 @@ BOOST_AUTO_TEST_CASE(script_standard_GetScriptFor_)
 #ifdef BUILD_BTC
     witnessScript << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-    witnessScript << OP_DUP << OP_SHA3HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
+    witnessScript << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
     result = GetScriptForWitness(witnessScript);
     BOOST_CHECK(result == expected);
@@ -505,7 +505,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
 #ifdef BUILD_BTC
         scriptPubKey << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-        scriptPubKey << OP_DUP << OP_SHA3HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
+        scriptPubKey << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
 
         // Keystore does not have key
@@ -527,7 +527,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
 #ifdef BUILD_BTC
         scriptPubKey << OP_DUP << OP_HASH160 << ToByteVector(uncompressedPubkey.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-        scriptPubKey << OP_DUP << OP_SHA3HASH160 << ToByteVector(uncompressedPubkey.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
+        scriptPubKey << OP_DUP << OP_HASH160 << ToByteVector(uncompressedPubkey.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
 
         // Keystore does not have key
@@ -550,14 +550,14 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
 #ifdef BUILD_BTC
         redeemScript << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #else // BUILD_EQB
-        redeemScript << OP_DUP << OP_SHA3HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
+        redeemScript << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
 #endif // END_BUILD
 
         scriptPubKey.clear();
 #ifdef BUILD_BTC
         scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #else // BUILD_EQB
-        scriptPubKey << OP_SHA3HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
+        scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #endif // END_BUILD
 
         // Keystore does not have redeemScript or key
@@ -659,7 +659,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
 #ifdef BUILD_BTC
         scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #else // BUILD_EQB
-        scriptPubKey << OP_SHA3HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
+        scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #endif // END_BUILD
 
         // Keystore has no redeemScript
@@ -784,7 +784,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
 #ifdef BUILD_BTC
         scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #else // BUILD_EQB
-        scriptPubKey << OP_SHA3HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
+        scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
 #endif // END_BUILD
 
         // Keystore has no witnessScript, P2SH redeemScript, or keys
