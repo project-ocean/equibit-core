@@ -209,11 +209,7 @@ bool CScript::IsPayToScriptHash() const
 {
     // Extra-fast test for pay-to-script-hash CScripts:
     return (this->size() == 23 &&
-#ifdef BUILD_BTC
             (*this)[0] == OP_HASH160 &&
-#else // BUILD_EQB
-            (*this)[0] == OP_HASH160 &&
-#endif // END_BUILD
             (*this)[1] == 0x14 &&
             (*this)[22] == OP_EQUAL);
 }

@@ -38,11 +38,7 @@ BOOST_AUTO_TEST_CASE(script_standard_Solver_success)
 
     // TX_PUBKEYHASH
     s.clear();
-#ifdef BUILD_BTC
     s << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#else // BUILD_EQB
-    s << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#endif // END_BUILD
     BOOST_CHECK(Solver(s, whichType, solutions));
     BOOST_CHECK_EQUAL(whichType, TX_PUBKEYHASH);
     BOOST_CHECK_EQUAL(solutions.size(), 1);
@@ -51,11 +47,7 @@ BOOST_AUTO_TEST_CASE(script_standard_Solver_success)
     // TX_SCRIPTHASH
     CScript redeemScript(s); // initialize with leftover P2PKH script
     s.clear();
-#ifdef BUILD_BTC
     s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#else // BUILD_EQB
-    s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#endif // END_BUILD
     BOOST_CHECK(Solver(s, whichType, solutions));
     BOOST_CHECK_EQUAL(whichType, TX_SCRIPTHASH);
     BOOST_CHECK_EQUAL(solutions.size(), 1);
@@ -150,20 +142,12 @@ BOOST_AUTO_TEST_CASE(script_standard_Solver_failure)
 
     // TX_PUBKEYHASH with incorrectly sized key hash
     s.clear();
-#ifdef BUILD_BTC
     s << OP_DUP << OP_HASH160 << ToByteVector(pubkey) << OP_EQUALVERIFY << OP_CHECKSIG;
-#else // BUILD_EQB
-    s << OP_DUP << OP_HASH160 << ToByteVector(pubkey) << OP_EQUALVERIFY << OP_CHECKSIG;
-#endif // END_BUILD
     BOOST_CHECK(!Solver(s, whichType, solutions));
 
     // TX_SCRIPTHASH with incorrectly sized script hash
     s.clear();
-#ifdef BUILD_BTC
     s << OP_HASH160 << std::vector<unsigned char>(21, 0x01) << OP_EQUAL;
-#else // BUILD_EQB
-    s << OP_HASH160 << std::vector<unsigned char>(21, 0x01) << OP_EQUAL;
-#endif // END_BUILD
     BOOST_CHECK(!Solver(s, whichType, solutions));
 
     // TX_MULTISIG 0/2
@@ -216,11 +200,7 @@ BOOST_AUTO_TEST_CASE(script_standard_ExtractDestination)
 
     // TX_PUBKEYHASH
     s.clear();
-#ifdef BUILD_BTC
     s << OP_DUP << OP_HASH160 << ToByteVector(pubkey.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#else // BUILD_EQB
-    s << OP_DUP << OP_HASH160 << ToByteVector(pubkey.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#endif // END_BUILD
     BOOST_CHECK(ExtractDestination(s, address));
     BOOST_CHECK(boost::get<CKeyID>(&address) &&
                 *boost::get<CKeyID>(&address) == pubkey.GetID());
@@ -228,11 +208,7 @@ BOOST_AUTO_TEST_CASE(script_standard_ExtractDestination)
     // TX_SCRIPTHASH
     CScript redeemScript(s); // initialize with leftover P2PKH script
     s.clear();
-#ifdef BUILD_BTC
     s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#else // BUILD_EQB
-    s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#endif // END_BUILD
     BOOST_CHECK(ExtractDestination(s, address));
     BOOST_CHECK(boost::get<CScriptID>(&address) &&
                 *boost::get<CScriptID>(&address) == CScriptID(redeemScript));
@@ -308,11 +284,7 @@ BOOST_AUTO_TEST_CASE(script_standard_ExtractDestinations)
 
     // TX_PUBKEYHASH
     s.clear();
-#ifdef BUILD_BTC
     s << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#else // BUILD_EQB
-    s << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#endif // END_BUILD
     BOOST_CHECK(ExtractDestinations(s, whichType, addresses, nRequired));
     BOOST_CHECK_EQUAL(whichType, TX_PUBKEYHASH);
     BOOST_CHECK_EQUAL(addresses.size(), 1);
@@ -323,11 +295,7 @@ BOOST_AUTO_TEST_CASE(script_standard_ExtractDestinations)
     // TX_SCRIPTHASH
     CScript redeemScript(s); // initialize with leftover P2PKH script
     s.clear();
-#ifdef BUILD_BTC
     s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#else // BUILD_EQB
-    s << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#endif // END_BUILD
     BOOST_CHECK(ExtractDestinations(s, whichType, addresses, nRequired));
     BOOST_CHECK_EQUAL(whichType, TX_SCRIPTHASH);
     BOOST_CHECK_EQUAL(addresses.size(), 1);
@@ -369,22 +337,14 @@ BOOST_AUTO_TEST_CASE(script_standard_GetScriptFor_)
 
     // CKeyID
     expected.clear();
-#ifdef BUILD_BTC
     expected << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#else // BUILD_EQB
-    expected << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#endif // END_BUILD
     result = GetScriptForDestination(pubkeys[0].GetID());
     BOOST_CHECK(result == expected);
 
     // CScriptID
     CScript redeemScript(result);
     expected.clear();
-#ifdef BUILD_BTC
     expected << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#else // BUILD_EQB
-    expected << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#endif // END_BUILD
     result = GetScriptForDestination(CScriptID(redeemScript));
     BOOST_CHECK(result == expected);
 
@@ -419,11 +379,7 @@ BOOST_AUTO_TEST_CASE(script_standard_GetScriptFor_)
     BOOST_CHECK(result == expected);
 
     witnessScript.clear();
-#ifdef BUILD_BTC
     witnessScript << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#else // BUILD_EQB
-    witnessScript << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#endif // END_BUILD
     result = GetScriptForWitness(witnessScript);
     BOOST_CHECK(result == expected);
 
@@ -502,11 +458,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
     {
         CBasicKeyStore keystore;
         scriptPubKey.clear();
-#ifdef BUILD_BTC
         scriptPubKey << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#else // BUILD_EQB
-        scriptPubKey << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#endif // END_BUILD
 
         // Keystore does not have key
         result = IsMine(keystore, scriptPubKey, isInvalid);
@@ -524,11 +476,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
     {
         CBasicKeyStore keystore;
         scriptPubKey.clear();
-#ifdef BUILD_BTC
         scriptPubKey << OP_DUP << OP_HASH160 << ToByteVector(uncompressedPubkey.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#else // BUILD_EQB
-        scriptPubKey << OP_DUP << OP_HASH160 << ToByteVector(uncompressedPubkey.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#endif // END_BUILD
 
         // Keystore does not have key
         result = IsMine(keystore, scriptPubKey, isInvalid);
@@ -547,18 +495,10 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
         CBasicKeyStore keystore;
 
         CScript redeemScript;
-#ifdef BUILD_BTC
         redeemScript << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#else // BUILD_EQB
-        redeemScript << OP_DUP << OP_HASH160 << ToByteVector(pubkeys[0].GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-#endif // END_BUILD
 
         scriptPubKey.clear();
-#ifdef BUILD_BTC
         scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#else // BUILD_EQB
-        scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#endif // END_BUILD
 
         // Keystore does not have redeemScript or key
         result = IsMine(keystore, scriptPubKey, isInvalid);
@@ -656,11 +596,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
             OP_2 << OP_CHECKMULTISIG;
 
         scriptPubKey.clear();
-#ifdef BUILD_BTC
         scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#else // BUILD_EQB
-        scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#endif // END_BUILD
 
         // Keystore has no redeemScript
         result = IsMine(keystore, scriptPubKey, isInvalid);
@@ -781,11 +717,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
         redeemScript << OP_0 << ToByteVector(scriptHash);
 
         scriptPubKey.clear();
-#ifdef BUILD_BTC
         scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#else // BUILD_EQB
-        scriptPubKey << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL;
-#endif // END_BUILD
 
         // Keystore has no witnessScript, P2SH redeemScript, or keys
         result = IsMine(keystore, scriptPubKey, isInvalid);

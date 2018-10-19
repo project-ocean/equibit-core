@@ -50,11 +50,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<std::v
         mTemplates.insert(std::make_pair(TX_PUBKEY, CScript() << OP_PUBKEY << OP_CHECKSIG));
 
         // Bitcoin address tx, sender provides hash of pubkey, receiver provides signature and pubkey
-#ifdef BUILD_BTC
         mTemplates.insert(std::make_pair(TX_PUBKEYHASH, CScript() << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG));
-#else // BUILD_EQB
-        mTemplates.insert(std::make_pair(TX_PUBKEYHASH, CScript() << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG));
-#endif // END_BUILD
 
         // Sender provides N pubkeys, receivers provides M signatures
         mTemplates.insert(std::make_pair(TX_MULTISIG, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
@@ -292,21 +288,13 @@ public:
 
     bool operator()(const CKeyID &keyID) const {
         script->clear();
-#ifdef BUILD_BTC
         *script << OP_DUP << OP_HASH160 << ToByteVector(keyID) << OP_EQUALVERIFY << OP_CHECKSIG;
-#else // BUILD_EQB
-        *script << OP_DUP << OP_HASH160 << ToByteVector(keyID) << OP_EQUALVERIFY << OP_CHECKSIG;
-#endif // END_BUILD
         return true;
     }
 
     bool operator()(const CScriptID &scriptID) const {
         script->clear();
-#ifdef BUILD_BTC
         *script << OP_HASH160 << ToByteVector(scriptID) << OP_EQUAL;
-#else // BUILD_EQB
-        *script << OP_HASH160 << ToByteVector(scriptID) << OP_EQUAL;
-#endif // END_BUILD
         return true;
     }
 
