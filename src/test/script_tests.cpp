@@ -1026,7 +1026,7 @@ BOOST_AUTO_TEST_CASE(script_json_test)
             continue;
         }
 
-        std::cout << "test  " << idx << " " << strTest << std::endl;
+        // std::cout << "test  " << idx << " " << strTest << std::endl;
 
         std::string scriptSigString = test[pos++].get_str();
         CScript scriptSig = ParseScript(scriptSigString);
@@ -1037,9 +1037,7 @@ BOOST_AUTO_TEST_CASE(script_json_test)
 
 #ifdef BUILD_BTC
         DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
-#else // BUILD_EQB
-        // EQB_TODO: Implement Unit Test specific to SHA3 based OP codes 
-        //std::cout << "DoTest " << idx << " " << strTest << std::endl;
+#else  // BUILD_EQB
         DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
 #endif // END_BUILD
     }
