@@ -1,6 +1,7 @@
 import hashlib
 import sha3
 
+
 # This is a handy script to generate a Equibit HASH160 which is RIPEMD160(SHA3(input)))
 
 #step 1: sha256
