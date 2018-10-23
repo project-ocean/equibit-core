@@ -7,7 +7,7 @@
 This file is modified from python-bitcoinlib.
 """
 
-from .mininode import CTransaction, CTxOut, sha256, hash256, uint256_from_str, ser_uint256, ser_string
+from .mininode import CTransaction, CTxOut, sha256, hash256, uint256_from_str, ser_uint256, ser_string, sha3_256, hash3_256  # EQB_TODO: oct-23
 from binascii import hexlify
 import hashlib
 
@@ -29,6 +29,9 @@ OPCODE_NAMES = {}
 
 def hash160(s):
     return hashlib.new('ripemd160', sha256(s)).digest()
+
+def hash160_sha3_256(s):  # EQB_TODO: oct-23
+    return hashlib.new('ripemd160', sha3_256(s)).digest()  # EQB_TODO: oct-23
 
 
 _opcode_instances = []
@@ -642,7 +645,7 @@ def SignatureHash(script, txTo, inIdx, hashtype):
     s = txtmp.serialize_without_witness()
     s += struct.pack(b"<I", hashtype)
 
-    hash = hash256(s)
+    hash = hash3_256(s)  # EQB_TODO: oct-23
 
     return (hash, None)
 

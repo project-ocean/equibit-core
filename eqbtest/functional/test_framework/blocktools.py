@@ -21,6 +21,7 @@ from .script import (
     OP_RETURN,
     OP_TRUE,
     hash160,
+    hash160_sha3_256  # EQB_TODO: oct-23
 )
 from .util import assert_equal
 
@@ -132,12 +133,12 @@ def get_legacy_sigopcount_tx(tx, fAccurate=True):
 def witness_script(use_p2wsh, pubkey):
     if (use_p2wsh == False):
         # P2WPKH instead
-        pubkeyhash = hash160(hex_str_to_bytes(pubkey))
+        pubkeyhash = hash160_sha3_256(hex_str_to_bytes(pubkey))  # EQB_TODO: oct-23
         pkscript = CScript([OP_0, pubkeyhash])
     else:
         # 1-of-1 multisig
         witness_program = CScript([OP_1, hex_str_to_bytes(pubkey), OP_1, OP_CHECKMULTISIG])
-        scripthash = sha256(witness_program)
+        scripthash = sha3_256(witness_program)  # EQB_TODO: oct-23
         pkscript = CScript([OP_0, scripthash])
     return bytes_to_hex_str(pkscript)
 

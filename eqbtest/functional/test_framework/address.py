@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Encode and decode BASE58, P2PKH and P2SH addresses."""
 
-from .script import hash256, hash160, sha256, CScript, OP_0
+from .script import hash256, hash160, sha256, CScript, OP_0, hash160_sha3_256  # EQB_TODO: oct-23
 from .util import bytes_to_hex_str, hex_str_to_bytes
 
 from . import segwit_addr
@@ -65,7 +65,7 @@ def script_to_p2wsh(script, main = False):
 
 def key_to_p2wpkh(key, main = False):
     key = check_key(key)
-    return program_to_witness(0, hash160(key), main)
+    return program_to_witness(0, hash160_sha3_256(key), main)  # EQB_TODO: oct-23
 
 def script_to_p2sh_p2wsh(script, main = False):
     script = check_script(script)
