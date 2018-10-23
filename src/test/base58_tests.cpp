@@ -76,6 +76,7 @@ BOOST_AUTO_TEST_CASE(base58_DecodeBase58)
 // Goal: check that parsed keys match test payload
 BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
 {
+#ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));
     CBitcoinSecret secret;
     CTxDestination destination;
@@ -111,12 +112,8 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
             destination = DecodeDestination(exp_base58string);
             CScript script = GetScriptForDestination(destination);
 
-#ifdef BUILD_BTC
             BOOST_CHECK_MESSAGE(IsValidDestination(destination), "!IsValid:" + strTest);
             BOOST_CHECK_EQUAL(HexStr(script), HexStr(exp_payload));
-#else  // BUILD_EQB
-            // EQB_TODO Generate new test data
-#endif // END_BUILD
 
             // Try flipped case version
             for (char& c : exp_base58string) {
@@ -138,6 +135,9 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
             BOOST_CHECK_MESSAGE(!secret.IsValid(), "IsValid pubkey as privkey:" + strTest);
         }
     }
+#else  // BUILD_EQB
+       // EQB_TODO Generate new test data
+#endif // END_BUILD
 }
 
 // Goal: check that generated keys match test vectors
@@ -165,7 +165,11 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
             assert(key.IsValid());
             CBitcoinSecret secret;
             secret.SetKey(key);
+#ifdef BUILD_BTC
             BOOST_CHECK_MESSAGE(secret.ToString() == exp_base58string, "result mismatch: " + strTest);
+#else  // BUILD_EQB
+       // EQB_TODO Generate new test data
+#endif // END_BUILD
         } else {
             CTxDestination dest;
             CScript exp_script(exp_payload.begin(), exp_payload.end());
@@ -175,7 +179,7 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
 #ifdef BUILD_BTC
             BOOST_CHECK_EQUAL(address, exp_base58string);
 #else  // BUILD_EQB
-            // EQB_TODO Generate new test data
+       // EQB_TODO Generate new test data
 #endif // END_BUILD
         }
     }
