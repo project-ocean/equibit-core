@@ -165,22 +165,21 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
             assert(key.IsValid());
             CBitcoinSecret secret;
             secret.SetKey(key);
-#ifdef BUILD_BTC
+
+            //std::cout << "prv secret       " << secret.ToString() << std::endl;
+            //std::cout << "exp_base58string " << exp_base58string << std::endl;
+
             BOOST_CHECK_MESSAGE(secret.ToString() == exp_base58string, "result mismatch: " + strTest);
-#else  // BUILD_EQB
-       // EQB_TODO Generate new test data
-#endif // END_BUILD
         } else {
             CTxDestination dest;
             CScript exp_script(exp_payload.begin(), exp_payload.end());
             ExtractDestination(exp_script, dest);
             std::string address = EncodeDestination(dest);
 
-#ifdef BUILD_BTC
+            //std::cout << "pub address      " << address << std::endl;
+            //std::cout << "exp_base58string " << exp_base58string << std::endl;
+
             BOOST_CHECK_EQUAL(address, exp_base58string);
-#else  // BUILD_EQB
-       // EQB_TODO Generate new test data
-#endif // END_BUILD
         }
     }
 
