@@ -85,7 +85,11 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_serialize_with_tweak)
 
 BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
 {
+#ifdef BUILD_BTC
     std::string strSecret = std::string("5Kg1gnAjaLfKiwhhPpGS3QfRg2m6awQvaj98JCZBZQ5SuS2F15C");
+#else  // BUILD_EQB
+    std::string strSecret = std::string("5K6egrfPCCHH2xg1Dqf5i2vsaUhbUqwZsWCVpffKLVMW8PP9Q5j");
+#endif // END_BUILD
     CBitcoinSecret vchSecret;
     BOOST_CHECK(vchSecret.SetString(strSecret));
 
@@ -105,7 +109,7 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
     std::vector<unsigned char> vch = ParseHex("038fc16b080000000000000001");
 #else  // BUILD_EQB
     // EQB_TODO Derive the expected value independently
-    std::vector<unsigned char> vch = ParseHex("03b3c1eb080000000000000001");
+    std::vector<unsigned char> vch = ParseHex("03333e14080000000000000001");
 #endif // END_BUILD
     std::vector<char> expected(vch.size());
 
