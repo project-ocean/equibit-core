@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -21,7 +22,11 @@ bool SerializeDB(Stream& stream, const Data& data)
 {
     // Write and commit header, data
     try {
+#ifdef BUILD_BTC
         CHashWriter hasher(SER_DISK, CLIENT_VERSION);
+#else // BUILD_EQB
+        CSHA3HashWriter hasher(SER_DISK, CLIENT_VERSION);
+#endif // END_BUILD
         stream << FLATDATA(Params().MessageStart()) << data;
         hasher << FLATDATA(Params().MessageStart()) << data;
         stream << hasher.GetHash();
