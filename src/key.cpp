@@ -279,7 +279,11 @@ bool CExtKey::Derive(CExtKey &out, unsigned int _nChild) const {
 }
 
 void CExtKey::SetMaster(const unsigned char *seed, unsigned int nSeedLen) {
+#ifdef BUILD_BTC
     static const unsigned char hashkey[] = {'B','i','t','c','o','i','n',' ','s','e','e','d'};
+#else  // BUILD_EQB
+    static const unsigned char hashkey[] = {'E','q','u','i','b','i','t',' ','s','e','e','d'};
+#endif // END_BUILD
     std::vector<unsigned char, secure_allocator<unsigned char>> vout(64);
     CHMAC_SHA512(hashkey, sizeof(hashkey)).Write(seed, nSeedLen).Finalize(vout.data());
     key.Set(vout.data(), vout.data() + 32, true);
