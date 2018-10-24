@@ -31,7 +31,7 @@ def hash160(s):
     return hashlib.new('ripemd160', sha256(s)).digest()
 
 def hash160_sha3_256(s):  # EQB_TODO: oct-23
-    return hashlib.new('ripemd160', sha3_256(s)).digest()  # EQB_TODO: oct-23
+    return hashlib.new('ripemd160', sha3_256(s)).digest()
 
 
 _opcode_instances = []
