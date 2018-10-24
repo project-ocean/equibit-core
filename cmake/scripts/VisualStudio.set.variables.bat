@@ -44,3 +44,7 @@ SET VISUAL_STUDIO_CMAKE=Visual Studio 14 2015
 SET VISUAL_STUDIO_PLATFORM=x86
 SET VISUAL_STUDIO=C:\Program Files (x86)\Microsoft Visual Studio 14.0
 exit /b
+
+
+
+

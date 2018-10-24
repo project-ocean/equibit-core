@@ -7,7 +7,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/build")
 set (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/install")
-set (THIRDPARTY_DIRECTORY "${PROJECT_SOURCE_DIR}/../thirdparty")
+#set (THIRDPARTY_DIRECTORY "${PROJECT_SOURCE_DIR}/../thirdparty")
+set (THIRDPARTY_DIRECTORY "C:/Users/RezaSoltani/Projects/dependencies")
+
+#example: 
+#C:\Users\RezaSoltani\Projects\dependencies\OpenSSL-Win64
 
 if (MSVC)
 
