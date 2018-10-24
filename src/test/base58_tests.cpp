@@ -76,7 +76,6 @@ BOOST_AUTO_TEST_CASE(base58_DecodeBase58)
 // Goal: check that parsed keys match test payload
 BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
 {
-#ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));
     CBitcoinSecret secret;
     CTxDestination destination;
@@ -135,9 +134,6 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
             BOOST_CHECK_MESSAGE(!secret.IsValid(), "IsValid pubkey as privkey:" + strTest);
         }
     }
-#else  // BUILD_EQB
-       // EQB_TODO Generate new test data
-#endif // END_BUILD
 }
 
 // Goal: check that generated keys match test vectors
