@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test transaction signing using the signrawtransaction RPC."""
 
-from test_framework.test_framework import BitcoinTestFramework, SkipTest  # EQB_TODO: Remove import SkipTest class after fixing all the tests (Oct-24)
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
 
 
@@ -25,9 +25,9 @@ class SignRawTransactionsTest(BitcoinTestFramework):
         inputs = [
             # Valid pay-to-pubkey scripts
             {'txid': '9b907ef1e3c26fc71fe4a4b3580bc75264112f95050014157059c736f0202e71', 'vout': 0,
-             'scriptPubKey': '76a91460baa0f494b38ce3c940dea67f3804dc52d1fb9488ac'},
+             'scriptPubKey': '76a9143864fb97359d9630378bfef87f9e385608cca3ba88ac'},
             {'txid': '83a4f6a6b73660e13ee6cb3c6063fa3759c50c9b7521d0536022961898f4fb02', 'vout': 0,
-             'scriptPubKey': '76a914669b857c03a5ed269d5d85a1ffac9ed5d663072788ac'},
+             'scriptPubKey': '76a914b05323babe0c36982da10a6a0a49f2c20d43680188ac'},
         ]
 
         outputs = {'mpLQjfK79b7CCV4VMJWEWAj5Mpx8Up5zxB': 0.1}
@@ -65,7 +65,7 @@ class SignRawTransactionsTest(BitcoinTestFramework):
         scripts = [
             # Valid pay-to-pubkey script
             {'txid': '9b907ef1e3c26fc71fe4a4b3580bc75264112f95050014157059c736f0202e71', 'vout': 0,
-             'scriptPubKey': '76a91460baa0f494b38ce3c940dea67f3804dc52d1fb9488ac'},
+             'scriptPubKey': '76a9143864fb97359d9630378bfef87f9e385608cca3ba88ac'},
             # Invalid script
             {'txid': '5b8673686910442c644b1f4993d8f7753c7c8fcb5c87ee40d56eaeef25204547', 'vout': 7,
              'scriptPubKey': 'badbadbadbad'}
@@ -135,7 +135,6 @@ class SignRawTransactionsTest(BitcoinTestFramework):
         assert not rawTxSigned['errors'][0]['witness']
 
     def run_test(self):
-        raise SkipTest("DOES NOT WORK: sign transaction test")  # EQB_TODO: Fix the tests: 'Create and sign a valid raw transaction with one input'
         self.successful_signing_test()
         self.script_verification_error_test()
 
