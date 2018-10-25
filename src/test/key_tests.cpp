@@ -94,11 +94,6 @@ BOOST_AUTO_TEST_CASE(key_test1)
     BOOST_CHECK(!key2C.VerifyPubKey(pubkey2));
     BOOST_CHECK(key2C.VerifyPubKey(pubkey2C));
 
-    //std::cout << EncodeDestination(CTxDestination(pubkey1.GetID())) << std::endl;
-    //std::cout << EncodeDestination(CTxDestination(pubkey2.GetID())) << std::endl;
-    //std::cout << EncodeDestination(CTxDestination(pubkey1C.GetID())) << std::endl;
-    //std::cout << EncodeDestination(CTxDestination(pubkey2C.GetID())) << std::endl;
-
     BOOST_CHECK(DecodeDestination(addr1)  == CTxDestination(pubkey1.GetID()));
     BOOST_CHECK(DecodeDestination(addr2)  == CTxDestination(pubkey2.GetID()));
     BOOST_CHECK(DecodeDestination(addr1C) == CTxDestination(pubkey1C.GetID()));

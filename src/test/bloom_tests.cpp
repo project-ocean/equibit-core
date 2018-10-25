@@ -109,7 +109,6 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
     std::vector<unsigned char> vch = ParseHex("038fc16b080000000000000001");
 #else  // BUILD_EQB
     // EQB_TODO Derive the expected value independently
-    // std::vector<unsigned char> vch = ParseHex("03b3c1eb080000000000000001");
     std::vector<unsigned char> vch = ParseHex("03333e14080000000000000001");
 #endif // END_BUILD
     std::vector<char> expected(vch.size());
