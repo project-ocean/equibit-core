@@ -157,6 +157,8 @@ CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CSc
 
 void DoTest(const CScript& scriptPubKey, const CScript& scriptSig, const CScriptWitness& scriptWitness, int flags, const std::string& message, int scriptError, CAmount nValue = 0)
 {
+    // std::cout << "DoTest " << message << std::endl;
+
     bool expect = (scriptError == SCRIPT_ERR_OK);
     if (flags & SCRIPT_VERIFY_CLEANSTACK) {
         flags |= SCRIPT_VERIFY_P2SH;
@@ -315,13 +317,21 @@ public:
         CScript scriptPubKey = script;
         if (wm == WITNESS_PKH) {
             uint160 hash;
+#ifdef BUILD_BTC
             CHash160().Write(&script[1], script.size() - 1).Finalize(hash.begin());
+#else // BUILD_EQB
+            CSHA3Hash160().Write(&script[1], script.size() - 1).Finalize(hash.begin());
+#endif // END_BUILD
             script = CScript() << OP_DUP << OP_HASH160 << ToByteVector(hash) << OP_EQUALVERIFY << OP_CHECKSIG;
             scriptPubKey = CScript() << witnessversion << ToByteVector(hash);
         } else if (wm == WITNESS_SH) {
             witscript = scriptPubKey;
             uint256 hash;
+#ifdef BUILD_BTC
             CSHA256().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
+#else // BUILD_EQB
+            SHA3().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
+#endif // END_BUILD
             scriptPubKey = CScript() << witnessversion << ToByteVector(hash);
         }
         if (P2SH) {
@@ -515,7 +525,7 @@ BOOST_AUTO_TEST_CASE(script_build)
     tests.push_back(TestBuilder(CScript() << ToByteVector(keys.pubkey0C) << OP_CHECKSIG,
                                 "P2SH(P2PK), bad redeemscript", SCRIPT_VERIFY_P2SH, true
                                ).PushSig(keys.key0).PushRedeem().DamagePush(10).ScriptError(SCRIPT_ERR_EVAL_FALSE));
-    
+
     tests.push_back(TestBuilder(CScript() << OP_DUP << OP_HASH160 << ToByteVector(keys.pubkey0.GetID()) << OP_EQUALVERIFY << OP_CHECKSIG,
                                 "P2SH(P2PKH)", SCRIPT_VERIFY_P2SH, true
                                ).PushSig(keys.key0).Push(keys.pubkey0).PushRedeem());
@@ -989,6 +999,9 @@ BOOST_AUTO_TEST_CASE(script_json_test)
             }
             continue;
         }
+
+        // std::cout << "test  " << idx << " " << strTest << std::endl;
+
         std::string scriptSigString = test[pos++].get_str();
         CScript scriptSig = ParseScript(scriptSigString);
         std::string scriptPubKeyString = test[pos++].get_str();
@@ -998,8 +1011,8 @@ BOOST_AUTO_TEST_CASE(script_json_test)
 
 #ifdef BUILD_BTC
         DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
-#else // BUILD_EQB
-      // EQB_TODO: Implement Unit Test specific to SHA3 based OP codes 
+#else  // BUILD_EQB
+        DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
 #endif // END_BUILD
     }
 }
@@ -1464,7 +1477,11 @@ BOOST_AUTO_TEST_CASE(script_HasValidOps)
     BOOST_CHECK(script.HasValidOps());
     script = ScriptFromHex("ff88ac"); // Script with OP_INVALIDOPCODE explicit
     BOOST_CHECK(!script.HasValidOps());
+#ifdef BUILD_BTC
     script = ScriptFromHex("88acc0"); // Script with undefined opcode
+#else // BUILD_EQB
+    script = ScriptFromHex("88acc9"); // Script with undefined opcode
+#endif // END_BUILD
     BOOST_CHECK(!script.HasValidOps());
 }
 

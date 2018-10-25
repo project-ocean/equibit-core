@@ -79,7 +79,11 @@ uint256 static SignatureHashOld(CScript scriptCode, const CTransaction& txTo, un
     }
 
     // Serialize and hash
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
+#else // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
+#endif // END_BUILD
     ss << txTmp << nHashType;
     return ss.GetHash();
 }

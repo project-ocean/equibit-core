@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,7 +17,11 @@ typedef std::vector<unsigned char> valtype;
 bool fAcceptDatacarrier = DEFAULT_ACCEPT_DATACARRIER;
 unsigned nMaxDatacarrierBytes = MAX_OP_RETURN_RELAY;
 
+#ifdef BUILD_BTC
 CScriptID::CScriptID(const CScript& in) : uint160(Hash160(in.begin(), in.end())) {}
+#else // BUILD_EQB
+CScriptID::CScriptID(const CScript& in) : uint160(SHA3Hash160(in.begin(), in.end())) {}
+#endif // END_BUILD
 
 const char* GetTxnOutputType(txnouttype t)
 {
@@ -348,13 +353,21 @@ CScript GetScriptForWitness(const CScript& redeemscript)
     std::vector<std::vector<unsigned char> > vSolutions;
     if (Solver(redeemscript, typ, vSolutions)) {
         if (typ == TX_PUBKEY) {
+#ifdef BUILD_BTC
             return GetScriptForDestination(WitnessV0KeyHash(Hash160(vSolutions[0].begin(), vSolutions[0].end())));
+#else // BUILD_EQB
+            return GetScriptForDestination(WitnessV0KeyHash(SHA3Hash160(vSolutions[0].begin(), vSolutions[0].end())));
+#endif // END_BUILD
         } else if (typ == TX_PUBKEYHASH) {
             return GetScriptForDestination(WitnessV0KeyHash(vSolutions[0]));
         }
     }
     uint256 hash;
+#ifdef BUILD_BTC
     CSHA256().Write(&redeemscript[0], redeemscript.size()).Finalize(hash.begin());
+#else // BUILD_EQB
+    SHA3().Write(&redeemscript[0], redeemscript.size()).Finalize(hash.begin());
+#endif // END_BUILD
     return GetScriptForDestination(WitnessV0ScriptHash(hash));
 }
 

@@ -848,11 +848,13 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                 // Crypto
                 //
                 case OP_RIPEMD160:
-#ifndef BUILD_BTC
+                case OP_SHA1:
+#ifdef BUILD_BTC
+                case OP_SHA256:
+#else  // BUILD_EQB
+                case OP_SHA2:
                 case OP_SHA3:
 #endif // END_BUILD
-                case OP_SHA1:
-                case OP_SHA256:
                 case OP_HASH160:
                 case OP_HASH256:
                 {
@@ -861,12 +863,9 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                         return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
                     valtype& vch = stacktop(-1);
                     valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160) ? 20 : 32);
+#ifdef BUILD_BTC
                     if (opcode == OP_RIPEMD160)
                         CRIPEMD160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
-#ifndef BUILD_BTC
-                    else if(opcode == OP_SHA3)
-                        SHA3().Write(vch.data(), vch.size()).Finalize(vchHash.data());
-#endif // END_BUILD
                     else if (opcode == OP_SHA1)
                         CSHA1().Write(vch.data(), vch.size()).Finalize(vchHash.data());
                     else if (opcode == OP_SHA256)
@@ -874,9 +873,19 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                     else if (opcode == OP_HASH160)
                         CHash160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
                     else if (opcode == OP_HASH256)
-#ifdef BUILD_BTC
                         CHash256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
-#else // BUILD_EQB
+#else  // BUILD_EQB
+                    if (opcode == OP_RIPEMD160)
+                        CRIPEMD160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_SHA1)
+                        CSHA1().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_SHA2)
+                        CSHA256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_SHA3)
+                        SHA3().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_HASH160)
+                        CSHA3Hash160().Write(vch.data(), vch.size()).Finalize(vchHash.data());
+                    else if (opcode == OP_HASH256)
                         CSHA3Hash256().Write(vch.data(), vch.size()).Finalize(vchHash.data());
 #endif // END_BUILD
                     popstack(stack);
@@ -1164,7 +1173,11 @@ public:
 };
 
 uint256 GetPrevoutHash(const CTransaction& txTo) {
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     for (const auto& txin : txTo.vin) {
         ss << txin.prevout;
     }
@@ -1172,7 +1185,11 @@ uint256 GetPrevoutHash(const CTransaction& txTo) {
 }
 
 uint256 GetSequenceHash(const CTransaction& txTo) {
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     for (const auto& txin : txTo.vin) {
         ss << txin.nSequence;
     }
@@ -1180,7 +1197,11 @@ uint256 GetSequenceHash(const CTransaction& txTo) {
 }
 
 uint256 GetOutputsHash(const CTransaction& txTo) {
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     for (const auto& txout : txTo.vout) {
         ss << txout;
     }
@@ -1222,12 +1243,20 @@ uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsig
         if ((nHashType & 0x1f) != SIGHASH_SINGLE && (nHashType & 0x1f) != SIGHASH_NONE) {
             hashOutputs = cacheready ? cache->hashOutputs : GetOutputsHash(txTo);
         } else if ((nHashType & 0x1f) == SIGHASH_SINGLE && nIn < txTo.vout.size()) {
+#ifdef BUILD_BTC
             CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+            CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
             ss << txTo.vout[nIn];
             hashOutputs = ss.GetHash();
         }
 
+#ifdef BUILD_BTC
         CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+        CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
         // Version
         ss << txTo.nVersion;
         // Input prevouts/nSequence (none/all, depending on flags)
@@ -1264,7 +1293,11 @@ uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsig
     CTransactionSignatureSerializer txTmp(txTo, scriptCode, nIn, nHashType);
 
     // Serialize and hash
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     ss << txTmp << nHashType;
     return ss.GetHash();
 }
@@ -1384,14 +1417,22 @@ static bool VerifyWitnessProgram(const CScriptWitness& witness, int witversion, 
 
     if (witversion == 0) {
         if (program.size() == 32) {
+#ifdef BUILD_BTC
             // Version 0 segregated witness program: SHA256(CScript) inside the program, CScript + inputs in witness
+#else // BUILD_EQB
+            // Version 0 segregated witness program: SHA3(CScript) inside the program, CScript + inputs in witness
+#endif // END_BUILD
             if (witness.stack.size() == 0) {
                 return set_error(serror, SCRIPT_ERR_WITNESS_PROGRAM_WITNESS_EMPTY);
             }
             scriptPubKey = CScript(witness.stack.back().begin(), witness.stack.back().end());
             stack = std::vector<std::vector<unsigned char> >(witness.stack.begin(), witness.stack.end() - 1);
             uint256 hashScriptPubKey;
+#ifdef BUILD_BTC
             CSHA256().Write(&scriptPubKey[0], scriptPubKey.size()).Finalize(hashScriptPubKey.begin());
+#else // BUILD_EQB
+            SHA3().Write(&scriptPubKey[0], scriptPubKey.size()).Finalize(hashScriptPubKey.begin());
+#endif // END_BUILD
             if (memcmp(hashScriptPubKey.begin(), program.data(), 32)) {
                 return set_error(serror, SCRIPT_ERR_WITNESS_PROGRAM_MISMATCH);
             }
