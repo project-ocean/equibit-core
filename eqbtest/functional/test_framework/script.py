@@ -663,22 +663,22 @@ def SegwitVersion1SignatureHash(script, txTo, inIdx, hashtype, amount):
         serialize_prevouts = bytes()
         for i in txTo.vin:
             serialize_prevouts += i.prevout.serialize()
-        hashPrevouts = uint256_from_str(hash256(serialize_prevouts))
+        hashPrevouts = uint256_from_str(hash3_256(serialize_prevouts))  # EQB_TODO: oct-26 ++
 
     if (not (hashtype & SIGHASH_ANYONECANPAY) and (hashtype & 0x1f) != SIGHASH_SINGLE and (hashtype & 0x1f) != SIGHASH_NONE):
         serialize_sequence = bytes()
         for i in txTo.vin:
             serialize_sequence += struct.pack("<I", i.nSequence)
-        hashSequence = uint256_from_str(hash256(serialize_sequence))
+        hashSequence = uint256_from_str(hash3_256(serialize_sequence))  # EQB_TODO: oct-26 ++
 
     if ((hashtype & 0x1f) != SIGHASH_SINGLE and (hashtype & 0x1f) != SIGHASH_NONE):
         serialize_outputs = bytes()
         for o in txTo.vout:
             serialize_outputs += o.serialize()
-        hashOutputs = uint256_from_str(hash256(serialize_outputs))
+        hashOutputs = uint256_from_str(hash3_256(serialize_outputs))  # EQB_TODO: oct-26 ?
     elif ((hashtype & 0x1f) == SIGHASH_SINGLE and inIdx < len(txTo.vout)):
         serialize_outputs = txTo.vout[inIdx].serialize()
-        hashOutputs = uint256_from_str(hash256(serialize_outputs))
+        hashOutputs = uint256_from_str(hash3_256(serialize_outputs))  # EQB_TODO: oct-26 ?
 
     ss = bytes()
     ss += struct.pack("<i", txTo.nVersion)
@@ -692,4 +692,4 @@ def SegwitVersion1SignatureHash(script, txTo, inIdx, hashtype, amount):
     ss += struct.pack("<i", txTo.nLockTime)
     ss += struct.pack("<I", hashtype)
 
-    return hash256(ss)
+    return hash3_256(ss)  # EQB_TODO: oct-26 ?
