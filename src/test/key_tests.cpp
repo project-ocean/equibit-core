@@ -164,7 +164,11 @@ BOOST_AUTO_TEST_CASE(key_test1)
 
     std::vector<unsigned char> detsig, detsigc;
     std::string strMsg = "Very deterministic message";
+#ifdef BUILD_BTC
     uint256 hashMsg = Hash(strMsg.begin(), strMsg.end());
+#else  // BUILD_EQB
+    uint256 hashMsg = SHA3Hash(strMsg.begin(), strMsg.end());
+#endif // END_BUILD
     BOOST_CHECK(key1.Sign(hashMsg, detsig));
     BOOST_CHECK(key1C.Sign(hashMsg, detsigc));
     BOOST_CHECK(detsig == detsigc);
