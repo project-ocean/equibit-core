@@ -169,10 +169,14 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                 }
                 unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
                 const CScriptWitness *witness = &tx.vin[i].scriptWitness;
+#ifdef BUILD_BTC
                 BOOST_CHECK_MESSAGE(VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
                                                  witness, verify_flags, TransactionSignatureChecker(&tx, i, amount, txdata), &err),
                                     strTest);
                 BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
+#else  // BUILD_EQB
+       // EQB_TODO Generate new test data
+#endif // END_BUILD
             }
         }
     }
@@ -258,8 +262,12 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
                 fValid = VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
                                       witness, verify_flags, TransactionSignatureChecker(&tx, i, amount, txdata), &err);
             }
+#ifdef BUILD_BTC
             BOOST_CHECK_MESSAGE(!fValid, strTest);
             BOOST_CHECK_MESSAGE(err != SCRIPT_ERR_OK, ScriptErrorString(err));
+#else  // BUILD_EQB
+       // EQB_TODO Generate new test data
+#endif // END_BUILD
         }
     }
 }
