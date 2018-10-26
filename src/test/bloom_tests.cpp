@@ -128,13 +128,13 @@ BOOST_AUTO_TEST_CASE(bloom_match)
 
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match tx hash");
 #else // BUILD_EQB
+    
     // 570880a3e3fad00e4b8fae6d4e2261cbd38771c8f68c2a63e4fe8d3f167e037c
     // new tnx1: 02000000000101efcd847453291536de973214d3356a60771c7a28a97df7b227db11c4f03f202e0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0280778e060000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8788c1341d0000000017a914c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc870248304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a20121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824de000000
-
     // a606ecb7226335f9d30f4197bf7034db711b1c2a16c31055939eef62e498ad2a
     // new tnx2: 02000000000101 7c037e163f8dfee4632a8cf6c87187d3cb61224e6dae8f4b0ed0fae3a3800857 0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0288102c040000000017a914ed649576ad657747835d116611981c90113c074387005a62020000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8702483045022100b40db3a574a7254d60f8e64335d9bab60ff986ad7fe1c0ad06dcfc4ba896e16002201bbf15e25b0334817baa34fd02ebe90c94af2d65226c9302a60a96e8357c0da50121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824df000000
 
-      // Random real transaction (570880a3e3fad00e4b8fae6d4e2261cbd38771c8f68c2a63e4fe8d3f167e037c)
+    // Random real transaction (570880a3e3fad00e4b8fae6d4e2261cbd38771c8f68c2a63e4fe8d3f167e037c)
     CDataStream stream(ParseHex("02000000000101efcd847453291536de973214d3356a60771c7a28a97df7b227db11c4f03f202e0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0280778e060000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8788c1341d0000000017a914c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc870248304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a20121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824de000000"), SER_DISK, CLIENT_VERSION);
     CTransaction tx(deserialize, stream);
 
@@ -160,7 +160,6 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match manually serialized tx hash");
 #else // BUILD_EQB
     // byte-reversed tx hash
-    // note the endianness when entering tnx IDs
     filter.insert(ParseHex("7c037e163f8dfee4632a8cf6c87187d3cb61224e6dae8f4b0ed0fae3a3800857")); // id of first tnx
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match manually serialized tx hash");
 #endif // END_BUILD
@@ -181,14 +180,25 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(spendingTx), "Simple Bloom filter didn't add output");
 #else // BUILD_EQB
     // this test consist of a tnx, and a signature, a public key of vIn and and a vOut address as filters
-    // original tx1: 01000000010b26e9b7735eb6aabdf358bab62f9816a21ba9ebdb719d5299e88607d722c190000000008b4830450220070aca44506c5cef3a16ed519d7c3c39f8aab192c4e1c90d065f37b8a4af6141022100a8e160b856c2d43d27d8fba71e5aef6405b8643ac4cb7cb3c462aced7f14711a0141046d11fee51b0e60666d5049a9101a72741df480b96ee26488a4d3466b95c9a40ac5eeef87e10a5cd336c19a84565f80fa6c547957b7700ff4dfbdefe76036c339ffffffff021bff3d11000000001976a91404943fdd508053c75000106d3bc6e2754dbcff1988ac2f15de00000000001976a914a266436d2965547608b9e15d9032a7b9d64fa43188ac00000000
-    //      new tx1: 02000000000101efcd847453291536de973214d3356a60771c7a28a97df7b227db11c4f03f202e0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0280778e060000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8788c1341d0000000017a914c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc870248304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a20121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824de000000
+    // old tx1: 01000000010b26e9b7735eb6aabdf358bab62f9816a21ba9ebdb719d5299e88607d722c190000000008b4830450220070aca44506c5cef3a16ed519d7c3c39f8aab192c4e1c90d065f37b8a4af6141022100a8e160b856c2d43d27d8fba71e5aef6405b8643ac4cb7cb3c462aced7f14711a0141046d11fee51b0e60666d5049a9101a72741df480b96ee26488a4d3466b95c9a40ac5eeef87e10a5cd336c19a84565f80fa6c547957b7700ff4dfbdefe76036c339ffffffff021bff3d11000000001976a91404943fdd508053c75000106d3bc6e2754dbcff1988ac2f15de00000000001976a914a266436d2965547608b9e15d9032a7b9d64fa43188ac00000000
+    // new tx1: 02000000000101efcd847453291536de973214d3356a60771c7a28a97df7b227db11c4f03f202e0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0280778e060000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8788c1341d0000000017a914c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc870248304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a20121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824de000000
+    // Note: new tnx is P2WPKH type where scriptPubkey is OP_0 0x14 {20-byte-hash}
+    // Note: Bitcoin addresses use the non-segwit address and pubkey addresses. whereas Equibit tests use segwit transactions and script addresses
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);  // signature of vIN
-    filter.insert(ParseHex("304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a201"));
-    //BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match input signature");
+    
+    //! troublemakers!!
+    // prev: 30450220070aca44506c5cef3a16ed519d7c3c39f8aab192c4e1c90d065f37b8a4af6141022100a8e160b856c2d43d27d8fba71e5aef6405b8643ac4cb7cb3c462aced7f14711a01
+    // new:  304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a201
+    // EQB_TODO: the following signature found in txinwitness does not pass the test 
+    // note: the previous content was a regular signature, but the new value is a segwit type signature 
+    filter.insert(ParseHex("304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a201")); 
+    // BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match input signature");
 
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);  // public key of vIN
-    filter.insert(ParseHex("034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824"));
+    // prev: 046d11fee51b0e60666d5049a9101a72741df480b96ee26488a4d3466b95c9a40ac5eeef87e10a5cd336c19a84565f80fa6c547957b7700ff4dfbdefe76036c339
+    // new:  034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824
+    // EQB_TODO: the following pkey found in txinwitness does not pass the test  
+    filter.insert(ParseHex("034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824")); 
     //BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match input pub key");
 
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);  // address of vOut 
@@ -232,7 +242,39 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     filter.insert(COutPoint(uint256S("0x000000d70786e899529d71dbeba91ba216982fb6ba58f3bdaab65e73b7e9260b"), 0));
     BOOST_CHECK_MESSAGE(!filter.IsRelevantAndUpdate(tx), "Simple Bloom filter matched COutPoint for an output we didn't care about");
 #else  // BUILD_EQB
-    // EQB_TODO fix unit tests
+    filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+    filter.insert(ParseHex("c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc"));
+    BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match output address");
+
+    filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+    filter.insert(COutPoint(uint256S("0x2e203ff0c411db27b2f77da9287a1c77606a35d3143297de361529537484cdef"), 0));
+    BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match COutPoint");
+
+    filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+    COutPoint prevOutPoint(uint256S("0x2e203ff0c411db27b2f77da9287a1c77606a35d3143297de361529537484cdef"), 0);
+    {
+        std::vector<unsigned char> data(32 + sizeof(unsigned int));
+        memcpy(data.data(), prevOutPoint.hash.begin(), 32);
+        memcpy(data.data() + 32, &prevOutPoint.n, sizeof(unsigned int));
+        filter.insert(data);
+    }
+    BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match manually serialized COutPoint");
+
+    filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+    filter.insert(uint256S("00000007226335f9d30f4197bf7034db711b1c2a16c31055939eef62e498ad2a"));
+    BOOST_CHECK_MESSAGE(!filter.IsRelevantAndUpdate(tx), "Simple Bloom filter matched random tx hash");
+
+    filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+    filter.insert(ParseHex("000000c6a74b7a8fc4c13c51dc2cb048d012f5cc"));
+    BOOST_CHECK_MESSAGE(!filter.IsRelevantAndUpdate(tx), "Simple Bloom filter matched random address");
+
+    filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+    filter.insert(COutPoint(uint256S("0x2e203ff0c411db27b2f77da9287a1c77606a35d3143297de361529537484cdef"), 1));
+    BOOST_CHECK_MESSAGE(!filter.IsRelevantAndUpdate(tx), "Simple Bloom filter matched COutPoint for an output we didn't care about");
+
+    filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+    filter.insert(COutPoint(uint256S("0x000000f0c411db27b2f77da9287a1c77606a35d3143297de361529537484cdef"), 0));
+    BOOST_CHECK_MESSAGE(!filter.IsRelevantAndUpdate(tx), "Simple Bloom filter matched COutPoint for an output we didn't care about");
 #endif // END_BUILD
 }
 
