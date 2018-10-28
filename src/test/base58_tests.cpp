@@ -111,12 +111,8 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
             destination = DecodeDestination(exp_base58string);
             CScript script = GetScriptForDestination(destination);
 
-#ifdef BUILD_BTC
             BOOST_CHECK_MESSAGE(IsValidDestination(destination), "!IsValid:" + strTest);
             BOOST_CHECK_EQUAL(HexStr(script), HexStr(exp_payload));
-#else  // BUILD_EQB
-            // EQB_TODO Generate new test data
-#endif // END_BUILD
 
             // Try flipped case version
             for (char& c : exp_base58string) {
@@ -139,6 +135,57 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
         }
     }
 }
+
+//#define KEY_TEST_GEN
+#ifdef KEY_TEST_GEN
+// Goal: generate test data (addresses) for key_test1 in key_tests.cpp
+BOOST_AUTO_TEST_CASE(base58_key_test_gen)
+{
+    std::vector<unsigned char> exp_payload1 = ParseHex("36cb93b9ab1bdabf7fb9f2c04f1b9cc879933530ae7842398eef5a63a56800c2");
+
+    CKey key1;
+    key1.Set(exp_payload1.begin(), exp_payload1.end(), false);
+    assert(key1.IsValid());
+    CBitcoinSecret secret1;
+    secret1.SetKey(key1);
+    
+    CKey key1C;
+    key1C.Set(exp_payload1.begin(), exp_payload1.end(), true);
+    assert(key1C.IsValid());
+    CBitcoinSecret secret1C;
+    secret1C.SetKey(key1C);
+
+    CPubKey pubkey1 = key1.GetPubKey();
+    CPubKey pubkey1C = key1C.GetPubKey();
+
+    std::cout << "strSecret1  " << secret1.ToString() << std::endl;
+    std::cout << "strSecret1C " << secret1C.ToString() << std::endl;
+    std::cout << "addr1       " << EncodeDestination(CTxDestination(pubkey1.GetID())) << std::endl;
+    std::cout << "addr1C      " << EncodeDestination(CTxDestination(pubkey1C.GetID())) << std::endl;
+
+    std::vector<unsigned char> exp_payload2 = ParseHex("a326b95ebae30164217d7a7f57d72ab2b54e3be64928a19da0210b9568d4015e");
+
+    CKey key2;
+    key2.Set(exp_payload2.begin(), exp_payload2.end(), false);
+    assert(key2.IsValid());
+    CBitcoinSecret secret2;
+    secret2.SetKey(key2);
+
+    CKey key2C;
+    key2C.Set(exp_payload2.begin(), exp_payload2.end(), true);
+    assert(key2C.IsValid());
+    CBitcoinSecret secret2C;
+    secret2C.SetKey(key2C);
+
+    CPubKey pubkey2 = key2.GetPubKey();
+    CPubKey pubkey2C = key2C.GetPubKey();
+
+    std::cout << "strSecret2  " << secret2.ToString() << std::endl;
+    std::cout << "strSecret2C " << secret2C.ToString() << std::endl;
+    std::cout << "addr2       " << EncodeDestination(CTxDestination(pubkey2.GetID())) << std::endl;
+    std::cout << "addr2C      " << EncodeDestination(CTxDestination(pubkey2C.GetID())) << std::endl;
+}
+#endif
 
 // Goal: check that generated keys match test vectors
 BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
@@ -165,6 +212,10 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
             assert(key.IsValid());
             CBitcoinSecret secret;
             secret.SetKey(key);
+
+            //std::cout << "prv secret       " << secret.ToString() << std::endl;
+            //std::cout << "exp_base58string " << exp_base58string << std::endl;
+
             BOOST_CHECK_MESSAGE(secret.ToString() == exp_base58string, "result mismatch: " + strTest);
         } else {
             CTxDestination dest;
@@ -172,11 +223,10 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
             ExtractDestination(exp_script, dest);
             std::string address = EncodeDestination(dest);
 
-#ifdef BUILD_BTC
+            //std::cout << "pub address      " << address << std::endl;
+            //std::cout << "exp_base58string " << exp_base58string << std::endl;
+
             BOOST_CHECK_EQUAL(address, exp_base58string);
-#else  // BUILD_EQB
-            // EQB_TODO Generate new test data
-#endif // END_BUILD
         }
     }
 

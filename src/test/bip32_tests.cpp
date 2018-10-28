@@ -91,55 +91,57 @@ TestVector test3 =
 
 #else  // BUILD_EQB
 
+// EQB_TODO Generate the test data independently
+
 TestVector test1 =
   TestVector("000102030405060708090a0b0c0d0e0f")
-    ("xpub661MyMwAqRbcGX6igyVeB748CxUT3KkFLFeLACZpVMCkCgVAPSC113nC7BcPB9XYSusEchKUhun7tLE1uSvNMiQxTHXotyBzXMzsiu9xXWm",
-     "xprv9s21ZrQH143K432Fawxdoy7Pevdxds2Py2ijMpACw1fmKtA1qtskTFTiFw4CcCuxKWUujfGsWYvFr1GDKqbERErAiY37GrSRS7xoB2q2XCo",
+    ("xpub661MyMwAqRbcGX6igyVeB748CxUT3KkFLFeLACZpVMCkCgVAPSC113nC7BcPB9XYSusEchKUhun7tLE1uSvNMiQxTHXotyBzXMzsiu2fMaU",
+     "xprv9s21ZrQH143K432Fawxdoy7Pevdxds2Py2ijMpACw1fmKtA1qtskTFTiFw4CcCuxKWUujfGsWYvFr1GDKqbERErAiY37GrSRS7xoB2k1b2z",
      0x80000000)
-    ("xpub68UBKmzZiq6Neaj7bhkV4o4JVTNWxAL9ueHDJYF2QTakeedvY6tGmztiTUADpwa5x1USj3S3SBkX7Kj7GjqrPQ1c2tSuULrMPBS2W7CMCqd",
-     "xprv9uUpvGTftTY5S6eeVgDUhf7ZwRY2YhcJYRMcW9qQr83mmrJmzZa2ECaEcC6tnw9JUBi3i3H2NGKXkaNZtXjynR35BK5rJFn2qE3SmqjVcTq",
+    ("xpub68UBKmzZiq6Neaj7bhkV4o4JVTNWxAL9ueHDJYF2QTakeedvY6tGmztiTUADpwa5x1USj3S3SBkX7Kj7GjqrPQ1c2tSuULrMPBS2W8az74e",
+     "xprv9uUpvGTftTY5S6eeVgDUhf7ZwRY2YhcJYRMcW9qQr83mmrJmzZa2ECaEcC6tnw9JUBi3i3H2NGKXkaNZtXjynR35BK5rJFn2qE3Smpa8i2P",
      1)
-    ("xpub6BJKZV1xdbbSwYvPBUKeb6aM48BWVFyaHK6pZgEC9RwuaXMP9yNw2Vn5dQFyHo1TBAusoDs5dPLpNcWTLpMgSv89D7LG5Mn4qiw231rSSx4",
-     "xprv9xJy9yV4oE39j4qv5SneDxdcW6M25oFiv6BDmHpab6Qvhj2EcS4gUhTbn77nVfWpWBbtEVdk15UcidJmKiTZjtTrnN6LCvas85G5G2BUq5p",
+    ("xpub6BJKZV1xdbbSwYvPBUKeb6aM48BWVFyaHK6pZgEC9RwuaXMP9yNw2Vn5dQFyHo1TBAusoDs5dPLpNcWTLpMgSv89D7LG5Mn4qiw233Faghf",
+     "xprv9xJy9yV4oE39j4qv5SneDxdcW6M25oFiv6BDmHpab6Qvhj2EcS4gUhTbn77nVfWpWBbtEVdk15UcidJmKiTZjtTrnN6LCvas85G5Fx6NrH7",
      0x80000002)
-    ("xpub6BfXRwG5dgJv113zbpSZKMcWMJTNapmgrzSw1t7akpdvngBbRZjRGYL3vi5EE8Lk8k6VvyaxrEHDqCiZdqfyxQosF4zz9xSKz3TiURsPRkf",
-     "xprv9xgB2RjBoJkcnWyXVnuYxDfmoGctBN3qVmXLDVhyCV6wusrSt2RAik1a5R2864CbPo8NFTCp9hb9QxyPXc2ntxx5dQsKLqodHLbSPrpBFjc",
+    ("xpub6BfXRwG5dgJv113zbpSZKMcWMJTNapmgrzSw1t7akpdvngBbRZjRGYL3vi5EE8Lk8k6VvyaxrEHDqCiZdqfyxQosF4zz9xSKz3TiURD35Ki",
+     "xprv9xgB2RjBoJkcnWyXVnuYxDfmoGctBN3qVmXLDVhyCV6wusrSt2RAik1a5R2864CbPo8NFTCp9hb9QxyPXc2ntxx5dQsKLqodHLbSPrL7P1c",
      2)
-    ("xpub6Dh2UAm5FWQV1BtnRWQakKh1cM62ZLG4Udpe6Gx8PDhT7XrvSBunLCFHknrQPE1qKEnUKTzNeSQuFLzQKisTXE99Ub1vDxVjGsbFybJAq3d",
-     "xprv9zhg4fEBR8rBnhpKKUsaPBkH4KFY9sYD7Qu3HtYWptAUEjXmtebXnPvouZ9484qH2kYKfNXo7BJusZSEkQEUP3CLfN3JDB5ShHyJvc9o8FF",
+    ("xpub6Dh2UAm5FWQV1BtnRWQakKh1cM62ZLG4Udpe6Gx8PDhT7XrvSBunLCFHknrQPE1qKEnUKTzNeSQuFLzQKisTXE99Ub1vDxVjGsbFyXjnG2t",
+     "xprv9zhg4fEBR8rBnhpKKUsaPBkH4KFY9sYD7Qu3HtYWptAUEjXmtebXnPvouZ9484qH2kYKfNXo7BJusZSEkQEUP3CLfN3JDB5ShHyJvbE2dXi",
      1000000000)
-    ("xpub6G7N3xCh9wrbff8MbdupFh9X4Q6qRHHJnFLLRYgcQMouMsGbEVS8VLXRuGNCETygc25xHC7nHKS4Ph8jGfGzaKKLUZBHPiJ7gktuXFJmEyo",
-     "xprvA381eSfoKaJJTB3tVcNotZCnWNGM1pZTR2QjdAGzr2GvV4wSgx7swYCx3y7ZLvg6x4BH9ZbhNRwG462TpKbJ1HyitUrQPBJg459boMvGKhA",
+    ("xpub6G7N3xCh9wrbff8MbdupFh9X4Q6qRHHJnFLLRYgcQMouMsGbEVS8VLXRuGNCETygc25xHC7nHKS4Ph8jGfGzaKKLUZBHPiJ7gktuXGDVkfH",
+     "xprvA381eSfoKaJJTB3tVcNotZCnWNGM1pZTR2QjdAGzr2GvV4wSgx7swYCx3y7ZLvg6x4BH9ZbhNRwG462TpKbJ1HyitUrQPBJg459boK2ey9G",
      0);
 
 TestVector test2 =
   TestVector("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542")
-    ("xpub661MyMwAqRbcFicanfPjizCD5AHzEX5zXPtoxwYSGx3P5vRoS4dQsyVMkn9x68JUyYxkEtxzZc1uVettMrgxz1QAPD3kYcdPAwduihoyjRi",
-     "xprv9s21ZrQH143K3EY7gdrjMrFUX8TVq4N9AAyDAZ8picWQD86etXKALBAsuUNBcmej1baPDTwXraQ51tVfL74wd8S5xJoCCTSqvas3YZwikG7",
+    ("xpub661MyMwAqRbcFicanfPjizCD5AHzEX5zXPtoxwYSGx3P5vRoS4dQsyVMkn9x68JUyYxkEtxzZc1uVettMrgxz1QAPD3kYcdPAwduiiEbxv6",
+     "xprv9s21ZrQH143K3EY7gdrjMrFUX8TVq4N9AAyDAZ8picWQD86etXKALBAsuUNBcmej1baPDTwXraQ51tVfL74wd8S5xJoCCTSqvas3YdXrKNZ",
      0)
-    ("xpub68oaZV5XjxMXCHL1QnFPJZ1MG22RsRdrjwEckFiYyLZW67vQHWtvjY7xEEui5dbTbUX3vWcjaKFpSQNXRkgXN2Kg5HScGdy4TPsiu8BqyTF",
-     "xprv9upE9yYduaoDyoFYJkiNwR4chzBwTxv1NiK1wsJwR12XDKbFjyagBjoUNyrXXTs1j4X6kzoyBmR9y8vQfZh1hhtu1MBsqyx7qxSdZKkWbn8",
+    ("xpub68oaZV5XjxMXCHL1QnFPJZ1MG22RsRdrjwEckFiYyLZW67vQHWtvjY7xEEui5dbTbUX3vWcjaKFpSQNXRkgXN2Kg5HScGdy4TPsiu3HWwjM",
+     "xprv9upE9yYduaoDyoFYJkiNwR4chzBwTxv1NiK1wsJwR12XDKbFjyagBjoUNyrXXTs1j4X6kzoyBmR9y8vQfZh1hhtu1MBsqyx7qxSdZMCgF7g",
      0xFFFFFFFF)
-    ("xpub6ARYwz46ofHCCvu3eLogFyxEM4hTucbziNm36RRrfnrLP1JQeLNoiVCrfN27Mjw3YvxRX7biPBWubwfGsqbvaVemVugfmpbTXmEz8g4WzJk",
-     "xprv9wSCYUXCyHitzSpaYKGftr1Vo2ryW9t9M9qSJ32F7TKMWCyG6o4ZAgtNp6aPHkK632ceV1dFyiBm5m6Ndyhj7eSLyDyAQbFgbB11id24RRi",
+    ("xpub6ARYwz46ofHCCvu3eLogFyxEM4hTucbziNm36RRrfnrLP1JQeLNoiVCrfN27Mjw3YvxRX7biPBWubwfGsqbvaVemVugfmpbTXmEz8ec93wr",
+     "xprv9wSCYUXCyHitzSpaYKGftr1Vo2ryW9t9M9qSJ32F7TKMWCyG6o4ZAgtNp6aPHkK632ceV1dFyiBm5m6Ndyhj7eSLyDyAQbFgbB11iapzVrp",
      1)
-    ("xpub6CXXBVoFDkMoVahf3uTFfLXy59j7PWiYHt9w2EKZzQZs9bFtSgmh7DUTnNXKEWtsa9TdEhtfaXYfv2pqW7oPCgEXLQTmzVHdV8stw9KaRh8",
-     "xprv9yYAmzGMPNoWH6dBwsvFJCbEX7tcz3zgvfELDquxS52tGnvju9TSZR9yw7jMwMaRvFiLAMZ1K2nLumX7HwrePHkgZzBVNamFKqPDr9jQBtq",
+    ("xpub6CXXBVoFDkMoVahf3uTFfLXy59j7PWiYHt9w2EKZzQZs9bFtSgmh7DUTnNXKEWtsa9TdEhtfaXYfv2pqW7oPCgEXLQTmzVHdV8stw8Fc9M5",
+     "xprv9yYAmzGMPNoWH6dBwsvFJCbEX7tcz3zgvfELDquxS52tGnvju9TSZR9yw7jMwMaRvFiLAMZ1K2nLumX7HwrePHkgZzBVNamFKqPDrAxCd7J",
      0xFFFFFFFE)
-    ("xpub6FQuE1qLv2g4ngZwhMLiNRJ7XH4Yca2dzJqxjtQqFYRa82Ngmcm6j2Ett6DnXVXNNWtoS5EkqHVNmiqAESjyWXfiRWs1eNyUWi47aQwMgHQ",
-     "xprvA2RYpWJT5f7maCVUbKoi1HMNyFE4D7Jnd5vMwW1DhCtbFE3YE5SrBDvR2pvPjhUQgM9eW2hovLR42jGvtrGkA8FTLRoDmaKNBvabAfjkGE5",
+    ("xpub6FQuE1qLv2g4ngZwhMLiNRJ7XH4Yca2dzJqxjtQqFYRa82Ngmcm6j2Ett6DnXVXNNWtoS5EkqHVNmiqAESjyWXfiRWs1eNyUWi47aVThKfc",
+     "xprvA2RYpWJT5f7maCVUbKoi1HMNyFE4D7Jnd5vMwW1DhCtbFE3YE5SrBDvR2pvPjhUQgM9eW2hovLR42jGvtrGkA8FTLRoDmaKNBvabAeaRHyb",
      2)
-    ("xpub6GrWpFeJybS3t3rxxegHXPNPpnRDxJtZKEkpzTvUVGLkn75Vef2j8bKXQZRe4aq4hVgVhSr9rtdvXXkayPnRAVuf4zFeEutcWwv8pWhNB9q",
-     "xprvA3sAQk7R9DskfZnVrd9HAFRfGkajYrAhx1qEC5WrvvomuJkM77iUao13ZGZg7cBSHuF91AxuEdzmejEFn4KdvCAzh6W3tnHgeEU46xDcqtY",
+    ("xpub6GrWpFeJybS3t3rxxegHXPNPpnRDxJtZKEkpzTvUVGLkn75Vef2j8bKXQZRe4aq4hVgVhSr9rtdvXXkayPnRAVuf4zFeEutcWwv8pUMQYHb",
+     "xprvA3sAQk7R9DskfZnVrd9HAFRfGkajYrAhx1qEC5WrvvomuJkM77iUao13ZGZg7cBSHuF91AxuEdzmejEFn4KdvCAzh6W3tnHgeEU471LTK3D",
      0);
 
 TestVector test3 =
   TestVector("4b381541583be4423346c643850da4b320e46a87ae3d2a4e6da11eba819cd4acba45d239319ac14f863b8d5ab5a0d0c64d2e8a1e7d1457df2e5a3c51c73235be")
-    ("xpub661MyMwAqRbcH67oyNT8SMJBZp8sovtbjs8k555MCy9r5ihLQSCJBJstFiqTzN5Ek6EAgJNDLWaMXbwiVU7aGfyykF6qYqnxJpvP5EsJuQJ",
-     "xprv9s21ZrQH143K4c3LsLv85DMT1nJPQUAkNeD9GgfjedcsCvNBrtt3dWZQQTokDHLQv1NKeid3yoJCdk2hCATJjvhrM5DjyK332pU133fENvT",
+    ("xpub661MyMwAqRbcH67oyNT8SMJBZp8sovtbjs8k555MCy9r5ihLQSCJBJstFiqTzN5Ek6EAgJNDLWaMXbwiVU7aGfyykF6qYqnxJpvP5EUZ2io",
+     "xprv9s21ZrQH143K4c3LsLv85DMT1nJPQUAkNeD9GgfjedcsCvNBrtt3dWZQQTokDHLQv1NKeid3yoJCdk2hCATJjvhrM5DjyK332pU12zYU32M",
     0x80000000)
-    ("xpub69aqk6TAsLPaR9QG9k31njketbWD6RZVHQ7FRNJwFLAqyUN6EUZvByGnnx6CKUq5P7oaUPmCETDkh7zheWgm6wWjxmtNtdeN7czfLww8nPk",
-     "xprv9vbVLavH2xqHCfKo3iW1RbovLZfigxqdvBBecyuKgzds6g2wgwFfeAxJwfGJoA41HW2A14JZfv7vboP74HjrBMDFwqLJaJ2wz5ADLzeNUrr",
+    ("xpub69aqk6TAsLPaR9QG9k31njketbWD6RZVHQ7FRNJwFLAqyUN6EUZvByGnnx6CKUq5P7oaUPmCETDkh7zheWgm6wWjxmtNtdeN7czfLsTDGYQ",
+     "xprv9vbVLavH2xqHCfKo3iW1RbovLZfigxqdvBBecyuKgzds6g2wgwFfeAxJwfGJoA41HW2A14JZfv7vboP74HjrBMDFwqLJaJ2wz5ADM13YGYA",
      0);
 
 #endif // END_BUILD
@@ -161,7 +163,11 @@ void RunTest(const TestVector &test) {
 
         CBitcoinExtKey b58keyDecodeCheck(derive.prv);
         CExtKey checkKey = b58keyDecodeCheck.GetKey();
+#ifdef BUILD_BTC
         assert(checkKey == key); //ensure a base58 decoded key also matches
+#else  // BUILD_EQB
+        BOOST_CHECK(checkKey == key); //ensure a base58 decoded key also matches
+#endif // END_BUILD
 
         // Test public key
         CBitcoinExtPubKey b58pubkey; b58pubkey.SetKey(pubkey);
@@ -169,7 +175,11 @@ void RunTest(const TestVector &test) {
 
         CBitcoinExtPubKey b58PubkeyDecodeCheck(derive.pub);
         CExtPubKey checkPubKey = b58PubkeyDecodeCheck.GetKey();
+#ifdef BUILD_BTC
         assert(checkPubKey == pubkey); //ensure a base58 decoded pubkey also matches
+#else  // BUILD_EQB
+        BOOST_CHECK(checkPubKey == pubkey); //ensure a base58 decoded pubkey also matches
+#endif // END_BUILD
 
         // Derive new keys
         CExtKey keyNew;
