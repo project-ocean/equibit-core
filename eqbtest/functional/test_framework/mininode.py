@@ -216,8 +216,8 @@ class P2PConnection(asyncore.dispatcher):
         tmsg += command
         tmsg += b"\x00" * (12 - len(command))
         tmsg += struct.pack("<I", len(data))
-        th = sha256(data)  # EQB_TODO: oct-26
-        h = sha256(th)  # EQB_TODO: oct-26
+        th = sha256(data)
+        h = sha256(th)
         tmsg += h[:4]
         tmsg += data
         with mininode_lock:
