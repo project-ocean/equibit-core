@@ -2814,7 +2814,11 @@ void CConnman::PushMessage(CNode* pnode, CSerializedNetMsg&& msg)
 
     std::vector<unsigned char> serializedHeader;
     serializedHeader.reserve(CMessageHeader::HEADER_SIZE);
+ #ifdef BUILD_BTC
     uint256 hash = Hash(msg.data.data(), msg.data.data() + nMessageSize);
+#else // BUILD_EQB
+    uint256 hash = SHA3Hash(msg.data.data(), msg.data.data() + nMessageSize);
+#endif // END_BUILD
     CMessageHeader hdr(Params().MessageStart(), msg.command.c_str(), nMessageSize);
     memcpy(hdr.pchChecksum, hash.begin(), CMessageHeader::CHECKSUM_SIZE);
 

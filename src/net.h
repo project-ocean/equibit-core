@@ -555,7 +555,11 @@ public:
 
 class CNetMessage {
 private:
+#ifdef BUILD_BTC
     mutable CHash256 hasher;
+#else // BUILD_EQB
+    mutable CSHA3Hash256 hasher;
+#endif // END_BUILD
     mutable uint256 data_hash;
 public:
     bool in_data;                   // parsing header (false) or data (true)
