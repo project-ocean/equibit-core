@@ -396,7 +396,11 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
 
 uint64_t CNetAddr::GetHash() const
 {
+ #ifdef BUILD_BTC
     uint256 hash = Hash(&ip[0], &ip[16]);
+#else // BUILD_EQB
+    uint256 hash = SHA3Hash(&ip[0], &ip[16]);
+#endif // END_BUILD
     uint64_t nRet;
     memcpy(&nRet, &hash, sizeof(nRet));
     return nRet;
