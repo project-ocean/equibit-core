@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Encode and decode BASE58, P2PKH and P2SH addresses."""
 
-from .script import hash256, hash160, sha256, CScript, OP_0, hash160_sha3_256  # EQB_TODO: oct-23
+from .script import hash256, hash160, sha256, CScript, OP_0, hash160_sha3_256, hash3_256, sha3_256  # EQB_TODO: oct-23
 from .util import bytes_to_hex_str, hex_str_to_bytes
 
 from . import segwit_addr
@@ -15,7 +15,7 @@ def byte_to_base58(b, version):
     result = ''
     str = bytes_to_hex_str(b)
     str = bytes_to_hex_str(chr(version).encode('latin-1')) + str
-    checksum = bytes_to_hex_str(hash256(hex_str_to_bytes(str)))
+    checksum = bytes_to_hex_str(hash256(hex_str_to_bytes(str)))  # EQB_TODO: oct-26 ?
     str += checksum[:8]
     value = int('0x'+str,0)
     while value > 0:
@@ -40,15 +40,15 @@ def scripthash_to_p2sh(hash, main = False):
 
 def key_to_p2pkh(key, main = False):
     key = check_key(key)
-    return keyhash_to_p2pkh(hash160(key), main)
+    return keyhash_to_p2pkh(hash160_sha3_256(key), main)  # EQB_TODO: oct-26 ?
 
 def script_to_p2sh(script, main = False):
     script = check_script(script)
-    return scripthash_to_p2sh(hash160(script), main)
+    return scripthash_to_p2sh(hash160_sha3_256(script), main)  # EQB_TODO: oct-26 +
 
 def key_to_p2sh_p2wpkh(key, main = False):
     key = check_key(key)
-    p2shscript = CScript([OP_0, hash160(key)])
+    p2shscript = CScript([OP_0, hash160_sha3_256(key)])  # EQB_TODO: oct-26 +
     return script_to_p2sh(p2shscript, main)
 
 def program_to_witness(version, program, main = False):
@@ -61,7 +61,7 @@ def program_to_witness(version, program, main = False):
 
 def script_to_p2wsh(script, main = False):
     script = check_script(script)
-    return program_to_witness(0, sha256(script), main)
+    return program_to_witness(0, sha3_256(script), main)  # EQB_TODO: oct-26 +
 
 def key_to_p2wpkh(key, main = False):
     key = check_key(key)
@@ -69,7 +69,7 @@ def key_to_p2wpkh(key, main = False):
 
 def script_to_p2sh_p2wsh(script, main = False):
     script = check_script(script)
-    p2shscript = CScript([OP_0, sha256(script)])
+    p2shscript = CScript([OP_0, sha3_256(script)])  # EQB_TODO: oct-26 +
     return script_to_p2sh(p2shscript, main)
 
 def check_key(key):

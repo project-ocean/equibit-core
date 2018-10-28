@@ -4,7 +4,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the SegWit changeover logic."""
-
+# EQB_TODO: public keys here are with old check sum (sha256)
 from test_framework.address import (
     key_to_p2sh_p2wpkh,
     key_to_p2wpkh,
@@ -13,11 +13,11 @@ from test_framework.address import (
     script_to_p2wsh,
 )
 from test_framework.blocktools import witness_script, send_to_witness
-from test_framework.test_framework import BitcoinTestFramework, SkipTest # EQB_TODO: Remove import SkipTest class after fixing all the tests (Oct-24)
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
-from test_framework.mininode import sha256, CTransaction, CTxIn, COutPoint, CTxOut, COIN, ToHex, FromHex
+from test_framework.mininode import sha256, CTransaction, CTxIn, COutPoint, CTxOut, COIN, ToHex, FromHex, sha3_256
 from test_framework.address import script_to_p2sh, key_to_p2pkh
-from test_framework.script import CScript, OP_HASH160, OP_CHECKSIG, OP_0, hash160, OP_EQUAL, OP_DUP, OP_EQUALVERIFY, OP_1, OP_2, OP_CHECKMULTISIG, OP_TRUE, OP_DROP
+from test_framework.script import CScript, OP_HASH160, OP_CHECKSIG, OP_0, hash160, OP_EQUAL, OP_DUP, OP_EQUALVERIFY, OP_1, OP_2, OP_CHECKMULTISIG, OP_TRUE, OP_DROP, hash160_sha3_256
 from io import BytesIO
 
 NODE_0 = 0
@@ -71,7 +71,6 @@ class SegWitTest(BitcoinTestFramework):
         sync_blocks(self.nodes)
 
     def run_test(self):
-        raise SkipTest("DOES NOT WORK")  # EQB_TODO: Fix the tests
         self.nodes[0].generate(161) #block 161
 
         self.log.info("Verify sigops are counted in GBT with pre-BIP141 rules before the fork")
@@ -230,7 +229,7 @@ class SegWitTest(BitcoinTestFramework):
         tx = CTransaction()
         tx.vin.append(CTxIn(COutPoint(int(txid2, 16), 0), b""))
         tx.vout.append(CTxOut(int(49.95 * COIN), CScript([OP_TRUE, OP_DROP] * 15 + [OP_TRUE])))  # Huge fee
-        tx.calc_sha256()
+        tx.calc_sha3_256()
         txid3 = self.nodes[0].sendrawtransaction(ToHex(tx))
         assert(tx.wit.is_null())
         assert(txid3 in self.nodes[0].getrawmempool())
@@ -260,8 +259,8 @@ class SegWitTest(BitcoinTestFramework):
 
         # Some public keys to be used later
         pubkeys = [
-            "0363D44AABD0F1699138239DF2F042C3282C0671CC7A76826A55C8203D90E39242", # cPiM8Ub4heR9NBYmgVzJQiUH1if44GSBGiqaeJySuL2BKxubvgwb
-            "02D3E626B3E616FC8662B489C123349FECBFC611E778E5BE739B257EAE4721E5BF", # cPpAdHaD6VoYbW78kveN2bsvb45Q7G5PhaPApVUGwvF8VQ9brD97
+            "0363d44aabd0f1699138239df2f042c3282c0671cc7a76826a55c8203d90e39242", # cPiM8Ub4heR9NBYmgVzJQiUH1if44GSBGiqaeJySuL2BKxubvgwb -> 0363D44AABD0F1699138239DF2F042C3282C0671CC7A76826A55C8203D90E39242
+            "02d3e626b3e616fc8662b489c123349fecbfc611e778e5be739b257eae4721e5bf", # cPpAdHaD6VoYbW78kveN2bsvb45Q7G5PhaPApVUGwvF8VQ9brD97 02D3E626B3E616FC8662B489C123349FECBFC611E778E5BE739B257EAE4721E5BF
             "04A47F2CBCEFFA7B9BCDA184E7D5668D3DA6F9079AD41E422FA5FD7B2D458F2538A62F5BD8EC85C2477F39650BD391EA6250207065B2A81DA8B009FC891E898F0E", # 91zqCU5B9sdWxzMt1ca3VzbtVm2YM6Hi5Rxn4UDtxEaN9C9nzXV
             "02A47F2CBCEFFA7B9BCDA184E7D5668D3DA6F9079AD41E422FA5FD7B2D458F2538", # cPQFjcVRpAUBG8BA9hzr2yEzHwKoMgLkJZBBtK9vJnvGJgMjzTbd
             "036722F784214129FEB9E8129D626324F3F6716555B603FFE8300BBCB882151228", # cQGtcm34xiLjB1v7bkRa4V3aAc9tS2UTuBZ1UnZGeSeNy627fN66
@@ -271,9 +270,9 @@ class SegWitTest(BitcoinTestFramework):
 
         # Import a compressed key and an uncompressed key, generate some multisig addresses
         self.nodes[0].importprivkey("92e6XLo5jVAVwrQKPNTs93oQco8f8sDNBcpv73Dsrs397fQtFQn")
-        uncompressed_spendable_address = ["mvozP4UwyGD2mGZU4D2eMvMLPB9WkMmMQu"]
+        uncompressed_spendable_address = ["mjL4cXFtNeoDYyPtXhEjDfCrJr6HgMNKyp"]
         self.nodes[0].importprivkey("cNC8eQ5dg3mFAVePDX4ddmPYpPbw41r9bm2jd1nLJT77e6RrzTRR")
-        compressed_spendable_address = ["mmWQubrDomqpgSYekvsU7HWEVjLFHAakLe"]
+        compressed_spendable_address = ["mq5CVnKcFjKUJucMzihHC3DSrnNCrTyDFi"]
         assert ((self.nodes[0].validateaddress(uncompressed_spendable_address[0])['iscompressed'] == False))
         assert ((self.nodes[0].validateaddress(compressed_spendable_address[0])['iscompressed'] == True))
 
@@ -305,7 +304,7 @@ class SegWitTest(BitcoinTestFramework):
 
         multisig_without_privkey_address = self.nodes[0].addmultisigaddress(2, [pubkeys[3], pubkeys[4]])['address']
         script = CScript([OP_2, hex_str_to_bytes(pubkeys[3]), hex_str_to_bytes(pubkeys[4]), OP_2, OP_CHECKMULTISIG])
-        solvable_after_importaddress.append(CScript([OP_HASH160, hash160(script), OP_EQUAL]))
+        solvable_after_importaddress.append(CScript([OP_HASH160, hash160_sha3_256(script), OP_EQUAL]))
 
         for i in compressed_spendable_address:
             v = self.nodes[0].validateaddress(i)
@@ -376,10 +375,10 @@ class SegWitTest(BitcoinTestFramework):
         # 2N7MGY19ti4KDMSzRfPAssP6Pxyuxoi6jLe is the P2SH(P2PKH) version of mjoE3sSrb8ByYEvgnC3Aox86u1CHnfJA4V
         unsolvable_address = ["mjoE3sSrb8ByYEvgnC3Aox86u1CHnfJA4V", "2N7MGY19ti4KDMSzRfPAssP6Pxyuxoi6jLe", script_to_p2sh(op1), script_to_p2sh(op0)]
         unsolvable_address_key = hex_str_to_bytes("02341AEC7587A51CDE5279E0630A531AEA2615A9F80B17E8D9376327BAEAA59E3D")
-        unsolvablep2pkh = CScript([OP_DUP, OP_HASH160, hash160(unsolvable_address_key), OP_EQUALVERIFY, OP_CHECKSIG])
-        unsolvablep2wshp2pkh = CScript([OP_0, sha256(unsolvablep2pkh)])
-        p2shop0 = CScript([OP_HASH160, hash160(op0), OP_EQUAL])
-        p2wshop1 = CScript([OP_0, sha256(op1)])
+        unsolvablep2pkh = CScript([OP_DUP, OP_HASH160, hash160_sha3_256(unsolvable_address_key), OP_EQUALVERIFY, OP_CHECKSIG])
+        unsolvablep2wshp2pkh = CScript([OP_0, sha3_256(unsolvablep2pkh)])
+        p2shop0 = CScript([OP_HASH160, hash160_sha3_256(op0), OP_EQUAL])
+        p2wshop1 = CScript([OP_0, sha3_256(op1)])
         unsolvable_after_importaddress.append(unsolvablep2pkh)
         unsolvable_after_importaddress.append(unsolvablep2wshp2pkh)
         unsolvable_after_importaddress.append(op1) # OP_1 will be imported as script
@@ -399,16 +398,16 @@ class SegWitTest(BitcoinTestFramework):
             if (v['isscript']):
                 bare = hex_str_to_bytes(v['hex'])
                 importlist.append(bytes_to_hex_str(bare))
-                importlist.append(bytes_to_hex_str(CScript([OP_0, sha256(bare)])))
+                importlist.append(bytes_to_hex_str(CScript([OP_0, sha3_256(bare)])))
             else:
                 pubkey = hex_str_to_bytes(v['pubkey'])
                 p2pk = CScript([pubkey, OP_CHECKSIG])
-                p2pkh = CScript([OP_DUP, OP_HASH160, hash160(pubkey), OP_EQUALVERIFY, OP_CHECKSIG])
+                p2pkh = CScript([OP_DUP, OP_HASH160, hash160_sha3_256(pubkey), OP_EQUALVERIFY, OP_CHECKSIG])
                 importlist.append(bytes_to_hex_str(p2pk))
                 importlist.append(bytes_to_hex_str(p2pkh))
-                importlist.append(bytes_to_hex_str(CScript([OP_0, hash160(pubkey)])))
-                importlist.append(bytes_to_hex_str(CScript([OP_0, sha256(p2pk)])))
-                importlist.append(bytes_to_hex_str(CScript([OP_0, sha256(p2pkh)])))
+                importlist.append(bytes_to_hex_str(CScript([OP_0, hash160_sha3_256(pubkey)])))
+                importlist.append(bytes_to_hex_str(CScript([OP_0, sha3_256(p2pk)])))
+                importlist.append(bytes_to_hex_str(CScript([OP_0, sha3_256(p2pkh)])))
 
         importlist.append(bytes_to_hex_str(unsolvablep2pkh))
         importlist.append(bytes_to_hex_str(unsolvablep2wshp2pkh))
@@ -449,9 +448,9 @@ class SegWitTest(BitcoinTestFramework):
         # Repeat some tests. This time we don't add witness scripts with importaddress
         # Import a compressed key and an uncompressed key, generate some multisig addresses
         self.nodes[0].importprivkey("927pw6RW8ZekycnXqBQ2JS5nPyo1yRfGNN8oq74HeddWSpafDJH")
-        uncompressed_spendable_address = ["mguN2vNSCEUh6rJaXoAVwY3YZwZvEmf5xi"]
+        uncompressed_spendable_address = ["mhsDpt5o4MQRKFxkeeHC5edUPhCYxxzUCL"]  # mguN2vNSCEUh6rJaXoAVwY3YZwZvEmf5xi
         self.nodes[0].importprivkey("cMcrXaaUC48ZKpcyydfFo8PxHAjpsYLhdsp6nmtB3E2ER9UUHWnw")
-        compressed_spendable_address = ["n1UNmpmbVUJ9ytXYXiurmGPQ3TRrXqPWKL"]
+        compressed_spendable_address = ["mx4yfkq8814yqi8JaGpk7Vuz4sGp8rotS1"]  # n1UNmpmbVUJ9ytXYXiurmGPQ3TRrXqPWKL
 
         self.nodes[0].importpubkey(pubkeys[5])
         compressed_solvable_address = [key_to_p2pkh(pubkeys[5])]
@@ -601,22 +600,22 @@ class SegWitTest(BitcoinTestFramework):
     def p2sh_address_to_script(self,v):
         bare = CScript(hex_str_to_bytes(v['hex']))
         p2sh = CScript(hex_str_to_bytes(v['scriptPubKey']))
-        p2wsh = CScript([OP_0, sha256(bare)])
-        p2sh_p2wsh = CScript([OP_HASH160, hash160(p2wsh), OP_EQUAL])
+        p2wsh = CScript([OP_0, sha3_256(bare)])
+        p2sh_p2wsh = CScript([OP_HASH160, hash160_sha3_256(p2wsh), OP_EQUAL])
         return([bare, p2sh, p2wsh, p2sh_p2wsh])
 
     def p2pkh_address_to_script(self,v):
         pubkey = hex_str_to_bytes(v['pubkey'])
-        p2wpkh = CScript([OP_0, hash160(pubkey)])
-        p2sh_p2wpkh = CScript([OP_HASH160, hash160(p2wpkh), OP_EQUAL])
+        p2wpkh = CScript([OP_0, hash160_sha3_256(pubkey)])
+        p2sh_p2wpkh = CScript([OP_HASH160, hash160_sha3_256(p2wpkh), OP_EQUAL])
         p2pk = CScript([pubkey, OP_CHECKSIG])
         p2pkh = CScript(hex_str_to_bytes(v['scriptPubKey']))
-        p2sh_p2pk = CScript([OP_HASH160, hash160(p2pk), OP_EQUAL])
-        p2sh_p2pkh = CScript([OP_HASH160, hash160(p2pkh), OP_EQUAL])
-        p2wsh_p2pk = CScript([OP_0, sha256(p2pk)])
-        p2wsh_p2pkh = CScript([OP_0, sha256(p2pkh)])
-        p2sh_p2wsh_p2pk = CScript([OP_HASH160, hash160(p2wsh_p2pk), OP_EQUAL])
-        p2sh_p2wsh_p2pkh = CScript([OP_HASH160, hash160(p2wsh_p2pkh), OP_EQUAL])
+        p2sh_p2pk = CScript([OP_HASH160, hash160_sha3_256(p2pk), OP_EQUAL])
+        p2sh_p2pkh = CScript([OP_HASH160, hash160_sha3_256(p2pkh), OP_EQUAL])
+        p2wsh_p2pk = CScript([OP_0, sha3_256(p2pk)])
+        p2wsh_p2pkh = CScript([OP_0, sha3_256(p2pkh)])
+        p2sh_p2wsh_p2pk = CScript([OP_HASH160, hash160_sha3_256(p2wsh_p2pk), OP_EQUAL])
+        p2sh_p2wsh_p2pkh = CScript([OP_HASH160, hash160_sha3_256(p2wsh_p2pkh), OP_EQUAL])
         return [p2wpkh, p2sh_p2wpkh, p2pk, p2pkh, p2sh_p2pk, p2sh_p2pkh, p2wsh_p2pk, p2wsh_p2pkh, p2sh_p2wsh_p2pk, p2sh_p2wsh_p2pkh]
 
     def create_and_mine_tx_from_txids(self, txids, success = True):
