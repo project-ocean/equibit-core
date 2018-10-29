@@ -15,7 +15,7 @@ def byte_to_base58(b, version):
     result = ''
     str = bytes_to_hex_str(b)
     str = bytes_to_hex_str(chr(version).encode('latin-1')) + str
-    checksum = bytes_to_hex_str(hash256(hex_str_to_bytes(str)))
+    checksum = bytes_to_hex_str(hash3_256(hex_str_to_bytes(str)))
     str += checksum[:8]
     value = int('0x'+str,0)
     while value > 0:
