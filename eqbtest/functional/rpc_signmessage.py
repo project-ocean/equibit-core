@@ -18,9 +18,9 @@ class SignMessagesTest(BitcoinTestFramework):
         message = 'This is just a test message'
 
         self.log.info('test signing with priv_key')
-        priv_key = 'cSpT2f84cFKZGuUcPS2SVbXcQ7Qg2hB3kXxbfR6qQekQeBerQsSZ'
-        address = 'mwwEVQgfNXuiLGq95nAy4rGyCTrCNv4adp'  # EQB_TODO: oct-23 to regenerate priv_key & address use address legacy mode
-        expected_signature = 'IAX22T7LuhXiEuki5lQ+AKNYhCfubuuqZA+Dm4Ean3k1T4VSLj5jSq7kLfuthFDXtNYJ4wuvrim3kQOYuqvRYYY='
+        priv_key = 'cUTr7TrW1oFYBBuwLcZEJWcSfdCA3zwgnAfTzoGGPC6jh4dRpRHC'
+        address = 'muQCTdXkG823DgB7mcRSaeWbtfNEEKy3Aq'
+        expected_signature = 'IGRDvqazYMa+ICkorS2aVFbjHG4fnuKaLO8QBpcvX8nmRAsZnFMcAYysmoxeacgAqCtxyRCk5pw7jZMg3CFsIVY='
         signature = self.nodes[0].signmessagewithprivkey(priv_key, message)
         assert_equal(expected_signature, signature)
         assert(self.nodes[0].verifymessage(address, signature, message))

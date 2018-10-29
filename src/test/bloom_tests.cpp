@@ -85,7 +85,11 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_serialize_with_tweak)
 
 BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
 {
+#ifdef BUILD_BTC
     std::string strSecret = std::string("5Kg1gnAjaLfKiwhhPpGS3QfRg2m6awQvaj98JCZBZQ5SuS2F15C");
+#else  // BUILD_EQB
+    std::string strSecret = std::string("5K6egrfPCCHH2xg1Dqf5i2vsaUhbUqwZsWCVpffKLVMW8PP9Q5j");
+#endif // END_BUILD
     CBitcoinSecret vchSecret;
     BOOST_CHECK(vchSecret.SetString(strSecret));
 
@@ -105,7 +109,7 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
     std::vector<unsigned char> vch = ParseHex("038fc16b080000000000000001");
 #else  // BUILD_EQB
     // EQB_TODO Derive the expected value independently
-    std::vector<unsigned char> vch = ParseHex("03b3c1eb080000000000000001");
+    std::vector<unsigned char> vch = ParseHex("03333e14080000000000000001");
 #endif // END_BUILD
     std::vector<char> expected(vch.size());
 
@@ -117,6 +121,7 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
 
 BOOST_AUTO_TEST_CASE(bloom_match)
 {
+#ifdef BUILD_BTC
     // Random real transaction (b4749f017444b051c44dfd2720e88f314ff94f3dd6d56d40ef65854fcd7fff6b)
     CDataStream stream(ParseHex("01000000010b26e9b7735eb6aabdf358bab62f9816a21ba9ebdb719d5299e88607d722c190000000008b4830450220070aca44506c5cef3a16ed519d7c3c39f8aab192c4e1c90d065f37b8a4af6141022100a8e160b856c2d43d27d8fba71e5aef6405b8643ac4cb7cb3c462aced7f14711a0141046d11fee51b0e60666d5049a9101a72741df480b96ee26488a4d3466b95c9a40ac5eeef87e10a5cd336c19a84565f80fa6c547957b7700ff4dfbdefe76036c339ffffffff021bff3d11000000001976a91404943fdd508053c75000106d3bc6e2754dbcff1988ac2f15de00000000001976a914a266436d2965547608b9e15d9032a7b9d64fa43188ac00000000"), SER_DISK, CLIENT_VERSION);
     CTransaction tx(deserialize, stream);
@@ -129,23 +134,47 @@ BOOST_AUTO_TEST_CASE(bloom_match)
 
     CBloomFilter filter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(uint256S("0xb4749f017444b051c44dfd2720e88f314ff94f3dd6d56d40ef65854fcd7fff6b"));
-#ifdef BUILD_BTC
+
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match tx hash");
-#else
-       // BUILD_EQB
-       // EQB_TODO fix unit tests
+#else // BUILD_EQB
+    // 570880a3e3fad00e4b8fae6d4e2261cbd38771c8f68c2a63e4fe8d3f167e037c
+    // new tnx1: 02000000000101efcd847453291536de973214d3356a60771c7a28a97df7b227db11c4f03f202e0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0280778e060000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8788c1341d0000000017a914c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc870248304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a20121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824de000000
+
+    // a606ecb7226335f9d30f4197bf7034db711b1c2a16c31055939eef62e498ad2a
+    // new tnx2: 02000000000101 7c037e163f8dfee4632a8cf6c87187d3cb61224e6dae8f4b0ed0fae3a3800857 0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0288102c040000000017a914ed649576ad657747835d116611981c90113c074387005a62020000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8702483045022100b40db3a574a7254d60f8e64335d9bab60ff986ad7fe1c0ad06dcfc4ba896e16002201bbf15e25b0334817baa34fd02ebe90c94af2d65226c9302a60a96e8357c0da50121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824df000000
+
+      // Random real transaction (570880a3e3fad00e4b8fae6d4e2261cbd38771c8f68c2a63e4fe8d3f167e037c)
+    CDataStream stream(ParseHex("02000000000101efcd847453291536de973214d3356a60771c7a28a97df7b227db11c4f03f202e0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0280778e060000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8788c1341d0000000017a914c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc870248304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a20121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824de000000"), SER_DISK, CLIENT_VERSION);
+    CTransaction tx(deserialize, stream);
+
+    // alternative approach to creating the raw transaction: a606ecb7226335f9d30f4197bf7034db711b1c2a16c31055939eef62e498ad2a
+    CDataStream spendStream(ParseHex("020000000001017c037e163f8dfee4632a8cf6c87187d3cb61224e6dae8f4b0ed0fae3a38008570000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0288102c040000000017a914ed649576ad657747835d116611981c90113c074387005a62020000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8702483045022100b40db3a574a7254d60f8e64335d9bab60ff986ad7fe1c0ad06dcfc4ba896e16002201bbf15e25b0334817baa34fd02ebe90c94af2d65226c9302a60a96e8357c0da50121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824df000000"), SER_DISK, CLIENT_VERSION);
+    // EQB_TODO: use an array of characters(bytes) to represent the tnx 
+    //unsigned char ch[] = {};
+    //std::vector<unsigned char> vch(ch, ch + sizeof(ch) - 1);
+    //CDataStream spendStream(vch, SER_DISK, CLIENT_VERSION);
+    CTransaction spendingTx(deserialize, spendStream);
+
+    CBloomFilter filter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+    filter.insert(uint256S("570880a3e3fad00e4b8fae6d4e2261cbd38771c8f68c2a63e4fe8d3f167e037c"));  // ID of first transaction 
+
+    BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match tx hash");
+
 #endif // END_BUILD
 
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+#ifdef BUILD_BTC
     // byte-reversed tx hash
     filter.insert(ParseHex("6bff7fcd4f8565ef406dd5d63d4ff94f318fe82027fd4dc451b04474019f74b4"));
-#ifdef BUILD_BTC
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match manually serialized tx hash");
-#else
-// BUILD_EQB
-// EQB_TODO fix unit tests
+#else // BUILD_EQB
+    // byte-reversed tx hash
+    // note the endianness when entering tnx IDs
+    filter.insert(ParseHex("7c037e163f8dfee4632a8cf6c87187d3cb61224e6dae8f4b0ed0fae3a3800857")); // id of first tnx
+    BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match manually serialized tx hash");
 #endif // END_BUILD
 
+#ifdef BUILD_BTC
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(ParseHex("30450220070aca44506c5cef3a16ed519d7c3c39f8aab192c4e1c90d065f37b8a4af6141022100a8e160b856c2d43d27d8fba71e5aef6405b8643ac4cb7cb3c462aced7f14711a01"));
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match input signature");
@@ -157,13 +186,27 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(ParseHex("04943fdd508053c75000106d3bc6e2754dbcff19"));
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match output address");
-#ifdef BUILD_BTC
-    BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(spendingTx), "Simple Bloom filter didn't add output");
-#else
-// BUILD_EQB
-// EQB_TODO fix unit tests
-#endif // END_BUILD
 
+    BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(spendingTx), "Simple Bloom filter didn't add output");
+#else // BUILD_EQB
+    // this test consist of a tnx, and a signature, a public key of vIn and and a vOut address as filters
+    // original tx1: 01000000010b26e9b7735eb6aabdf358bab62f9816a21ba9ebdb719d5299e88607d722c190000000008b4830450220070aca44506c5cef3a16ed519d7c3c39f8aab192c4e1c90d065f37b8a4af6141022100a8e160b856c2d43d27d8fba71e5aef6405b8643ac4cb7cb3c462aced7f14711a0141046d11fee51b0e60666d5049a9101a72741df480b96ee26488a4d3466b95c9a40ac5eeef87e10a5cd336c19a84565f80fa6c547957b7700ff4dfbdefe76036c339ffffffff021bff3d11000000001976a91404943fdd508053c75000106d3bc6e2754dbcff1988ac2f15de00000000001976a914a266436d2965547608b9e15d9032a7b9d64fa43188ac00000000
+    //      new tx1: 02000000000101efcd847453291536de973214d3356a60771c7a28a97df7b227db11c4f03f202e0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0280778e060000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8788c1341d0000000017a914c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc870248304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a20121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824de000000
+    filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);  // signature of vIN
+    filter.insert(ParseHex("304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a201"));
+    //BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match input signature");
+
+    filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);  // public key of vIN
+    filter.insert(ParseHex("034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824"));
+    //BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match input pub key");
+
+    filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);  // address of vOut 
+    filter.insert(ParseHex("e62a29e7d756eb30c453ae022f315619fe8ddfbb"));
+    BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match output address");
+
+    BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(spendingTx), "Simple Bloom filter didn't add output");
+#endif // END_BUILD
+#ifdef BUILD_BTC
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(ParseHex("a266436d2965547608b9e15d9032a7b9d64fa431"));
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match output address");
@@ -197,6 +240,9 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(COutPoint(uint256S("0x000000d70786e899529d71dbeba91ba216982fb6ba58f3bdaab65e73b7e9260b"), 0));
     BOOST_CHECK_MESSAGE(!filter.IsRelevantAndUpdate(tx), "Simple Bloom filter matched COutPoint for an output we didn't care about");
+#else  // BUILD_EQB
+    // EQB_TODO fix unit tests
+#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_CASE(merkle_block_1)
@@ -242,7 +288,61 @@ BOOST_AUTO_TEST_CASE(merkle_block_1)
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #else  // BUILD_EQB
-       // EQB_TODO fix unit tests
+    // this tests consist of a block and two transactions as filter
+
+     // get a block: https://live.blockcypher.com/btc/block/0000000000013b8ab2cd513b0261a14096412195a72a0c4827d229dcc7e0f7af/
+     // original block id: 0000000000013b8ab2cd513b0261a14096412195a72a0c4827d229dcc7e0f7af
+     // new block id: 3357a296bf0e5de334d9a1318962dca2ec079b49a56c8bb799acf587aaccb0d0
+     // new block: 01000030ad61fde50492dd9b573efc8d98ce9f65ebf4ba2c3d8743f62baf674eb7da56389fd6d31fc23131ea0c07a137c5dabef7a36923d06e6acb2593702142f6cb2373f1a4d05bffff7f200100000003020000000001010000000000000000000000000000000000000000000000000000000000000000ffffffff0502e1000101ffffffff020c1a039500000000232102b2f774fad8d756cfa36c8c40f41a2b3d5a1efb10cd16dd359c175d934a2e410fac0000000000000000266a24aa21a9ed5d5abe5f59bac0046a9a042339bed0d0e68e9dafe7e8128483b6732926ac1adb0120000000000000000000000000000000000000000000000000000000000000000000000000020000000001022aad98e462ef9e935510c3162a1c1b71db3470bf97410fd3f9356322b7ec06a60000000017160014fc83ac01ca4c1b5559d35ffafb60cddacaf7db47feffffff2aad98e462ef9e935510c3162a1c1b71db3470bf97410fd3f9356322b7ec06a60100000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff02747598000000000017a914eb0e893ba01a031e3ae8e6d4ebefdcef0f75ea3b8700e1f5050000000017a914103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a58702483045022100bd9e2d961882530e8d50b5ad08e90123c92777ab82ba85ba01432ebc7cc6b7e702206094560e2177ec525a2978c9c0d28016c85279549a49c03628ac03aae2f59f1c0121031dde588cc9d063730bed29fb4a96f9567fcae3cc0e0d4c2fe63a7a501340cd1a02473044022048ee98b344eb84c3d10e7b454454e2a37ae97628b529e40018effbbfa708878102201e44255419a4dc3674e59f295aaea984672043aa7b014c6774fa15767eb74c6b0121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824e0000000020000000001017c037e163f8dfee4632a8cf6c87187d3cb61224e6dae8f4b0ed0fae3a380085701000000171600146ce9d46d789c906fcccb957f022a5f49c63d863efeffffff0290f248110000000017a9143db2531e5983de84d0fb987b7cc4b871593ae0858700c2eb0b0000000017a91445553271f2e2fd155dd8f26fc19b1017b15cfd1e8702473044022005746059e222352f0d51e2dda9d90b3b66dc9006c214bd5a8252cec2fb11686d02205e881d6ff27a8590ad5f62b0a554d7dbd1fdf6088a7af24d9ccea1096b19150701210279de02a079f37f249861953e169f0eb809e72f022e3cbce1808baf4af984c6c9e0000000
+     // there are only [3] transactions in this block, including the coinbase. tnxs are:
+     // "33b87a19caaaad05b696f28e07be229418ae6abb408137e9734c0f52b8037ae5",
+     // "a4e6f3972f903d4c8ef3e876072b905aeebe9bd7aa0f9b78996dd7bac5f86e26",
+     // "dcf3a378f6b6467087f78361b8288b11f85cdd84b6e53554a0ff949128905a5c"
+     // note: the raw transaction or raw block is not the same endian as the JSON ouputs or the tnx IDS fed to the filters!
+
+    CBlock block = getBlockEquibit();
+    CBloomFilter filter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+    // Match the last transaction
+
+    // this tnx is the last tnx in the above block
+    // new tx: a4e6f3972f903d4c8ef3e876072b905aeebe9bd7aa0f9b78996dd7bac5f86e26
+    filter.insert(uint256S("0xa4e6f3972f903d4c8ef3e876072b905aeebe9bd7aa0f9b78996dd7bac5f86e26"));
+
+    CMerkleBlock merkleBlock(block, filter);
+    BOOST_CHECK_EQUAL(merkleBlock.header.GetHash().GetHex(), block.GetHash().GetHex());
+
+    BOOST_CHECK_EQUAL(merkleBlock.vMatchedTxn.size(), 1);
+    std::pair<unsigned int, uint256> pair = merkleBlock.vMatchedTxn[0];
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn[0].second == uint256S("0xa4e6f3972f903d4c8ef3e876072b905aeebe9bd7aa0f9b78996dd7bac5f86e26"));
+    BOOST_CHECK(merkleBlock.vMatchedTxn[0].first == 1);
+
+    std::vector<uint256> vMatched;
+    std::vector<unsigned int> vIndex;
+
+    BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
+    BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
+
+    for(unsigned int i = 0; i < vMatched.size(); i++)
+        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
+
+    // Also match the 3th transaction
+    // this tnx is the second last tnx in the above block  
+    filter.insert(uint256S("0xdcf3a378f6b6467087f78361b8288b11f85cdd84b6e53554a0ff949128905a5c"));
+    merkleBlock = CMerkleBlock(block, filter);
+    BOOST_CHECK(merkleBlock.header.GetHash() == block.GetHash());
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn.size() == 2);
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn[0] == pair);  
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn[1].second == uint256S("0xdcf3a378f6b6467087f78361b8288b11f85cdd84b6e53554a0ff949128905a5c"));
+    BOOST_CHECK(merkleBlock.vMatchedTxn[1].first == 2);
+
+    BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
+    BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
+    for(unsigned int i = 0; i < vMatched.size(); i++)
+        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #endif // END_BUILD
 }
 
@@ -302,7 +402,65 @@ BOOST_AUTO_TEST_CASE(merkle_block_2)
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #else  // BUILD_EQB
-       // EQB_TODO fix unit tests
+    // new block: 23ff0dd345c3c4f4e7608b5c8fe10d528361e0a2e52f32386bca561d5d878eec
+    // With 5 txes
+    // note: the getlock CLI command provides the list of tnx within a block
+    CBlock block;
+    CDataStream stream(ParseHex("01000030d0b0ccaa87f5ac99b78b6ca5499b07eca2dc628931a1d934e35d0ebf96a25733d7888060ce0b7a493142aaa250bf8a930e60ca5d74e0b038930b2ff1200c9d2f70c4d05bffff7f200100000005020000000001010000000000000000000000000000000000000000000000000000000000000000ffffffff0502e2000101ffffffff02e02c03950000000023210365790a742d3be3aceb1222ff690329eaf45b2ddf504e86718750f243d603c134ac0000000000000000266a24aa21a9ed6d30384781ebd81fe9aa32f1558f7d2adacd7c75be40e8dc5b5c13b8cf579c640120000000000000000000000000000000000000000000000000000000000000000000000000020000000001015c5a90289194ffa05435e5b684dd5cf8118b28b86183f7877046b6f678a3f3dc010000001716001447269e6ef97784842b9b69c990f9fc5bb2b37318feffffff0280c3c9010000000017a914103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a58788f1210a0000000017a9140de4273d2bda530c67d2dd1f09b03f1d8819ba6f870247304402201bddea92b26bd2217718ec1649008b58a5e8867b743a70c97cdc4c9d409ca0da02201e42a891c4b245c081671739e8f4d4bf5d8aa4dd840bed678346cf4666470abd012102b0269dd59646096838a53bcdb3658145eea4e062afcb0df81d1497d24d12fb50e100000002000000000101266ef8c5bad76d99789b0faad79bbeee5a902b0776e8f38e4c3d902f97f3e6a401000000171600145a49ce1e8183a1d639039a17462b3ce03e81d4e6feffffff02883d5d050000000017a9143c6cc5d0a6bfc0a6aecb2fba19cb2fbaa3bc73c687809698000000000017a914103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a58702473044022063f0d347be3efe4c716d5b2fbd0a8b81f4b1b601372f04c6a2541b8ce64f36c502207bf1b7d5cda26af284342f9fae3bfa6341bbecc4dc238f9772d0765fcf98c2db012102b5ece59910ed76ee2502e3f06014f5818a9a5ba9af24095818925124e0aba348e10000000200000000010177d2ffb844395dd8b0bed682dc3d91fb7e010f375a20db8939ba7ae0d04a18d2010000001716001447269e6ef97784842b9b69c990f9fc5bb2b37318feffffff02886a8e060000000017a914f46800003c54f238841fd8b0ab604528fcd971ef87002d31010000000017a914103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a58702483045022100e40da6265c34241996ae01b65d1e5b5fabf323cb69df0cc2f29f6f80460435370220036d0185b44756478e65a40407551bfe776ba53e6cee0947b46a7a59225d749e012102b0269dd59646096838a53bcdb3658145eea4e062afcb0df81d1497d24d12fb50e1000000020000000001015c5a90289194ffa05435e5b684dd5cf8118b28b86183f7877046b6f678a3f3dc00000000171600149b340d9f0629529c54b7add4ef03c5381ccf7328feffffff02988be60e0000000017a9142394fbb7565dd65f93ca3b96d6e27a6e54df151a87005a62020000000017a914103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a58702483045022100e4b528230454fc2867e23b828f7d127923583979dd525d50800da2fa9dae24f0022078e9ac08ca576c40a73b135ee1f163518cff3e5bd132997a9c8a8c89dc3e20110121031988942dcc39d99a4e518978af766577a7cae443a0e8ec7b1df132e82d5759d0e1000000"), SER_NETWORK, PROTOCOL_VERSION);
+    stream >> block;
+
+    CBloomFilter filter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
+    // Match the first transaction
+    filter.insert(uint256S("0xad644165afc94ca989fce31e866ed22c33c2b60a2bf16b734fe71fbd7b111fca"));
+
+    CMerkleBlock merkleBlock(block, filter);
+    BOOST_CHECK(merkleBlock.header.GetHash() == block.GetHash());
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn.size() == 1);
+    std::pair<unsigned int, uint256> pair = merkleBlock.vMatchedTxn[0];
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn[0].second == uint256S("0xad644165afc94ca989fce31e866ed22c33c2b60a2bf16b734fe71fbd7b111fca"));
+    BOOST_CHECK(merkleBlock.vMatchedTxn[0].first == 0); 
+
+
+    std::vector<uint256> vMatched;
+    std::vector<unsigned int> vIndex;
+
+    BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
+    BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
+    for(unsigned int i = 0; i < vMatched.size(); i++)
+        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
+
+    // Bitcoin comments: 
+    // Match an output from the second transaction (the pubkey for address 1DZTzaBHUDM7T3QvUKBz4qXMRpkg8jsfB5)
+    // first: vin->vout, second: vin, third: vout
+    // This should match the third transaction because it spends the output matched
+    // It also matches the fourth transaction, which spends to the pubkey again
+
+    // new output script is obtained from the first output script of tnx: f82020cc634bef0cb4e481f28d3e671b38c41ff2d08b2b4b4faa53ba596fbc17
+    // new script: 103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a5
+    filter.insert(ParseHex("103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a5"));
+
+    merkleBlock = CMerkleBlock(block, filter);
+    BOOST_CHECK(merkleBlock.header.GetHash() == block.GetHash());
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn.size() == 5);
+
+    BOOST_CHECK(pair == merkleBlock.vMatchedTxn[0]);
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn[1].second == uint256S("0xf82020cc634bef0cb4e481f28d3e671b38c41ff2d08b2b4b4faa53ba596fbc17"));
+    BOOST_CHECK(merkleBlock.vMatchedTxn[1].first == 1);
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn[2].second == uint256S("0xc01b7b2d34b654a55469ccfabe4b75112846be36fad4d0037e699f4803d21e54"));
+    BOOST_CHECK(merkleBlock.vMatchedTxn[2].first == 2);
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn[3].second == uint256S("8727ed33fb713e31fd23f0d6ecaa0b0efeb3afc21851f98e1c31ea92e1a3348e"));
+    BOOST_CHECK(merkleBlock.vMatchedTxn[3].first == 3);
+
+    BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
+    BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
+    for(unsigned int i = 0; i < vMatched.size(); i++)
+        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #endif // END_BUILD
 }
 
@@ -360,7 +518,70 @@ BOOST_AUTO_TEST_CASE(merkle_block_2_with_update_none)
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #else  // BUILD_EQB
-       // EQB_TODO fix unit tests
+
+    //new block with id: 23ff0dd345c3c4f4e7608b5c8fe10d528361e0a2e52f32386bca561d5d878eec 
+    // list of tnxs:
+    /*
+    "ad644165afc94ca989fce31e866ed22c33c2b60a2bf16b734fe71fbd7b111fca",
+    "f82020cc634bef0cb4e481f28d3e671b38c41ff2d08b2b4b4faa53ba596fbc17",
+    "c01b7b2d34b654a55469ccfabe4b75112846be36fad4d0037e699f4803d21e54",
+    "8727ed33fb713e31fd23f0d6ecaa0b0efeb3afc21851f98e1c31ea92e1a3348e",
+    "9cf74959eb6b79e6a4402907c2af5a90e92002f5b23b8e0b8a4d57a05080caf4"
+    */
+    CBlock block;
+    CDataStream stream(ParseHex("01000030d0b0ccaa87f5ac99b78b6ca5499b07eca2dc628931a1d934e35d0ebf96a25733d7888060ce0b7a493142aaa250bf8a930e60ca5d74e0b038930b2ff1200c9d2f70c4d05bffff7f200100000005020000000001010000000000000000000000000000000000000000000000000000000000000000ffffffff0502e2000101ffffffff02e02c03950000000023210365790a742d3be3aceb1222ff690329eaf45b2ddf504e86718750f243d603c134ac0000000000000000266a24aa21a9ed6d30384781ebd81fe9aa32f1558f7d2adacd7c75be40e8dc5b5c13b8cf579c640120000000000000000000000000000000000000000000000000000000000000000000000000020000000001015c5a90289194ffa05435e5b684dd5cf8118b28b86183f7877046b6f678a3f3dc010000001716001447269e6ef97784842b9b69c990f9fc5bb2b37318feffffff0280c3c9010000000017a914103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a58788f1210a0000000017a9140de4273d2bda530c67d2dd1f09b03f1d8819ba6f870247304402201bddea92b26bd2217718ec1649008b58a5e8867b743a70c97cdc4c9d409ca0da02201e42a891c4b245c081671739e8f4d4bf5d8aa4dd840bed678346cf4666470abd012102b0269dd59646096838a53bcdb3658145eea4e062afcb0df81d1497d24d12fb50e100000002000000000101266ef8c5bad76d99789b0faad79bbeee5a902b0776e8f38e4c3d902f97f3e6a401000000171600145a49ce1e8183a1d639039a17462b3ce03e81d4e6feffffff02883d5d050000000017a9143c6cc5d0a6bfc0a6aecb2fba19cb2fbaa3bc73c687809698000000000017a914103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a58702473044022063f0d347be3efe4c716d5b2fbd0a8b81f4b1b601372f04c6a2541b8ce64f36c502207bf1b7d5cda26af284342f9fae3bfa6341bbecc4dc238f9772d0765fcf98c2db012102b5ece59910ed76ee2502e3f06014f5818a9a5ba9af24095818925124e0aba348e10000000200000000010177d2ffb844395dd8b0bed682dc3d91fb7e010f375a20db8939ba7ae0d04a18d2010000001716001447269e6ef97784842b9b69c990f9fc5bb2b37318feffffff02886a8e060000000017a914f46800003c54f238841fd8b0ab604528fcd971ef87002d31010000000017a914103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a58702483045022100e40da6265c34241996ae01b65d1e5b5fabf323cb69df0cc2f29f6f80460435370220036d0185b44756478e65a40407551bfe776ba53e6cee0947b46a7a59225d749e012102b0269dd59646096838a53bcdb3658145eea4e062afcb0df81d1497d24d12fb50e1000000020000000001015c5a90289194ffa05435e5b684dd5cf8118b28b86183f7877046b6f678a3f3dc00000000171600149b340d9f0629529c54b7add4ef03c5381ccf7328feffffff02988be60e0000000017a9142394fbb7565dd65f93ca3b96d6e27a6e54df151a87005a62020000000017a914103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a58702483045022100e4b528230454fc2867e23b828f7d127923583979dd525d50800da2fa9dae24f0022078e9ac08ca576c40a73b135ee1f163518cff3e5bd132997a9c8a8c89dc3e20110121031988942dcc39d99a4e518978af766577a7cae443a0e8ec7b1df132e82d5759d0e1000000"), SER_NETWORK, PROTOCOL_VERSION);
+    stream >> block;
+
+    CBloomFilter filter(10, 0.000001, 0, BLOOM_UPDATE_NONE);
+    // Match the first transaction
+    filter.insert(uint256S("0xad644165afc94ca989fce31e866ed22c33c2b60a2bf16b734fe71fbd7b111fca"));
+
+    CMerkleBlock merkleBlock(block, filter);
+    BOOST_CHECK(merkleBlock.header.GetHash() == block.GetHash());
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn.size() == 1);
+    std::pair<unsigned int, uint256> pair = merkleBlock.vMatchedTxn[0];
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn[0].second == uint256S("0xad644165afc94ca989fce31e866ed22c33c2b60a2bf16b734fe71fbd7b111fca"));
+    BOOST_CHECK(merkleBlock.vMatchedTxn[0].first == 0);
+
+    std::vector<uint256> vMatched;
+    std::vector<unsigned int> vIndex;
+
+    BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
+    BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
+    for(unsigned int i = 0; i < vMatched.size(); i++)
+        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
+
+
+    // Bitcoin comments:
+    // Match an output from the second transaction (the pubkey for address 1DZTzaBHUDM7T3QvUKBz4qXMRpkg8jsfB5)
+    // This should not match the third transaction though it spends the output matched
+    // It will match the fourth transaction, which has another pay-to-pubkey output to the same address
+
+    // new output script is obtained from the first output script of tnx: f82020cc634bef0cb4e481f28d3e671b38c41ff2d08b2b4b4faa53ba596fbc17
+    // new script: 103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a5
+    filter.insert(ParseHex("103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a5"));
+
+    merkleBlock = CMerkleBlock(block, filter);
+    BOOST_CHECK(merkleBlock.header.GetHash() == block.GetHash());
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn.size() == 5);
+
+    BOOST_CHECK(pair == merkleBlock.vMatchedTxn[0]);
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn[1].second == uint256S("0xf82020cc634bef0cb4e481f28d3e671b38c41ff2d08b2b4b4faa53ba596fbc17"));
+    BOOST_CHECK(merkleBlock.vMatchedTxn[1].first == 1);
+
+
+    BOOST_CHECK(merkleBlock.vMatchedTxn[3].second == uint256S("0x8727ed33fb713e31fd23f0d6ecaa0b0efeb3afc21851f98e1c31ea92e1a3348e"));
+    BOOST_CHECK(merkleBlock.vMatchedTxn[3].first == 3);
+
+    BOOST_CHECK(merkleBlock.txn.ExtractMatches(vMatched, vIndex) == block.hashMerkleRoot);
+    BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
+
+    for(unsigned int i = 0; i < vMatched.size(); i++)
+        BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #endif // END_BUILD
 }
 

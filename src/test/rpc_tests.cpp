@@ -108,6 +108,7 @@ BOOST_AUTO_TEST_CASE(rpc_togglenetwork)
 
 BOOST_AUTO_TEST_CASE(rpc_rawsign)
 {
+#ifdef BUILD_BTC
     UniValue r;
     // input is a 1-of-2 multisig (so is output):
     std::string prevout =
@@ -122,7 +123,6 @@ BOOST_AUTO_TEST_CASE(rpc_rawsign)
     r = CallRPC(std::string("signrawtransaction ")+notsigned+" "+prevout+" "+"[]");
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == false);
     r = CallRPC(std::string("signrawtransaction ")+notsigned+" "+prevout+" "+"["+privkey1+","+privkey2+"]");
-#ifdef BUILD_BTC
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == true);
 #else  // BUILD_EQB
        // EQB_TODO Generate new test data
