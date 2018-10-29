@@ -149,6 +149,9 @@ public:
     }
 };
 
+// EQB_TODO alias for Qt
+typedef CSHA3HashWriter CHashWriter;
+
 /** Reads data from an underlying stream, while hashing the read data. */
 template<typename Source>
 class CSHA3HashVerifier : public CSHA3HashWriter
