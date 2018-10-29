@@ -197,6 +197,8 @@ uint256 SHA3SerializeHash(const T& obj, int nType = SER_GETHASH, int nVersion = 
 
 typedef uint256 ChainCode;
 
+#ifdef BUILD_BTC
+
 /** A hasher class for Bitcoin's 256-bit hash (double SHA-256). */
 class CHash256 {
 private:
@@ -369,6 +371,8 @@ uint256 SerializeHash(const T& obj, int nType=SER_GETHASH, int nVersion=PROTOCOL
     ss << obj;
     return ss.GetHash();
 }
+
+#endif // BUILD_BTC
 
 unsigned int MurmurHash3(unsigned int nHashSeed, const std::vector<unsigned char>& vDataToHash);
 
