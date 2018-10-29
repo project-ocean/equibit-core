@@ -6,7 +6,7 @@
 """Test segwit transactions and blocks on P2P network."""
 
 from test_framework.mininode import *
-from test_framework.test_framework import BitcoinTestFramework, SkipTest # EQB_TODO: Remove import SkipTest class after fixing all the tests (Oct-24)
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
 from test_framework.script import *
 from test_framework.blocktools import create_block, create_coinbase, add_witness_commitment, get_witness_script, WITNESS_COMMITMENT_HEADER
@@ -226,7 +226,7 @@ class SegWitTest(BitcoinTestFramework):
         # rules (an anyone-can-spend OP_TRUE would be rejected, if not wrapped
         # in P2SH).
         p2sh_program = CScript([OP_TRUE])
-        p2sh_pubkey = hash160(p2sh_program)
+        p2sh_pubkey = hash160_sha3_256(p2sh_program)
         scriptPubKey = CScript([OP_HASH160, p2sh_pubkey, OP_EQUAL])
 
         # Now check that unnecessary witnesses can't be used to blind a node
@@ -344,7 +344,7 @@ class SegWitTest(BitcoinTestFramework):
 
         # Let's construct a witness program
         witness_program = CScript([OP_TRUE])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptPubKey = CScript([OP_0, witness_hash])
         tx.vout.append(CTxOut(self.utxo[0].nValue-1000, scriptPubKey))
         tx.rehash()
@@ -460,7 +460,7 @@ class SegWitTest(BitcoinTestFramework):
         NUM_OUTPUTS = 50
 
         witness_program = CScript([OP_2DROP]*NUM_DROPS + [OP_TRUE])
-        witness_hash = uint256_from_str(sha256(witness_program))
+        witness_hash = uint256_from_str(sha3_256(witness_program))
         scriptPubKey = CScript([OP_0, ser_uint256(witness_hash)])
 
         prevout = COutPoint(self.utxo[0].sha256, self.utxo[0].n)
@@ -567,7 +567,7 @@ class SegWitTest(BitcoinTestFramework):
         block = self.build_next_block()
 
         witness_program = CScript([OP_DROP, OP_TRUE])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptPubKey = CScript([OP_0, witness_hash])
 
         # First try extra witness data on a tx that doesn't require a witness
@@ -643,7 +643,7 @@ class SegWitTest(BitcoinTestFramework):
         block = self.build_next_block()
 
         witness_program = CScript([OP_DROP, OP_TRUE])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptPubKey = CScript([OP_0, witness_hash])
 
         tx = CTransaction()
@@ -683,7 +683,7 @@ class SegWitTest(BitcoinTestFramework):
         # This program is 19 max pushes (9937 bytes), then 64 more opcode-bytes.
         long_witness_program = CScript([b'a'*520]*19 + [OP_DROP]*63 + [OP_TRUE])
         assert(len(long_witness_program) == MAX_PROGRAM_LENGTH+1)
-        long_witness_hash = sha256(long_witness_program)
+        long_witness_hash = sha3_256(long_witness_program)
         long_scriptPubKey = CScript([OP_0, long_witness_hash])
 
         block = self.build_next_block()
@@ -707,7 +707,7 @@ class SegWitTest(BitcoinTestFramework):
         # Try again with one less byte in the witness program
         witness_program = CScript([b'a'*520]*19 + [OP_DROP]*62 + [OP_TRUE])
         assert(len(witness_program) == MAX_PROGRAM_LENGTH)
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptPubKey = CScript([OP_0, witness_hash])
 
         tx.vout[0] = CTxOut(tx.vout[0].nValue, scriptPubKey)
@@ -729,7 +729,7 @@ class SegWitTest(BitcoinTestFramework):
         assert(len(self.utxo))
 
         witness_program = CScript([OP_DROP, OP_TRUE])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptPubKey = CScript([OP_0, witness_hash])
         
         # Create a transaction that splits our utxo into many outputs
@@ -885,7 +885,7 @@ class SegWitTest(BitcoinTestFramework):
 
         # Now try to add extra witness data to a valid witness tx.
         witness_program = CScript([OP_TRUE])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptPubKey = CScript([OP_0, witness_hash])
         tx2 = CTransaction()
         tx2.vin.append(CTxIn(COutPoint(tx_hash, 0), b""))
@@ -898,7 +898,7 @@ class SegWitTest(BitcoinTestFramework):
 
         # Add too-large for IsStandard witness and check that it does not enter reject filter
         p2sh_program = CScript([OP_TRUE])
-        p2sh_pubkey = hash160(p2sh_program)
+        p2sh_pubkey = hash160_sha3_256(p2sh_program)
         witness_program2 = CScript([b'a'*400000])
         tx3.vout.append(CTxOut(tx2.vout[0].nValue-1000, CScript([OP_HASH160, p2sh_pubkey, OP_EQUAL])))
         tx3.wit.vtxinwit[0].scriptWitness.stack = [witness_program2]
@@ -1046,10 +1046,10 @@ class SegWitTest(BitcoinTestFramework):
         assert(len(self.utxo))
 
         witness_program = CScript([OP_TRUE])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptPubKey = CScript([OP_0, witness_hash])
 
-        p2sh_pubkey = hash160(witness_program)
+        p2sh_pubkey = hash160_sha3_256(witness_program)
         p2sh_scriptPubKey = CScript([OP_HASH160, p2sh_pubkey, OP_EQUAL])
 
         # First prepare a p2sh output (so that spending it will pass standardness)
@@ -1074,7 +1074,7 @@ class SegWitTest(BitcoinTestFramework):
         test_transaction_acceptance(self.nodes[1].rpc, self.std_node, tx, with_witness=True, accepted=segwit_activated)
 
         # Now create something that looks like a P2PKH output. This won't be spendable.
-        scriptPubKey = CScript([OP_0, hash160(witness_hash)])
+        scriptPubKey = CScript([OP_0, hash160_sha3_256(witness_hash)])
         tx2 = CTransaction()
         if segwit_activated:
             # if tx was accepted, then we spend the second output.
@@ -1141,7 +1141,7 @@ class SegWitTest(BitcoinTestFramework):
         tx = CTransaction()
         count = 0
         witness_program = CScript([OP_TRUE])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         assert_equal(len(self.nodes[1].getrawmempool()), 0)
         for version in list(range(OP_1, OP_16+1)) + [OP_0]:
             count += 1
@@ -1207,7 +1207,7 @@ class SegWitTest(BitcoinTestFramework):
         block = self.build_next_block()
         # Change the output of the block to be a witness output.
         witness_program = CScript([OP_TRUE])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptPubKey = CScript([OP_0, witness_hash])
         block.vtx[0].vout[0].scriptPubKey = scriptPubKey
         # This next line will rehash the coinbase and update the merkle
@@ -1244,7 +1244,7 @@ class SegWitTest(BitcoinTestFramework):
         pubkey = CPubKey(key.get_pubkey())
 
         witness_program = CScript([pubkey, CScriptOp(OP_CHECKSIG)])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptPubKey = CScript([OP_0, witness_hash])
 
         # First create a witness output for use in the tests.
@@ -1364,7 +1364,7 @@ class SegWitTest(BitcoinTestFramework):
             test_witness_block(self.nodes[0].rpc, self.test_node, block, accepted=True)
 
         # Now test witness version 0 P2PKH transactions
-        pubkeyhash = hash160(pubkey)
+        pubkeyhash = hash160_sha3_256(pubkey)
         scriptPKH = CScript([OP_0, pubkeyhash])
         tx = CTransaction()
         tx.vin.append(CTxIn(COutPoint(temp_utxos[0].sha256, temp_utxos[0].n), b""))
@@ -1428,9 +1428,9 @@ class SegWitTest(BitcoinTestFramework):
 
         # Prepare the p2sh-wrapped witness output
         witness_program = CScript([OP_DROP, OP_TRUE])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         p2wsh_pubkey = CScript([OP_0, witness_hash])
-        p2sh_witness_hash = hash160(p2wsh_pubkey)
+        p2sh_witness_hash = hash160_sha3_256(p2wsh_pubkey)
         scriptPubKey = CScript([OP_HASH160, p2sh_witness_hash, OP_EQUAL])
         scriptSig = CScript([p2wsh_pubkey]) # a push of the redeem script
 
@@ -1529,7 +1529,7 @@ class SegWitTest(BitcoinTestFramework):
 
         # Keep this under MAX_OPS_PER_SCRIPT (201)
         witness_program = CScript([OP_TRUE, OP_IF, OP_TRUE, OP_ELSE] + [OP_CHECKMULTISIG]*5 + [OP_CHECKSIG]*193 + [OP_ENDIF])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptPubKey = CScript([OP_0, witness_hash])
 
         sigops_per_script = 20*5 + 193*1
@@ -1546,13 +1546,13 @@ class SegWitTest(BitcoinTestFramework):
         # N(=MAX_SIGOP_COST//sigops_per_script) outputs of our transaction,
         # would push us just over the block sigop limit.
         witness_program_toomany = CScript([OP_TRUE, OP_IF, OP_TRUE, OP_ELSE] + [OP_CHECKSIG]*(extra_sigops_available + 1) + [OP_ENDIF])
-        witness_hash_toomany = sha256(witness_program_toomany)
+        witness_hash_toomany = sha3_256(witness_program_toomany)
         scriptPubKey_toomany = CScript([OP_0, witness_hash_toomany])
 
         # If we spend this script instead, we would exactly reach our sigop
         # limit (for witness sigops).
         witness_program_justright = CScript([OP_TRUE, OP_IF, OP_TRUE, OP_ELSE] + [OP_CHECKSIG]*(extra_sigops_available) + [OP_ENDIF])
-        witness_hash_justright = sha256(witness_program_justright)
+        witness_hash_justright = sha3_256(witness_program_justright)
         scriptPubKey_justright = CScript([OP_0, witness_hash_justright])
 
         # First split our available utxo into a bunch of outputs
@@ -1688,7 +1688,7 @@ class SegWitTest(BitcoinTestFramework):
 
         # Test 1: P2WPKH
         # First create a P2WPKH output that uses an uncompressed pubkey
-        pubkeyhash = hash160(pubkey)
+        pubkeyhash = hash160_sha3_256(pubkey)
         scriptPKH = CScript([OP_0, pubkeyhash])
         tx = CTransaction()
         tx.vin.append(CTxIn(COutPoint(utxo.sha256, utxo.n), b""))
@@ -1703,7 +1703,7 @@ class SegWitTest(BitcoinTestFramework):
         # Now try to spend it. Send it to a P2WSH output, which we'll
         # use in the next test.
         witness_program = CScript([pubkey, CScriptOp(OP_CHECKSIG)])
-        witness_hash = sha256(witness_program)
+        witness_hash = sha3_256(witness_program)
         scriptWSH = CScript([OP_0, witness_hash])
 
         tx2 = CTransaction()
@@ -1726,7 +1726,7 @@ class SegWitTest(BitcoinTestFramework):
         # Test 2: P2WSH
         # Try to spend the P2WSH output created in last test.
         # Send it to a P2SH(P2WSH) output, which we'll use in the next test.
-        p2sh_witness_hash = hash160(scriptWSH)
+        p2sh_witness_hash = hash160_sha3_256(scriptWSH)
         scriptP2SH = CScript([OP_HASH160, p2sh_witness_hash, OP_EQUAL])
         scriptSig = CScript([scriptWSH])
 
@@ -1795,8 +1795,8 @@ class SegWitTest(BitcoinTestFramework):
         # For each script, generate a pair of P2WSH and P2SH-P2WSH output.
         outputvalue = (self.utxo[0].nValue - 1000) // (len(scripts) * 2)
         for i in scripts:
-            p2wsh = CScript([OP_0, sha256(i)])
-            p2sh = hash160(p2wsh)
+            p2wsh = CScript([OP_0, sha3_256(i)])
+            p2sh = hash160_sha3_256(p2wsh)
             p2wsh_scripts.append(p2wsh)
             tx.vout.append(CTxOut(outputvalue, p2wsh))
             tx.vout.append(CTxOut(outputvalue, CScript([OP_HASH160, p2sh, OP_EQUAL])))
@@ -1813,13 +1813,13 @@ class SegWitTest(BitcoinTestFramework):
         for i in range(len(scripts)):
             p2wsh_tx = CTransaction()
             p2wsh_tx.vin.append(CTxIn(COutPoint(txid,i*2)))
-            p2wsh_tx.vout.append(CTxOut(outputvalue - 5000, CScript([OP_0, hash160(hex_str_to_bytes(""))])))
+            p2wsh_tx.vout.append(CTxOut(outputvalue - 5000, CScript([OP_0, hash160_sha3_256(hex_str_to_bytes(""))])))
             p2wsh_tx.wit.vtxinwit.append(CTxInWitness())
             p2wsh_tx.rehash()
             p2wsh_txs.append(p2wsh_tx)
             p2sh_tx = CTransaction()
             p2sh_tx.vin.append(CTxIn(COutPoint(txid,i*2+1), CScript([p2wsh_scripts[i]])))
-            p2sh_tx.vout.append(CTxOut(outputvalue - 5000, CScript([OP_0, hash160(hex_str_to_bytes(""))])))
+            p2sh_tx.vout.append(CTxOut(outputvalue - 5000, CScript([OP_0, hash160_sha3_256(hex_str_to_bytes(""))])))
             p2sh_tx.wit.vtxinwit.append(CTxInWitness())
             p2sh_tx.rehash()
             p2sh_txs.append(p2sh_tx)
@@ -1877,7 +1877,6 @@ class SegWitTest(BitcoinTestFramework):
 
 
     def run_test(self):
-        raise SkipTest("DOES NOT WORK")  # EQB_TODO: Fix the tests
         # Setup the p2p connections and start up the network thread.
         # self.test_node sets NODE_WITNESS|NODE_NETWORK
         self.test_node = self.nodes[0].add_p2p_connection(TestNode(), services=NODE_NETWORK|NODE_WITNESS)
