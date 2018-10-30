@@ -149,6 +149,9 @@ public:
     }
 };
 
+// EQB_TODO alias for Qt
+typedef CSHA3HashWriter CHashWriter;
+
 /** Reads data from an underlying stream, while hashing the read data. */
 template<typename Source>
 class CSHA3HashVerifier : public CSHA3HashWriter
@@ -196,6 +199,8 @@ uint256 SHA3SerializeHash(const T& obj, int nType = SER_GETHASH, int nVersion = 
 #endif
 
 typedef uint256 ChainCode;
+
+#ifdef BUILD_BTC
 
 /** A hasher class for Bitcoin's 256-bit hash (double SHA-256). */
 class CHash256 {
@@ -369,6 +374,8 @@ uint256 SerializeHash(const T& obj, int nType=SER_GETHASH, int nVersion=PROTOCOL
     ss << obj;
     return ss.GetHash();
 }
+
+#endif // BUILD_BTC
 
 unsigned int MurmurHash3(unsigned int nHashSeed, const std::vector<unsigned char>& vDataToHash);
 
