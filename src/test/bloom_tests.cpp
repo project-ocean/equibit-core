@@ -456,12 +456,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_2)
     for(unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 
-    // Bitcoin comments: 
-    // Match an output from the second transaction (the pubkey for address 1DZTzaBHUDM7T3QvUKBz4qXMRpkg8jsfB5)
     // first: vin->vout, second: vin, third: vout
-    // This should match the third transaction because it spends the output matched
-    // It also matches the fourth transaction, which spends to the pubkey again
-
     // new output script is obtained from the first output script of tnx: f82020cc634bef0cb4e481f28d3e671b38c41ff2d08b2b4b4faa53ba596fbc17
     // new script: 103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a5
     filter.insert(ParseHex("103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a5"));
@@ -577,12 +572,6 @@ BOOST_AUTO_TEST_CASE(merkle_block_2_with_update_none)
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
     for(unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
-
-
-    // Bitcoin comments:
-    // Match an output from the second transaction (the pubkey for address 1DZTzaBHUDM7T3QvUKBz4qXMRpkg8jsfB5)
-    // This should not match the third transaction though it spends the output matched
-    // It will match the fourth transaction, which has another pay-to-pubkey output to the same address
 
     // new output script is obtained from the first output script of tnx: f82020cc634bef0cb4e481f28d3e671b38c41ff2d08b2b4b4faa53ba596fbc17
     // new script: 103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a5
