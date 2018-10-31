@@ -1473,7 +1473,11 @@ bool UndoWriteToDisk(const CBlockUndo& blockundo, CDiskBlockPos& pos, const uint
     fileout << blockundo;
 
     // calculate & write checksum
+#ifdef BUILD_BTC
     CHashWriter hasher(SER_GETHASH, PROTOCOL_VERSION);
+#else  // BUILD_EQB
+    CSHA3HashWriter hasher(SER_GETHASH, PROTOCOL_VERSION);
+#endif // END_BUILD
     hasher << hashBlock;
     hasher << blockundo;
     fileout << hasher.GetHash();
@@ -1495,7 +1499,11 @@ static bool UndoReadFromDisk(CBlockUndo& blockundo, const CBlockIndex *pindex)
 
     // Read block
     uint256 hashChecksum;
+#ifdef BUILD_BTC
     CHashVerifier<CAutoFile> verifier(&filein); // We need a CHashVerifier as reserializing may lose data
+#else  // BUILD_EQB
+    CSHA3HashVerifier<CAutoFile> verifier(&filein); // We need a CHashVerifier as reserializing may lose data
+#endif // END_BUILD
     try {
         verifier << pindex->pprev->GetBlockHash();
         verifier >> blockundo;

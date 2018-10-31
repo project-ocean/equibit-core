@@ -824,7 +824,11 @@ struct CCoinsStats
     CCoinsStats() : nHeight(0), nTransactions(0), nTransactionOutputs(0), nBogoSize(0), nDiskSize(0), nTotalAmount(0) {}
 };
 
+#ifdef BUILD_BTC
 static void ApplyStats(CCoinsStats &stats, CHashWriter& ss, const uint256& hash, const std::map<uint32_t, Coin>& outputs)
+#else  // BUILD_EQB
+static void ApplyStats(CCoinsStats &stats, CSHA3HashWriter& ss, const uint256& hash, const std::map<uint32_t, Coin>& outputs)
+#endif // END_BUILD
 {
     assert(!outputs.empty());
     ss << hash;
@@ -848,7 +852,11 @@ static bool GetUTXOStats(CCoinsView *view, CCoinsStats &stats)
     std::unique_ptr<CCoinsViewCursor> pcursor(view->Cursor());
     assert(pcursor);
 
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+#else  // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+#endif // END_BUILD
     stats.hashBlock = pcursor->GetBestBlock();
     {
         LOCK(cs_main);
