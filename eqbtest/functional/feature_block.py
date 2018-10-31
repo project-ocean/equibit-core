@@ -11,7 +11,7 @@ We use the testing framework in which we expect a particular answer from
 each test.
 """
 
-from test_framework.test_framework import ComparisonTestFramework, SkipTest # EQB_TODO: Remove import SkipTest class after fixing all the tests (Oct-24)
+from test_framework.test_framework import ComparisonTestFramework
 from test_framework.util import *
 from test_framework.comptool import TestManager, TestInstance, RejectResult
 from test_framework.blocktools import *
@@ -70,7 +70,6 @@ class FullBlockTest(ComparisonTestFramework):
         parser.add_option("--runbarelyexpensive", dest="runbarelyexpensive", default=True)
 
     def run_test(self):
-        raise SkipTest("DOES NOT WORK: test 46")  # EQB_TODO: Fix the tests: '46'
         self.test = TestManager(self, self.options.tmpdir)
         self.test.add_all_connections(self.nodes)
         network_thread_start()
@@ -510,7 +509,7 @@ class FullBlockTest(ComparisonTestFramework):
 
         # Build the redeem script, hash it, use hash to create the p2sh script
         redeem_script = CScript([self.coinbase_pubkey] + [OP_2DUP, OP_CHECKSIGVERIFY]*5 + [OP_CHECKSIG])
-        redeem_script_hash = hash160(redeem_script)
+        redeem_script_hash = hash160_sha3_256(redeem_script)
         p2sh_script = CScript([OP_HASH160, redeem_script_hash, OP_EQUAL])
 
         # Create a transaction that spends one satoshi to the p2sh_script, the rest to OP_TRUE

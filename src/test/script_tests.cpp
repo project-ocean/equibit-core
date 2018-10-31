@@ -814,7 +814,11 @@ BOOST_AUTO_TEST_CASE(script_build)
     {
         CScript witscript = CScript() << ToByteVector(keys.pubkey0);
         uint256 hash;
+#ifdef BUILD_BTC
         CSHA256().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
+#else  // BUILD_EQB
+        SHA3().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
+#endif // END_BUILD
         std::vector<unsigned char> hashBytes = ToByteVector(hash);
         hashBytes.pop_back();
         tests.push_back(TestBuilder(CScript() << OP_0 << hashBytes,
