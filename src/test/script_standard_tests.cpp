@@ -102,8 +102,13 @@ BOOST_AUTO_TEST_CASE(script_standard_Solver_success)
 
     // TX_WITNESS_V0_SCRIPTHASH
     uint256 scriptHash;
+#ifdef BUILD_BTC
     CSHA256().Write(&redeemScript[0], redeemScript.size())
         .Finalize(scriptHash.begin());
+#else // BUILD_EQB
+    SHA3().Write(&redeemScript[0], redeemScript.size())
+        .Finalize(scriptHash.begin());
+#endif // END_BUILD
 
     s.clear();
     s << OP_0 << ToByteVector(scriptHash);
@@ -223,13 +228,21 @@ BOOST_AUTO_TEST_CASE(script_standard_ExtractDestination)
     s << OP_0 << ToByteVector(pubkey.GetID());
     BOOST_CHECK(ExtractDestination(s, address));
     WitnessV0KeyHash keyhash;
+#ifdef BUILD_BTC
     CHash160().Write(pubkey.begin(), pubkey.size()).Finalize(keyhash.begin());
+#else // BUILD_EQB
+    CSHA3Hash160().Write(pubkey.begin(), pubkey.size()).Finalize(keyhash.begin());
+#endif // END_BUILD
     BOOST_CHECK(boost::get<WitnessV0KeyHash>(&address) && *boost::get<WitnessV0KeyHash>(&address) == keyhash);
 
     // TX_WITNESS_V0_SCRIPTHASH
     s.clear();
     WitnessV0ScriptHash scripthash;
+#ifdef BUILD_BTC
     CSHA256().Write(redeemScript.data(), redeemScript.size()).Finalize(scripthash.begin());
+#else // BUILD_EQB
+    SHA3().Write(redeemScript.data(), redeemScript.size()).Finalize(scripthash.begin());
+#endif // END_BUILD
     s << OP_0 << ToByteVector(scripthash);
     BOOST_CHECK(ExtractDestination(s, address));
     BOOST_CHECK(boost::get<WitnessV0ScriptHash>(&address) && *boost::get<WitnessV0ScriptHash>(&address) == scripthash);
@@ -374,8 +387,13 @@ BOOST_AUTO_TEST_CASE(script_standard_GetScriptFor_)
     witnessScript << OP_1 << ToByteVector(pubkeys[0]) << OP_1 << OP_CHECKMULTISIG;
 
     uint256 scriptHash;
+#ifdef BUILD_BTC
     CSHA256().Write(&witnessScript[0], witnessScript.size())
         .Finalize(scriptHash.begin());
+#else // BUILD_EQB
+    SHA3().Write(&witnessScript[0], witnessScript.size())
+        .Finalize(scriptHash.begin());
+#endif // END_BUILD
 
     expected.clear();
     expected << OP_0 << ToByteVector(scriptHash);
@@ -605,8 +623,13 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
             OP_2 << OP_CHECKMULTISIG;
 
         uint256 scriptHash;
+#ifdef BUILD_BTC
         CSHA256().Write(&witnessScript[0], witnessScript.size())
             .Finalize(scriptHash.begin());
+#else // BUILD_EQB
+        SHA3().Write(&witnessScript[0], witnessScript.size())
+            .Finalize(scriptHash.begin());
+#endif // END_BUILD
 
         scriptPubKey.clear();
         scriptPubKey << OP_0 << ToByteVector(scriptHash);
@@ -642,8 +665,13 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
             OP_2 << OP_CHECKMULTISIG;
 
         uint256 scriptHash;
+#ifdef BUILD_BTC
         CSHA256().Write(&witnessScript[0], witnessScript.size())
             .Finalize(scriptHash.begin());
+#else // BUILD_EQB
+        SHA3().Write(&witnessScript[0], witnessScript.size())
+            .Finalize(scriptHash.begin());
+#endif // END_BUILD
 
         scriptPubKey.clear();
         scriptPubKey << OP_0 << ToByteVector(scriptHash);
@@ -677,8 +705,13 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
             OP_2 << OP_CHECKMULTISIG;
 
         uint256 scriptHash;
+#ifdef BUILD_BTC
         CSHA256().Write(&witnessScript[0], witnessScript.size())
             .Finalize(scriptHash.begin());
+#else // BUILD_EQB
+        SHA3().Write(&witnessScript[0], witnessScript.size())
+            .Finalize(scriptHash.begin());
+#endif // END_BUILD
 
         CScript redeemScript;
         redeemScript << OP_0 << ToByteVector(scriptHash);

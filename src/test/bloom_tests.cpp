@@ -101,7 +101,12 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << filter;
 
+#ifdef BUILD_BTC
     std::vector<unsigned char> vch = ParseHex("038fc16b080000000000000001");
+#else  // BUILD_EQB
+    // EQB_TODO Derive the expected value independently
+    std::vector<unsigned char> vch = ParseHex("03b3c1eb080000000000000001");
+#endif // END_BUILD
     std::vector<char> expected(vch.size());
 
     for (unsigned int i = 0; i < vch.size(); i++)
