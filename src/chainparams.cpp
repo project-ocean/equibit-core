@@ -180,21 +180,27 @@ public:
         // This is fine at runtime as we'll fall back to using them as a oneshot if they dont support the
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
-        // EQB_TODO replace with EQB seeds
+#ifdef BUILD_BTC
         vSeeds.emplace_back("seed.bitcoin.sipa.be"); // Pieter Wuille, only supports x1, x5, x9, and xd
         vSeeds.emplace_back("dnsseed.bluematt.me"); // Matt Corallo, only supports x9
         vSeeds.emplace_back("dnsseed.bitcoin.dashjr.org"); // Luke Dashjr
         vSeeds.emplace_back("seed.bitcoinstats.com"); // Christian Decker, supports x1 - xf
         vSeeds.emplace_back("seed.bitcoin.jonasschnelli.ch"); // Jonas Schnelli, only supports x1, x5, x9, and xd
         vSeeds.emplace_back("seed.btc.petertodd.org"); // Peter Todd, only supports x1, x5, x9, and xd
+#else  // BUILD_EQB
+       // EQB_TODO Add EQB mainnet seeds
+#endif // END_BUILD
 
 #ifdef BUILD_BTC
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,0);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 5);
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128);
 #else  // BUILD_EQB
+        // EQB_TODO specify new prefixes
         base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0x98 }; // "EQB" prefix on address
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 5);
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128);
 #endif // END_BUILD
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,128);
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
 
@@ -248,7 +254,12 @@ public:
         consensus.BIP34Hash = uint256S("0x0000000023b3a96d3484e5abb3755c413e7d41500f8e2a5c3f0dd01299cd8ef8");
         consensus.BIP65Height = 581885; // 00000000007f6655f22f98e72ed80d8b06dc761d5da09df0fa1dc4be4f861eb6
         consensus.BIP66Height = 330776; // 000000002104c8c45e99a8853285a3b592602a3ccde2b832481da85e9e4ba182
+#ifdef BUILD_BTC
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+#else  // BUILD_EQB
+       // EQB_TODO temporary to mine genesis block below
+        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+#endif // END_BUILD
 #ifdef BUILD_BTC
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
 #else  // BUILD_EQB
@@ -286,26 +297,51 @@ public:
         nDefaultPort = 18333;
         nPruneAfterHeight = 1000;
 
+#ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-#ifdef BUILD_BTC
         assert(consensus.hashGenesisBlock == uint256S("0x000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
-       // EQB_TODO fix asserts
+
+        // EQB_TODO temporarily mine a genesis block just to get the unit tests passing
+        // Replace later with standard difficulty, a new date and a hard-coded nonce
+
+        unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
+
+        for (uint32_t nonce = 0; ; nonce++) {
+            genesis = CreateEquibitGenesisBlock(1231006505, nonce, nPoWTarget, 1, 50 * COIN);
+            consensus.hashGenesisBlock = genesis.GetHash();
+            // std::cout << "genesis " << nonce << std::endl;
+
+            if (CheckProofOfWork(consensus.hashGenesisBlock, nPoWTarget, consensus)) {
+                break;
+            }
+        }
 #endif // END_BUILD
 
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
+#ifdef BUILD_BTC
         vSeeds.emplace_back("testnet-seed.bitcoin.jonasschnelli.ch");
         vSeeds.emplace_back("seed.tbtc.petertodd.org");
         vSeeds.emplace_back("seed.testnet.bitcoin.sprovoost.nl");
         vSeeds.emplace_back("testnet-seed.bluematt.me"); // Just a static list of stable node(s), only supports x9
+#else  // BUILD_EQB
+       // EQB_TODO Add EQB testnet seeds
+#endif // END_BUILD
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
+#ifdef BUILD_BTC
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 0);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 5);
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128);
+#else  // BUILD_EQB
+        // EQB_TODO specify new prefixes
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0x98 }; // "EQB" prefix on address
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 5);
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128);
+#endif // END_BUILD
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
@@ -381,13 +417,27 @@ public:
         nDefaultPort = 18444;
         nPruneAfterHeight = 1000;
 
+#ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1296688602, 2, 0x207fffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-#ifdef BUILD_BTC
         assert(consensus.hashGenesisBlock == uint256S("0x0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
-       // EQB_TODO fix asserts
+
+        // EQB_TODO temporarily mine a genesis block just to get the unit tests passing
+        // Replace later with standard difficulty, a new date and a hard-coded nonce
+
+        unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
+
+        for (uint32_t nonce = 0; ; nonce++) {
+            genesis = CreateEquibitGenesisBlock(1231006505, nonce, nPoWTarget, 1, 50 * COIN);
+            consensus.hashGenesisBlock = genesis.GetHash();
+            // std::cout << "genesis " << nonce << std::endl;
+
+            if (CheckProofOfWork(consensus.hashGenesisBlock, nPoWTarget, consensus)) {
+                break;
+            }
+        }
 #endif // END_BUILD
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
@@ -409,9 +459,16 @@ public:
             0
         };
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
+#ifdef BUILD_BTC
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 0);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 5);
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128);
+#else  // BUILD_EQB
+        // EQB_TODO specify new prefixes
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0x98 }; // "EQB" prefix on address
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 5);
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128);
+#endif // END_BUILD
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
