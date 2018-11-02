@@ -65,7 +65,11 @@ static void VerifyScriptBench(benchmark::State& state)
     key.Set(vchKey.begin(), vchKey.end(), false);
     CPubKey pubkey = key.GetPubKey();
     uint160 pubkeyHash;
+#ifdef BUILD_BTC
     CHash160().Write(pubkey.begin(), pubkey.size()).Finalize(pubkeyHash.begin());
+#else  // BUILD_EQB
+    CSHA3Hash160().Write(pubkey.begin(), pubkey.size()).Finalize(pubkeyHash.begin());
+#endif // END_BUILD
 
     // Script.
     CScript scriptPubKey = CScript() << witnessversion << ToByteVector(pubkeyHash);

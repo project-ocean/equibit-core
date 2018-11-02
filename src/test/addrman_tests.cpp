@@ -34,7 +34,11 @@ public:
 
     int RandomInt(int nMax) override
     {
+#ifdef BUILD_BTC
         state = (CHashWriter(SER_GETHASH, 0) << state).GetHash().GetCheapHash();
+#else  // BUILD_EQB
+        state = (CSHA3HashWriter(SER_GETHASH, 0) << state).GetHash().GetCheapHash();
+#endif // END_BUILD
         return (unsigned int)(state % nMax);
     }
 
@@ -225,6 +229,7 @@ BOOST_AUTO_TEST_CASE(addrman_new_collisions)
 
     BOOST_CHECK_EQUAL(addrman.size(), 0);
 
+#ifdef BUILD_BTC
     for (unsigned int i = 1; i < 18; i++) {
         CService addr = ResolveService("250.1.1." + boost::to_string(i));
         addrman.Add(CAddress(addr, NODE_NONE), source);
@@ -241,6 +246,24 @@ BOOST_AUTO_TEST_CASE(addrman_new_collisions)
     CService addr2 = ResolveService("250.1.1.19");
     addrman.Add(CAddress(addr2, NODE_NONE), source);
     BOOST_CHECK_EQUAL(addrman.size(), 18);
+#else  // BUILD_EQB
+    for (unsigned int i = 1; i < 6; i++) {
+        CService addr = ResolveService("250.1.1." + boost::to_string(i));
+        addrman.Add(CAddress(addr, NODE_NONE), source);
+
+        //Test: No collision in new table yet.
+        BOOST_CHECK_EQUAL(addrman.size(), i);
+    }
+
+    //Test: new table collision!
+    CService addr1 = ResolveService("250.1.1.6");
+    addrman.Add(CAddress(addr1, NODE_NONE), source);
+    BOOST_CHECK_EQUAL(addrman.size(), 5);
+
+    CService addr2 = ResolveService("250.1.1.7");
+    addrman.Add(CAddress(addr2, NODE_NONE), source);
+    BOOST_CHECK_EQUAL(addrman.size(), 6);
+#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_CASE(addrman_tried_collisions)
@@ -251,6 +274,7 @@ BOOST_AUTO_TEST_CASE(addrman_tried_collisions)
 
     BOOST_CHECK_EQUAL(addrman.size(), 0);
 
+#ifdef BUILD_BTC
     for (unsigned int i = 1; i < 80; i++) {
         CService addr = ResolveService("250.1.1." + boost::to_string(i));
         addrman.Add(CAddress(addr, NODE_NONE), source);
@@ -258,7 +282,7 @@ BOOST_AUTO_TEST_CASE(addrman_tried_collisions)
 
         //Test: No collision in tried table yet.
         BOOST_CHECK_EQUAL(addrman.size(), i);
-    }
+}
 
     //Test: tried table collision!
     CService addr1 = ResolveService("250.1.1.80");
@@ -268,6 +292,25 @@ BOOST_AUTO_TEST_CASE(addrman_tried_collisions)
     CService addr2 = ResolveService("250.1.1.81");
     addrman.Add(CAddress(addr2, NODE_NONE), source);
     BOOST_CHECK_EQUAL(addrman.size(), 80);
+#else  // BUILD_EQB
+    for (unsigned int i = 1; i < 60; i++) {
+        CService addr = ResolveService("250.1.1." + boost::to_string(i));
+        addrman.Add(CAddress(addr, NODE_NONE), source);
+        addrman.Good(CAddress(addr, NODE_NONE));
+
+        //Test: No collision in tried table yet.
+        BOOST_CHECK_EQUAL(addrman.size(), i);
+    }
+
+    //Test: tried table collision!
+    CService addr1 = ResolveService("250.1.1.60");
+    addrman.Add(CAddress(addr1, NODE_NONE), source);
+    BOOST_CHECK_EQUAL(addrman.size(), 59);
+
+    CService addr2 = ResolveService("250.1.1.61");
+    addrman.Add(CAddress(addr2, NODE_NONE), source);
+    BOOST_CHECK_EQUAL(addrman.size(), 60);
+#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_CASE(addrman_find)
@@ -398,9 +441,16 @@ BOOST_AUTO_TEST_CASE(addrman_getaddr)
 
     size_t percent23 = (addrman.size() * 23) / 100;
     BOOST_CHECK_EQUAL(vAddr.size(), percent23);
+
+#ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(vAddr.size(), 461);
     // (Addrman.size() < number of addresses added) due to address collisions.
     BOOST_CHECK_EQUAL(addrman.size(), 2006);
+#else  // BUILD_EQB
+    BOOST_CHECK_EQUAL(vAddr.size(), 459);
+    // (Addrman.size() < number of addresses added) due to address collisions.
+    BOOST_CHECK_EQUAL(addrman.size(), 1999);
+#endif // END_BUILD
 }
 
 
@@ -416,11 +466,19 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_tried_bucket)
 
     CAddrInfo info1 = CAddrInfo(addr1, source1);
 
+#ifdef BUILD_BTC
     uint256 nKey1 = (uint256)(CHashWriter(SER_GETHASH, 0) << 1).GetHash();
     uint256 nKey2 = (uint256)(CHashWriter(SER_GETHASH, 0) << 2).GetHash();
+#else  // BUILD_EQB
+    uint256 nKey1 = (uint256)(CSHA3HashWriter(SER_GETHASH, 0) << 1).GetHash();
+    uint256 nKey2 = (uint256)(CSHA3HashWriter(SER_GETHASH, 0) << 2).GetHash();
+#endif // END_BUILD
 
-
+#ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(info1.GetTriedBucket(nKey1), 40);
+#else  // BUILD_EQB
+    BOOST_CHECK_EQUAL(info1.GetTriedBucket(nKey1), 150);
+#endif // END_BUILD
 
     // Test: Make sure key actually randomizes bucket placement. A fail on
     //  this test could be a security issue.
@@ -455,7 +513,11 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_tried_bucket)
     }
     // Test: IP addresses in the different groups should map to more than
     //  8 buckets.
+#ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(buckets.size(), 160);
+#else  // BUILD_EQB
+    BOOST_CHECK_EQUAL(buckets.size(), 161);
+#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_CASE(caddrinfo_get_new_bucket)
@@ -469,12 +531,22 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_new_bucket)
 
     CAddrInfo info1 = CAddrInfo(addr1, source1);
 
+#ifdef BUILD_BTC
     uint256 nKey1 = (uint256)(CHashWriter(SER_GETHASH, 0) << 1).GetHash();
     uint256 nKey2 = (uint256)(CHashWriter(SER_GETHASH, 0) << 2).GetHash();
+#else  // BUILD_EQB
+    uint256 nKey1 = (uint256)(CSHA3HashWriter(SER_GETHASH, 0) << 1).GetHash();
+    uint256 nKey2 = (uint256)(CSHA3HashWriter(SER_GETHASH, 0) << 2).GetHash();
+#endif // END_BUILD
 
     // Test: Make sure the buckets are what we expect
+#ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1), 786);
     BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1, source1), 786);
+#else  // BUILD_EQB
+    BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1), 861);
+    BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1, source1), 861);
+#endif // END_BUILD
 
     // Test: Make sure key actually randomizes bucket placement. A fail on
     //  this test could be a security issue.

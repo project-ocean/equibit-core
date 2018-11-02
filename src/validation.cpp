@@ -1391,7 +1391,11 @@ bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsVi
             // We only use the first 19 bytes of nonce to avoid a second SHA
             // round - giving us 19 + 32 + 4 = 55 bytes (+ 8 + 1 = 64)
             static_assert(55 - sizeof(flags) - 32 >= 128/8, "Want at least 128 bits of nonce for script execution cache");
+#ifdef BUILD_BTC
             CSHA256().Write(scriptExecutionCacheNonce.begin(), 55 - sizeof(flags) - 32).Write(tx.GetWitnessHash().begin(), 32).Write((unsigned char*)&flags, sizeof(flags)).Finalize(hashCacheEntry.begin());
+#else  // BUILD_EQB
+            SHA3().Write(scriptExecutionCacheNonce.begin(), 55 - sizeof(flags) - 32).Write(tx.GetWitnessHash().begin(), 32).Write((unsigned char*)&flags, sizeof(flags)).Finalize(hashCacheEntry.begin());
+#endif // END_BUILD
             AssertLockHeld(cs_main); //TODO: Remove this requirement by making CuckooCache not require external locks
             if (scriptExecutionCache.contains(hashCacheEntry, !cacheFullScriptStore)) {
                 return true;
@@ -1469,7 +1473,11 @@ bool UndoWriteToDisk(const CBlockUndo& blockundo, CDiskBlockPos& pos, const uint
     fileout << blockundo;
 
     // calculate & write checksum
+#ifdef BUILD_BTC
     CHashWriter hasher(SER_GETHASH, PROTOCOL_VERSION);
+#else  // BUILD_EQB
+    CSHA3HashWriter hasher(SER_GETHASH, PROTOCOL_VERSION);
+#endif // END_BUILD
     hasher << hashBlock;
     hasher << blockundo;
     fileout << hasher.GetHash();
@@ -1491,7 +1499,11 @@ static bool UndoReadFromDisk(CBlockUndo& blockundo, const CBlockIndex *pindex)
 
     // Read block
     uint256 hashChecksum;
+#ifdef BUILD_BTC
     CHashVerifier<CAutoFile> verifier(&filein); // We need a CHashVerifier as reserializing may lose data
+#else  // BUILD_EQB
+    CSHA3HashVerifier<CAutoFile> verifier(&filein); // We need a CHashVerifier as reserializing may lose data
+#endif // END_BUILD
     try {
         verifier << pindex->pprev->GetBlockHash();
         verifier >> blockundo;

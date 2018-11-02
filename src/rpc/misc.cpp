@@ -389,7 +389,11 @@ UniValue verifymessage(const JSONRPCRequest& request)
     if (fInvalid)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Malformed base64 encoding");
 
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else  // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     ss << strMessageMagic;
     ss << strMessage;
 
@@ -431,7 +435,11 @@ UniValue signmessagewithprivkey(const JSONRPCRequest& request)
     if (!key.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Private key outside allowed range");
 
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else  // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     ss << strMessageMagic;
     ss << strMessage;
 

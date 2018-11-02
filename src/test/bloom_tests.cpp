@@ -85,7 +85,11 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_serialize_with_tweak)
 
 BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
 {
+#ifdef BUILD_BTC
     std::string strSecret = std::string("5Kg1gnAjaLfKiwhhPpGS3QfRg2m6awQvaj98JCZBZQ5SuS2F15C");
+#else  // BUILD_EQB
+    std::string strSecret = std::string("5K6egrfPCCHH2xg1Dqf5i2vsaUhbUqwZsWCVpffKLVMW8PP9Q5j");
+#endif // END_BUILD
     CBitcoinSecret vchSecret;
     BOOST_CHECK(vchSecret.SetString(strSecret));
 
@@ -105,7 +109,7 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
     std::vector<unsigned char> vch = ParseHex("038fc16b080000000000000001");
 #else  // BUILD_EQB
     // EQB_TODO Derive the expected value independently
-    std::vector<unsigned char> vch = ParseHex("03b3c1eb080000000000000001");
+    std::vector<unsigned char> vch = ParseHex("03333e14080000000000000001");
 #endif // END_BUILD
     std::vector<char> expected(vch.size());
 
@@ -318,6 +322,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_1)
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 #else  // BUILD_EQB
+     // this tests consist of a block and two transactions as filter
      // original block id: 0000000000013b8ab2cd513b0261a14096412195a72a0c4827d229dcc7e0f7af
      // new block id: 3357a296bf0e5de334d9a1318962dca2ec079b49a56c8bb799acf587aaccb0d0
      // new block: 01000030ad61fde50492dd9b573efc8d98ce9f65ebf4ba2c3d8743f62baf674eb7da56389fd6d31fc23131ea0c07a137c5dabef7a36923d06e6acb2593702142f6cb2373f1a4d05bffff7f200100000003020000000001010000000000000000000000000000000000000000000000000000000000000000ffffffff0502e1000101ffffffff020c1a039500000000232102b2f774fad8d756cfa36c8c40f41a2b3d5a1efb10cd16dd359c175d934a2e410fac0000000000000000266a24aa21a9ed5d5abe5f59bac0046a9a042339bed0d0e68e9dafe7e8128483b6732926ac1adb0120000000000000000000000000000000000000000000000000000000000000000000000000020000000001022aad98e462ef9e935510c3162a1c1b71db3470bf97410fd3f9356322b7ec06a60000000017160014fc83ac01ca4c1b5559d35ffafb60cddacaf7db47feffffff2aad98e462ef9e935510c3162a1c1b71db3470bf97410fd3f9356322b7ec06a60100000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff02747598000000000017a914eb0e893ba01a031e3ae8e6d4ebefdcef0f75ea3b8700e1f5050000000017a914103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a58702483045022100bd9e2d961882530e8d50b5ad08e90123c92777ab82ba85ba01432ebc7cc6b7e702206094560e2177ec525a2978c9c0d28016c85279549a49c03628ac03aae2f59f1c0121031dde588cc9d063730bed29fb4a96f9567fcae3cc0e0d4c2fe63a7a501340cd1a02473044022048ee98b344eb84c3d10e7b454454e2a37ae97628b529e40018effbbfa708878102201e44255419a4dc3674e59f295aaea984672043aa7b014c6774fa15767eb74c6b0121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824e0000000020000000001017c037e163f8dfee4632a8cf6c87187d3cb61224e6dae8f4b0ed0fae3a380085701000000171600146ce9d46d789c906fcccb957f022a5f49c63d863efeffffff0290f248110000000017a9143db2531e5983de84d0fb987b7cc4b871593ae0858700c2eb0b0000000017a91445553271f2e2fd155dd8f26fc19b1017b15cfd1e8702473044022005746059e222352f0d51e2dda9d90b3b66dc9006c214bd5a8252cec2fb11686d02205e881d6ff27a8590ad5f62b0a554d7dbd1fdf6088a7af24d9ccea1096b19150701210279de02a079f37f249861953e169f0eb809e72f022e3cbce1808baf4af984c6c9e0000000
@@ -456,7 +461,6 @@ BOOST_AUTO_TEST_CASE(merkle_block_2)
     for(unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
 
-    // first: vin->vout, second: vin, third: vout
     // new output script is obtained from the first output script of tnx: f82020cc634bef0cb4e481f28d3e671b38c41ff2d08b2b4b4faa53ba596fbc17
     // new script: 103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a5
     filter.insert(ParseHex("103e9fb7c75b69a0107ebfd3e21e3ba2e5cc35a5"));

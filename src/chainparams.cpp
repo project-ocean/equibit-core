@@ -54,6 +54,8 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  *     CTxOut(nValue=50.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
  *   vMerkleTree: 4a5e1e
  */
+#ifdef BUILD_BTC
+
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
     const char* pszTimestamp = "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks";
@@ -61,9 +63,9 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
-#ifndef BUILD_BTC
+#else  // BUILD_EQB
 
-static CBlock CreateEquibitGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
+static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
     //const char* pszTimestamp = "The Globe And Mail 28/Jun/2018 Blockchain has the pontential to do amazing things, but it needs a reboot";
     const char* pszTimestamp = "The G&M 28/Jun/2018 Blockchain has the pontential to do amazing things";
@@ -71,7 +73,25 @@ static CBlock CreateEquibitGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
-#endif
+static CBlock MineGenesisBlock(Consensus::Params& consensus)
+{
+    CBlock genesis;
+    unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
+
+    for (uint32_t nonce = 0; ; nonce++) {
+        genesis = CreateGenesisBlock(1231006505, nonce, nPoWTarget, 1, 50 * COIN);
+        consensus.hashGenesisBlock = genesis.GetHash();
+        //std::cout << "genesis " << nonce << std::endl;
+
+        if (CheckProofOfWork(consensus.hashGenesisBlock, nPoWTarget, consensus)) {
+            break;
+        }
+    }
+
+    return genesis;
+}
+
+#endif // END_BUILD
 
 void CChainParams::UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
 {
@@ -104,7 +124,6 @@ public:
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #else  // BUILD_EQB
        // EQB_TODO temporary to mine genesis block below
-        //consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #endif // END_BUILD
 #ifdef BUILD_BTC
@@ -155,22 +174,9 @@ public:
         assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
-
-        // EQB_TODO temporarily mine a genesis block just to get the unit tests passing
-        // Replace later with standard difficulty, a new date and a hard-coded nonce
-
-        unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
-
-        for (uint32_t nonce = 0; ; nonce++) {
-            genesis = CreateEquibitGenesisBlock(1231006505, nonce, nPoWTarget, 1, 50 * COIN);
-            consensus.hashGenesisBlock = genesis.GetHash();
-            //std::cout << "genesis " << nonce << std::endl;
-
-            if (CheckProofOfWork(consensus.hashGenesisBlock, nPoWTarget, consensus)) {
-                break;
-            }
-        }
-
+        // EQB_TODO MineGenesisBlock is temporary
+        genesis = MineGenesisBlock(consensus);
+        consensus.hashGenesisBlock = genesis.GetHash();
         //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
         //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #endif // END_BUILD
@@ -180,13 +186,16 @@ public:
         // This is fine at runtime as we'll fall back to using them as a oneshot if they dont support the
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
-        // EQB_TODO replace with EQB seeds
+#ifdef BUILD_BTC
         vSeeds.emplace_back("seed.bitcoin.sipa.be"); // Pieter Wuille, only supports x1, x5, x9, and xd
         vSeeds.emplace_back("dnsseed.bluematt.me"); // Matt Corallo, only supports x9
         vSeeds.emplace_back("dnsseed.bitcoin.dashjr.org"); // Luke Dashjr
         vSeeds.emplace_back("seed.bitcoinstats.com"); // Christian Decker, supports x1 - xf
         vSeeds.emplace_back("seed.bitcoin.jonasschnelli.ch"); // Jonas Schnelli, only supports x1, x5, x9, and xd
         vSeeds.emplace_back("seed.btc.petertodd.org"); // Peter Todd, only supports x1, x5, x9, and xd
+#else  // BUILD_EQB
+       // EQB_TODO Add EQB mainnet seeds
+#endif // END_BUILD
 
 #ifdef BUILD_BTC
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,0);
@@ -248,7 +257,12 @@ public:
         consensus.BIP34Hash = uint256S("0x0000000023b3a96d3484e5abb3755c413e7d41500f8e2a5c3f0dd01299cd8ef8");
         consensus.BIP65Height = 581885; // 00000000007f6655f22f98e72ed80d8b06dc761d5da09df0fa1dc4be4f861eb6
         consensus.BIP66Height = 330776; // 000000002104c8c45e99a8853285a3b592602a3ccde2b832481da85e9e4ba182
+#ifdef BUILD_BTC
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+#else  // BUILD_EQB
+        // EQB_TODO temporary to mine genesis block below
+        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+#endif // END_BUILD
 #ifdef BUILD_BTC
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
 #else  // BUILD_EQB
@@ -286,22 +300,31 @@ public:
         nDefaultPort = 18333;
         nPruneAfterHeight = 1000;
 
+#ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-#ifdef BUILD_BTC
         assert(consensus.hashGenesisBlock == uint256S("0x000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
-       // EQB_TODO fix asserts
+        // EQB_TODO MineGenesisBlock is temporary
+        genesis = MineGenesisBlock(consensus);
+        consensus.hashGenesisBlock = genesis.GetHash();
+        //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
+        //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #endif // END_BUILD
+
 
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
+#ifdef BUILD_BTC
         vSeeds.emplace_back("testnet-seed.bitcoin.jonasschnelli.ch");
         vSeeds.emplace_back("seed.tbtc.petertodd.org");
         vSeeds.emplace_back("seed.testnet.bitcoin.sprovoost.nl");
         vSeeds.emplace_back("testnet-seed.bluematt.me"); // Just a static list of stable node(s), only supports x9
+#else  // BUILD_EQB
+       // EQB_TODO Add EQB testnet seeds
+#endif // END_BUILD
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
@@ -381,13 +404,17 @@ public:
         nDefaultPort = 18444;
         nPruneAfterHeight = 1000;
 
+#ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1296688602, 2, 0x207fffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-#ifdef BUILD_BTC
         assert(consensus.hashGenesisBlock == uint256S("0x0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
-       // EQB_TODO fix asserts
+        // EQB_TODO MineGenesisBlock is temporary
+        genesis = MineGenesisBlock(consensus);
+        consensus.hashGenesisBlock = genesis.GetHash();
+        //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
+        //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #endif // END_BUILD
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
