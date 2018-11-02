@@ -18,6 +18,7 @@ BOOST_FIXTURE_TEST_SUITE(merkleblock_tests, BasicTestingSetup)
  */
 BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_found)
 {
+#ifdef BUILD_BTC
     CBlock block = getBlock13b8a();
 
     std::set<uint256> txids;
@@ -41,7 +42,6 @@ BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_found)
     std::vector<uint256> vMatched;
     std::vector<unsigned int> vIndex;
 
-#ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(merkleBlock.txn.ExtractMatches(vMatched, vIndex).GetHex(), block.hashMerkleRoot.GetHex());
     BOOST_CHECK_EQUAL(vMatched.size(), 2);
 
@@ -52,7 +52,38 @@ BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_found)
     BOOST_CHECK_EQUAL(vMatched[1].ToString(), txhash1.ToString());
     BOOST_CHECK_EQUAL(vIndex[1], 8);
 #else  // BUILD_EQB
-       // EQB_TODO fix unit tests
+    CBlock block = getBlockEquibit();
+
+    std::set<uint256> txids;
+
+    // Last txn in block.
+    uint256 txhash1 = uint256S("0xdcf3a378f6b6467087f78361b8288b11f85cdd84b6e53554a0ff949128905a5c");
+
+    // Second txn in block.
+    uint256 txhash2 = uint256S("0xa4e6f3972f903d4c8ef3e876072b905aeebe9bd7aa0f9b78996dd7bac5f86e26");
+
+    txids.insert(txhash1);
+    txids.insert(txhash2);
+
+    CMerkleBlock merkleBlock(block, txids);
+
+    BOOST_CHECK_EQUAL(merkleBlock.header.GetHash().GetHex(), block.GetHash().GetHex());
+
+    // vMatchedTxn is only used when bloom filter is specified.
+    BOOST_CHECK_EQUAL(merkleBlock.vMatchedTxn.size(), 0);
+
+    std::vector<uint256> vMatched;
+    std::vector<unsigned int> vIndex;
+
+    BOOST_CHECK_EQUAL(merkleBlock.txn.ExtractMatches(vMatched, vIndex).GetHex(), block.hashMerkleRoot.GetHex());
+    BOOST_CHECK_EQUAL(vMatched.size(), 2);
+
+    // Ordered by occurrence in depth-first tree traversal.
+    BOOST_CHECK_EQUAL(vMatched[0].ToString(), txhash2.ToString());
+    BOOST_CHECK_EQUAL(vIndex[0], 1);
+
+    BOOST_CHECK_EQUAL(vMatched[1].ToString(), txhash1.ToString());
+    BOOST_CHECK_EQUAL(vIndex[1], 2);
 #endif // END_BUILD
 }
 
@@ -63,6 +94,7 @@ BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_found)
  */
 BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_not_found)
 {
+#ifdef BUILD_BTC
     CBlock block = getBlock13b8a();
 
     std::set<uint256> txids2;
@@ -75,13 +107,29 @@ BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_not_found)
     std::vector<uint256> vMatched;
     std::vector<unsigned int> vIndex;
 
-#ifdef BUILD_BTC
+
     BOOST_CHECK_EQUAL(merkleBlock.txn.ExtractMatches(vMatched, vIndex).GetHex(), block.hashMerkleRoot.GetHex());
     BOOST_CHECK_EQUAL(vMatched.size(), 0);
-#else  // BUILD_EQB
-       // EQB_TODO fix unit tests
-#endif // END_BUILD
     BOOST_CHECK_EQUAL(vIndex.size(), 0);
+#else  // BUILD_EQB
+    CBlock block = getBlockEquibit();
+
+    std::set<uint256> txids2;
+    txids2.insert(uint256S("0xc0ffee00003bafa802c8aa084379aa98d9fcd632ddc2ed9782b586ec87451f20"));
+    CMerkleBlock merkleBlock(block, txids2);
+
+    BOOST_CHECK_EQUAL(merkleBlock.header.GetHash().GetHex(), block.GetHash().GetHex());
+    BOOST_CHECK_EQUAL(merkleBlock.vMatchedTxn.size(), 0);
+
+    std::vector<uint256> vMatched;
+    std::vector<unsigned int> vIndex;
+
+
+    BOOST_CHECK_EQUAL(merkleBlock.txn.ExtractMatches(vMatched, vIndex).GetHex(), block.hashMerkleRoot.GetHex());
+    BOOST_CHECK_EQUAL(vMatched.size(), 0);
+    BOOST_CHECK_EQUAL(vIndex.size(), 0);
+#endif // END_BUILD
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()
