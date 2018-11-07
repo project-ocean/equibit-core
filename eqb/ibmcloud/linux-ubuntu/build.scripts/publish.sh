@@ -33,4 +33,4 @@ git config --global user.email "hjhutty@coderise.io"
 
 git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}/
 git commit -m "Committed Equibit Binaries ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}"
-git push origin master
+# git push origin master
