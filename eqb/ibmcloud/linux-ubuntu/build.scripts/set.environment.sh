@@ -2,7 +2,7 @@
 
 script_name=$(realpath "$BASH_SOURCE")
 script_folder=$(dirname "$script_name")
-source_folder=$(realpath "$script_folder/../../..")
+source_folder=$(realpath "$script_folder/../../../..")
 thridparty_folder=$(realpath "$source_folder/../thirdparty")
 berkley_folder="$thridparty_folder/db4"
 
