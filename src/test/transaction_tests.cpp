@@ -1,11 +1,16 @@
 // Copyright (c) 2011-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#ifdef BUILD_BTC
 #include <test/data/tx_invalid.json.h>
 #include <test/data/tx_valid.json.h>
+#else // BUILD_EQB
+#include <test/data/eqb_tx_invalid.json.h>
+#include <test/data/eqb_tx_valid.json.h>
+#endif // END_BUILD
 #include <test/test_bitcoin.h>
-
 #include <clientversion.h>
 #include <checkqueue.h>
 #include <consensus/tx_verify.h>
@@ -102,7 +107,11 @@ BOOST_AUTO_TEST_CASE(tx_valid)
     // ... where all scripts are stringified scripts.
     //
     // verifyFlags is a comma separated list of script verification flags to apply, or "NONE"
+#ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::tx_valid, json_tests::tx_valid + sizeof(json_tests::tx_valid)));
+#else  // BUILD_EQB
+    UniValue tests = read_json(std::string(json_tests::eqb_tx_valid, json_tests::eqb_tx_valid + sizeof(json_tests::eqb_tx_valid)));
+#endif // END_BUILD
 
     ScriptError err;
     for (unsigned int idx = 0; idx < tests.size(); idx++) {
@@ -169,14 +178,14 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                 }
                 unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
                 const CScriptWitness *witness = &tx.vin[i].scriptWitness;
-#ifdef BUILD_BTC
+#ifdef BUILD_BTC  // BUILD_EQB
                 BOOST_CHECK_MESSAGE(VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
                                                  witness, verify_flags, TransactionSignatureChecker(&tx, i, amount, txdata), &err),
                                     strTest);
                 BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
-#else  // BUILD_EQB
-       // EQB_TODO Generate new test data
-#endif // END_BUILD
+#else // BUILD_EQB
+ // EQB_TODO: Implement Equibit specific transaction in eqb_tx_valid.json
+#endif
             }
         }
     }
@@ -191,8 +200,11 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
     // ... where all scripts are stringified scripts.
     //
     // verifyFlags is a comma separated list of script verification flags to apply, or "NONE"
+#ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::tx_invalid, json_tests::tx_invalid + sizeof(json_tests::tx_invalid)));
-
+#else // BUILD_EQB
+    UniValue tests = read_json(std::string(json_tests::eqb_tx_invalid, json_tests::eqb_tx_invalid + sizeof(json_tests::eqb_tx_invalid)));
+#endif  // END_BUILD
     // Initialize to SCRIPT_ERR_OK. The tests expect err to be changed to a
     // value other than SCRIPT_ERR_OK.
     ScriptError err = SCRIPT_ERR_OK;
@@ -266,7 +278,9 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
             BOOST_CHECK_MESSAGE(!fValid, strTest);
             BOOST_CHECK_MESSAGE(err != SCRIPT_ERR_OK, ScriptErrorString(err));
 #else  // BUILD_EQB
-       // EQB_TODO Generate new test data
+            BOOST_CHECK_MESSAGE(!fValid, strTest);
+            BOOST_CHECK_MESSAGE(err != SCRIPT_ERR_OK, ScriptErrorString(err));
+            // EQB_TODO: Implement Equibit specific transaction in eqb_tx_invalid.json
 #endif // END_BUILD
         }
     }

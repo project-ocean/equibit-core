@@ -1,0 +1,23 @@
+[
+  [ "The following are deserialized transactions which are valid." ],
+  [ "They are in the form" ],
+  [ "[[[prevout hash, prevout index, prevout scriptPubKey, amount?], [input 2], ...]," ],
+  [ "serializedTransaction, verifyFlags]" ],
+  [ "Objects that are only a single string (like this one) are ignored" ],
+
+  [ "The following is d2184ad0e07aba3989db205a370f017efb913ddc82d6beb0d85d3944b8ffd277" ],
+  [ "This is a simple transaction with one input and two outputs" ],
+  [
+    [
+      [
+        "2e203ff0c411db27b2f77da9287a1c77606a35d3143297de361529537484cdef",
+        1,
+        "HASH160 0x14 0x370e09851fad4dc853da261f3f89dbe99b546d89 EQUAL"
+      ]
+    ],
+    "02000000000101efcd847453291536de973214d3356a60771c7a28a97df7b227db11c4f03f202e01000000171600141bec2656913d5e80c27009221fe47bda93c807f6feffffff02d8eb82fe0000000017a9147723ebc4373ef595fba8014d79a2c973f325dce98780a4bf070000000017a91445553271f2e2fd155dd8f26fc19b1017b15cfd1e8702473044022008bd535df4305a6835e8e4f509d60f345231c1099b837994e3d276cfe2b8002e02205228747b984628768ec1f31e09f384d46348b206e00dd128139fb7fbb8ce394e012102bab06a650f832526e0000670bee7ea4fd3d565c1e38553a3d3146138f2bffa5ede000000",
+    "WITNESS"
+  ],
+
+  [ "Make diffs cleaner by leaving a comment here without comma at the end" ]
+]
