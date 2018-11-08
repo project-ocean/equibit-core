@@ -207,11 +207,11 @@ public:
 
         bech32_hrp = "bc";
 #else  // BUILD_EQB
-        base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0x98 }; // "EQB" prefix on address
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 5);
-        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128);
-        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x88, 0xB2, 0x1E };
-        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x88, 0xAD, 0xE4 };
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0xd2 }; // "EQa" prefix on address
+        base58Prefixes[SCRIPT_ADDRESS] = { 0x01, 0xb5, 0xfb }; // "EQs" prefix on address
+        base58Prefixes[SECRET_KEY] = { 0x01, 0xb5, 0xd6 }; // "EQc" WIF wallet format - compressed
+        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x88, 0xB2, 0x1E }; // "xpub" Same as Bitcoin
+        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x88, 0xAD, 0xE4 }; // "xprv" Same as Bitcoin
 
         bech32_hrp = "bc";
 #endif // END_BUILD
@@ -344,11 +344,11 @@ public:
 
         bech32_hrp = "tb";
 #else  // BUILD_EQB
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 196);
-        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 239);
-        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };
-        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x53 }; // "TQa" prefix on address
+        base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x88 }; // "TQs" prefix on address
+        base58Prefixes[SECRET_KEY] = { 0x03, 0x5e, 0xd6 }; // "TQc" WIF wallet format - compressed
+        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };  // Same as Bitcoin
+        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };  // Same as Bitcoin
 
         bech32_hrp = "tb";
 #endif // END_BUILD
@@ -467,11 +467,11 @@ public:
 
         bech32_hrp = "bcrt";
 #else  // BUILD_EQB
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 196);
-        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 239);
-        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };
-        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x53 }; // "TQa" prefix on address
+        base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x88 }; // "TQs" prefix on address
+        base58Prefixes[SECRET_KEY] = { 0x03, 0x5e, 0xd6 }; // "TQc" WIF wallet format - compressed
+        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };  // 'tpub' Same as Bitcoin
+        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };  // 'tprv' Same as Bitcoin
 
         bech32_hrp = "bcrt";
 #endif // END_BUILD
