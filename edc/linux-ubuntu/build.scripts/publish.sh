@@ -1,7 +1,7 @@
 #!/bin/bash
 
 EQUIBIT_ENV=dev
-EQUIBIT_VERSION=0.1
+EQUIBIT_VERSION=0.2
 BUILD_TIMESTAMP=$(date +%Y%m%d%H%M%S)
 
 echo -e "Checking for Equibit daemon"
