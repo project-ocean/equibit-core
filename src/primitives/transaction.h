@@ -198,6 +198,9 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
 
     s >> tx.nVersion;
+#ifndef BUILD_BTC
+    s >> tx.nEqbType;
+#endif // END_BUILD
     unsigned char flags = 0;
     tx.vin.clear();
     tx.vout.clear();
@@ -226,6 +229,9 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
         throw std::ios_base::failure("Unknown transaction optional data");
     }
     s >> tx.nLockTime;
+#ifndef BUILD_BTC
+    s >> tx.nEqbPayloadSize;
+#endif // END_BUILD
 }
 
 template<typename Stream, typename TxType>
@@ -233,6 +239,9 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
 
     s << tx.nVersion;
+#ifndef BUILD_BTC
+    s << tx.nEqbType;
+#endif // END_BUILD
     unsigned char flags = 0;
     // Consistency check
     if (fAllowWitness) {
@@ -255,6 +264,9 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
         }
     }
     s << tx.nLockTime;
+#ifndef BUILD_BTC
+    s << tx.nEqbPayloadSize;
+#endif // END_BUILD
 }
 
 
@@ -281,6 +293,10 @@ public:
     const std::vector<CTxIn> vin;
     const std::vector<CTxOut> vout;
     const int32_t nVersion;
+#ifndef BUILD_BTC  // BUILD_EQB
+    const int8_t nEqbType;    // store the type of transaction
+    const int64_t nEqbPayloadSize;  // store the Equibit payload 
+#endif // END_BUILD
     const uint32_t nLockTime;
 
 private:
@@ -364,6 +380,10 @@ struct CMutableTransaction
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
     int32_t nVersion;
+#ifndef BUILD_BTC  // BUILD_EQB
+    const int8_t nEqbType;    // store the type of transaction
+    const int64_t nEqbPayloadSize;  // store the Equibit payload 
+#endif // END_BUILD
     uint32_t nLockTime;
 
     CMutableTransaction();

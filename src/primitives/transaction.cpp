@@ -54,9 +54,14 @@ std::string CTxOut::ToString() const
 {
     return strprintf("CTxOut(nValue=%d.%08d, scriptPubKey=%s)", nValue / COIN, nValue % COIN, HexStr(scriptPubKey).substr(0, 30));
 }
-
+#ifdef BUILD_BTC
 CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0) {}
 CMutableTransaction::CMutableTransaction(const CTransaction& tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime) {}
+#else // BUILD_EQB
+CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0), nEqbType(0), nEqbPayloadSize(0) {}
+CMutableTransaction::CMutableTransaction(const CTransaction& tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nEqbType(tx.nEqbType), nLockTime(tx.nLockTime), nEqbPayloadSize(tx.nEqbPayloadSize) {}
+#endif // END_BUILD
+
 
 uint256 CMutableTransaction::GetHash() const
 {
@@ -89,9 +94,15 @@ uint256 CTransaction::GetWitnessHash() const
 }
 
 /* For backward compatibility, the hash is initialized to 0. TODO: remove the need for this default constructor entirely. */
+#ifdef BUILD_BTC
 CTransaction::CTransaction() : vin(), vout(), nVersion(CTransaction::CURRENT_VERSION), nLockTime(0), hash() {}
 CTransaction::CTransaction(const CMutableTransaction &tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime), hash(ComputeHash()) {}
 CTransaction::CTransaction(CMutableTransaction &&tx) : vin(std::move(tx.vin)), vout(std::move(tx.vout)), nVersion(tx.nVersion), nLockTime(tx.nLockTime), hash(ComputeHash()) {}
+#else  // BUILD_EQB
+CTransaction::CTransaction() : vin(), vout(), nVersion(CTransaction::CURRENT_VERSION), nEqbType(0), nEqbPayloadSize(0), nLockTime(0), hash() {}
+CTransaction::CTransaction(const CMutableTransaction &tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nEqbType(tx.nEqbType), nEqbPayloadSize(tx.nEqbPayloadSize), nLockTime(tx.nLockTime), hash(ComputeHash()) {}
+CTransaction::CTransaction(CMutableTransaction &&tx) : vin(std::move(tx.vin)), vout(std::move(tx.vout)), nVersion(tx.nVersion), nEqbType(tx.nEqbType), nEqbPayloadSize(tx.nEqbPayloadSize), nLockTime(tx.nLockTime), hash(ComputeHash()) {}
+#endif // END_BUILD
 
 CAmount CTransaction::GetValueOut() const
 {
@@ -112,12 +123,23 @@ unsigned int CTransaction::GetTotalSize() const
 std::string CTransaction::ToString() const
 {
     std::string str;
+#ifdef BUILD_BTC
     str += strprintf("CTransaction(hash=%s, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n",
         GetHash().ToString().substr(0,10),
         nVersion,
         vin.size(),
         vout.size(),
         nLockTime);
+#else  // BUILD_EQB
+    str += strprintf("CTransaction(hash=%s, ver=%d, type=%d, vin.size=%u, vout.size=%u, nLockTime=%u, %EqbPayloadSize=%d)\n",
+        GetHash().ToString().substr(0, 10),
+        nVersion,
+        nEqbType,
+        vin.size(),
+        vout.size(),
+        nLockTime,
+        nEqbPayloadSize);
+#endif // END_BUILD
     for (const auto& tx_in : vin)
         str += "    " + tx_in.ToString() + "\n";
     for (const auto& tx_in : vin)
