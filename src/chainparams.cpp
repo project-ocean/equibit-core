@@ -155,6 +155,7 @@ public:
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000000000000005214481d2d96f898e3d5416e43359c145944a909d242e0"); //506067
+        // EQB_TODO: replace above two values with updated values.
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -199,15 +200,21 @@ public:
 
 #ifdef BUILD_BTC
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,0);
-#else  // BUILD_EQB
-        base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0x98 }; // "EQB" prefix on address
-#endif // END_BUILD
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,128);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 5);
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128);
+        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x88, 0xB2, 0x1E };
+        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x88, 0xAD, 0xE4 };
 
         bech32_hrp = "bc";
+#else  // BUILD_EQB
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0xd1 }; // "EQa" prefix on address. 
+        base58Prefixes[SCRIPT_ADDRESS] = { 0x01, 0xb5, 0xfc }; // "EQs" prefix on address.
+        base58Prefixes[SECRET_KEY] = { 0x01, 0xb5, 0xd6 }; // TODO: "EQc" WIF wallet format - compressed
+        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x88, 0xB2, 0x1E }; // "xpub" Same as Bitcoin
+        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x88, 0xAD, 0xE4 }; // "xprv" Same as Bitcoin
+
+        bech32_hrp = "eq";
+#endif // END_BUILD
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
@@ -217,7 +224,7 @@ public:
 
         checkpointData = {
             {
-                // EQB_TODO
+                // EQB_TODO: Update the checkpoint data once enough blocks are mined 
                 { 11111, uint256S("0x0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d")},
                 { 33333, uint256S("0x000000002dd5588a74784eaa7ab0507a18ad16a236e7b1ce69f00d7ddfb5d0a6")},
                 { 74000, uint256S("0x0000000000573993a3c9e41ce34471c079dcf5f52a0e824a81e7f953b8661a20")},
@@ -234,6 +241,7 @@ public:
             }
         };
 
+        // EQB_TODO: Update chainTxData 
         chainTxData = ChainTxData{
             // Data as of block 0000000000000000002d6cca6761c99b3c2e936f9a0e304b7c7651a993f461de (height 506081).
             1516903077, // * UNIX timestamp of last known number of transactions
@@ -292,6 +300,7 @@ public:
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000002e9e7b00e1f6dc5123a04aad68dd0f0968d8c7aa45f6640795c37b1"); //1135275
+        // EQB_TODO: replace above two values with updated values.
 
         pchMessageStart[0] = 0x0b;
         pchMessageStart[1] = 0x11;
@@ -326,6 +335,7 @@ public:
        // EQB_TODO Add EQB testnet seeds
 #endif // END_BUILD
 
+#ifdef BUILD_BTC
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
@@ -333,6 +343,15 @@ public:
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
         bech32_hrp = "tb";
+#else  // BUILD_EQB
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x5d }; // "TQa" prefix on address
+        base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x87 }; // "TQs" prefix on address
+        base58Prefixes[SECRET_KEY] = { 0x03, 0x5e, 0xd6 }; // TODO: "TQc" WIF wallet format - compressed
+        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };  // Same as Bitcoin
+        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };  // Same as Bitcoin
+
+        bech32_hrp = "tq";
+#endif // END_BUILD
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
@@ -343,10 +362,12 @@ public:
 
         checkpointData = {
             {
+                // EQB_TODO: Update the checkpoint data once enough blocks are mined
                 {546, uint256S("000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70")},
             }
         };
 
+        // EQB_TODO: Update chainTxData 
         chainTxData = ChainTxData{
             // Data as of block 000000000000033cfa3c975eb83ecf2bb4aaedf68e6d279f6ed2b427c64caff9 (height 1260526)
             1516903490,
@@ -426,6 +447,7 @@ public:
 
         checkpointData = {
             {
+                // EQB_TODO: Update the checkpoint data once enough blocks are mined 
                 {0, uint256S("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206")},
             }
         };
@@ -436,6 +458,7 @@ public:
             0
         };
 
+#ifdef BUILD_BTC
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
@@ -443,6 +466,16 @@ public:
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
         bech32_hrp = "bcrt";
+#else  // BUILD_EQB
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x5d }; // "TQa" prefix on address
+        base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x87 }; // "TQs" prefix on address
+        base58Prefixes[SECRET_KEY] = { 0x03, 0x5e, 0xd6 }; // TODO: "TQc" WIF wallet format - compressed
+        base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };  // 'tpub' Same as Bitcoin
+        base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };  // 'tprv' Same as Bitcoin
+
+        bech32_hrp = "eqrt";
+#endif // END_BUILD
+
     }
 };
 
