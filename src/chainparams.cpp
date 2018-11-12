@@ -207,13 +207,13 @@ public:
 
         bech32_hrp = "bc";
 #else  // BUILD_EQB
-        base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0xd2 }; // "EQa" prefix on address
-        base58Prefixes[SCRIPT_ADDRESS] = { 0x01, 0xb5, 0xfb }; // "EQs" prefix on address
-        base58Prefixes[SECRET_KEY] = { 0x01, 0xb5, 0xd6 }; // "EQc" WIF wallet format - compressed
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0xd1 }; // "EQa" prefix on address. 
+        base58Prefixes[SCRIPT_ADDRESS] = { 0x01, 0xb5, 0xfc }; // "EQs" prefix on address.
+        base58Prefixes[SECRET_KEY] = { 0x01, 0xb5, 0xd6 }; // TODO: "EQc" WIF wallet format - compressed
         base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x88, 0xB2, 0x1E }; // "xpub" Same as Bitcoin
         base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x88, 0xAD, 0xE4 }; // "xprv" Same as Bitcoin
 
-        bech32_hrp = "bc";
+        bech32_hrp = "eq";
 #endif // END_BUILD
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
@@ -344,13 +344,13 @@ public:
 
         bech32_hrp = "tb";
 #else  // BUILD_EQB
-        base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x53 }; // "TQa" prefix on address
-        base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x88 }; // "TQs" prefix on address
-        base58Prefixes[SECRET_KEY] = { 0x03, 0x5e, 0xd6 }; // "TQc" WIF wallet format - compressed
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x5d }; // "TQa" prefix on address
+        base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x87 }; // "TQs" prefix on address
+        base58Prefixes[SECRET_KEY] = { 0x03, 0x5e, 0xd6 }; // TODO: "TQc" WIF wallet format - compressed
         base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };  // Same as Bitcoin
         base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };  // Same as Bitcoin
 
-        bech32_hrp = "tb";
+        bech32_hrp = "tq";
 #endif // END_BUILD
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
@@ -467,13 +467,13 @@ public:
 
         bech32_hrp = "bcrt";
 #else  // BUILD_EQB
-        base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x53 }; // "TQa" prefix on address
-        base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x88 }; // "TQs" prefix on address
-        base58Prefixes[SECRET_KEY] = { 0x03, 0x5e, 0xd6 }; // "TQc" WIF wallet format - compressed
+        base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x5d }; // "TQa" prefix on address
+        base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x87 }; // "TQs" prefix on address
+        base58Prefixes[SECRET_KEY] = { 0x03, 0x5e, 0xd6 }; // TODO: "TQc" WIF wallet format - compressed
         base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };  // 'tpub' Same as Bitcoin
         base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };  // 'tprv' Same as Bitcoin
 
-        bech32_hrp = "bcrt";
+        bech32_hrp = "eqrt";
 #endif // END_BUILD
 
     }
