@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -230,7 +231,7 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
     }
     s >> tx.nLockTime;
 #ifndef BUILD_BTC
-    s >> tx.nEqbPayloadSize;
+    s >> tx.nEQBPayload;
 #endif // END_BUILD
 }
 
@@ -265,10 +266,43 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
     }
     s << tx.nLockTime;
 #ifndef BUILD_BTC
-    s << tx.nEqbPayloadSize;
+    s << tx.nEQBPayload;
 #endif // END_BUILD
 }
 
+#ifndef BUILD_BTC  // BUILD_EQB
+/** This class represents the Equibit payload structure. For basic types of transactions such 
+* as coinbase transasctions and transfer of open equitbits, this structure should only take one byte when serialized!
+*/ 
+//! EQB_TODO:  Provide EQB structure to support all types of Equibit Transcations
+class EQBPayload
+{
+// The current version of EQB Transaction supports a payload of size 0,
+#define PAYLOAD_SIZE 0
+
+public:
+    std::vector<char> content;
+
+    EQBPayload()
+    {
+        SetNull();
+    }
+
+    void SetNull()
+    {
+        content.clear();
+    }
+
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action) {
+        READWRITE(content);
+    }
+
+    std::string ToString() const;
+};
+#endif // END_BUILD
 
 /** The basic transaction that is broadcasted on the network and contained in
  * blocks.  A transaction can contain multiple inputs and outputs.
@@ -295,7 +329,7 @@ public:
     const int32_t nVersion;
 #ifndef BUILD_BTC  // BUILD_EQB
     const int8_t nEqbType;    // store the type of transaction
-    const int64_t nEqbPayloadSize;  // store the Equibit payload 
+    const EQBPayload nEQBPayload;  // store the Equibit payload 
 #endif // END_BUILD
     const uint32_t nLockTime;
 
@@ -381,8 +415,8 @@ struct CMutableTransaction
     std::vector<CTxOut> vout;
     int32_t nVersion;
 #ifndef BUILD_BTC  // BUILD_EQB
-    const int8_t nEqbType;    // store the type of transaction
-    const int64_t nEqbPayloadSize;  // store the Equibit payload 
+    int8_t nEqbType;    // store the type of transaction
+    EQBPayload nEQBPayload;  // store the Equibit payload 
 #endif // END_BUILD
     uint32_t nLockTime;
 
