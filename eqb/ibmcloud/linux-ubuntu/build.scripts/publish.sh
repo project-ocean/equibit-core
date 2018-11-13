@@ -1,7 +1,11 @@
 #!/bin/bash
 
 EQUIBIT_ENV=dev
+<<<<<<< HEAD
 EQUIBIT_VERSION=0.2
+=======
+EQUIBIT_VERSION=0.1
+>>>>>>> issues/#18-sha3
 BUILD_TIMESTAMP=$(date +%Y%m%d%H%M%S)
 
 echo -e "Checking for Equibit daemon"
@@ -33,4 +37,8 @@ git config --global user.email "hjhutty@coderise.io"
 
 git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}/
 git commit -m "Committed Equibit Binaries ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}"
+<<<<<<< HEAD
 # git push origin master
+=======
+git push origin master
+>>>>>>> issues/#18-sha3

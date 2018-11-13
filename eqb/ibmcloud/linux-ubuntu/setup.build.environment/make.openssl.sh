@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Build and install OpenSSL
 
 cd ~

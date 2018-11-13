@@ -20,7 +20,7 @@
 
 #include <eqb/sha3/sha3.h>
 
-/** A hasher class for Equibit's 256-bit hash (double SHA-3). */
+/** A hasher class for Equibit's 256-bit hash (single SHA-3). */
 class CSHA3Hash256 {
 private:
     SHA3 sha;
@@ -28,9 +28,7 @@ public:
     static const size_t OUTPUT_SIZE = SHA3::OUTPUT_SIZE;
 
     void Finalize(unsigned char hash[OUTPUT_SIZE]) {
-        unsigned char buf[SHA3::OUTPUT_SIZE];
-        sha.Finalize(buf);
-        sha.Reset().Write(buf, SHA3::OUTPUT_SIZE).Finalize(hash);
+        sha.Finalize(hash);
     }
 
     CSHA3Hash256& Write(const unsigned char *data, size_t len) {
