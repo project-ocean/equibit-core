@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(addrman_new_collisions)
     addrman.Add(CAddress(addr2, NODE_NONE), source);
     BOOST_CHECK_EQUAL(addrman.size(), 18);
 #else  // BUILD_EQB
-    for (unsigned int i = 1; i < 6; i++) {
+    for (unsigned int i = 1; i < 15; i++) {
         CService addr = ResolveService("250.1.1." + boost::to_string(i));
         addrman.Add(CAddress(addr, NODE_NONE), source);
 
@@ -256,13 +256,13 @@ BOOST_AUTO_TEST_CASE(addrman_new_collisions)
     }
 
     //Test: new table collision!
-    CService addr1 = ResolveService("250.1.1.6");
+    CService addr1 = ResolveService("250.1.1.15");
     addrman.Add(CAddress(addr1, NODE_NONE), source);
-    BOOST_CHECK_EQUAL(addrman.size(), 5);
+    BOOST_CHECK_EQUAL(addrman.size(), 14);
 
-    CService addr2 = ResolveService("250.1.1.7");
+    CService addr2 = ResolveService("250.1.1.16");
     addrman.Add(CAddress(addr2, NODE_NONE), source);
-    BOOST_CHECK_EQUAL(addrman.size(), 6);
+    BOOST_CHECK_EQUAL(addrman.size(), 15);
 #endif // END_BUILD
 }
 
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(addrman_tried_collisions)
     addrman.Add(CAddress(addr2, NODE_NONE), source);
     BOOST_CHECK_EQUAL(addrman.size(), 80);
 #else  // BUILD_EQB
-    for (unsigned int i = 1; i < 60; i++) {
+    for (unsigned int i = 1; i < 58; i++) {
         CService addr = ResolveService("250.1.1." + boost::to_string(i));
         addrman.Add(CAddress(addr, NODE_NONE), source);
         addrman.Good(CAddress(addr, NODE_NONE));
@@ -303,13 +303,13 @@ BOOST_AUTO_TEST_CASE(addrman_tried_collisions)
     }
 
     //Test: tried table collision!
-    CService addr1 = ResolveService("250.1.1.60");
+    CService addr1 = ResolveService("250.1.1.58");
     addrman.Add(CAddress(addr1, NODE_NONE), source);
-    BOOST_CHECK_EQUAL(addrman.size(), 59);
+    BOOST_CHECK_EQUAL(addrman.size(), 57);
 
-    CService addr2 = ResolveService("250.1.1.61");
+    CService addr2 = ResolveService("250.1.1.59");
     addrman.Add(CAddress(addr2, NODE_NONE), source);
-    BOOST_CHECK_EQUAL(addrman.size(), 60);
+    BOOST_CHECK_EQUAL(addrman.size(), 58);
 #endif // END_BUILD
 }
 
@@ -447,9 +447,9 @@ BOOST_AUTO_TEST_CASE(addrman_getaddr)
     // (Addrman.size() < number of addresses added) due to address collisions.
     BOOST_CHECK_EQUAL(addrman.size(), 2006);
 #else  // BUILD_EQB
-    BOOST_CHECK_EQUAL(vAddr.size(), 459);
+    BOOST_CHECK_EQUAL(vAddr.size(), 461);
     // (Addrman.size() < number of addresses added) due to address collisions.
-    BOOST_CHECK_EQUAL(addrman.size(), 1999);
+    BOOST_CHECK_EQUAL(addrman.size(), 2006);
 #endif // END_BUILD
 }
 
@@ -477,7 +477,7 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_tried_bucket)
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(info1.GetTriedBucket(nKey1), 40);
 #else  // BUILD_EQB
-    BOOST_CHECK_EQUAL(info1.GetTriedBucket(nKey1), 150);
+    BOOST_CHECK_EQUAL(info1.GetTriedBucket(nKey1), 70);
 #endif // END_BUILD
 
     // Test: Make sure key actually randomizes bucket placement. A fail on
@@ -544,8 +544,8 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_new_bucket)
     BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1), 786);
     BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1, source1), 786);
 #else  // BUILD_EQB
-    BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1), 861);
-    BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1, source1), 861);
+    BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1), 218);
+    BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1, source1), 218);
 #endif // END_BUILD
 
     // Test: Make sure key actually randomizes bucket placement. A fail on
