@@ -198,7 +198,8 @@ uint256 SHA3SerializeHash(const T& obj, int nType = SER_GETHASH, int nVersion = 
 
 typedef uint256 ChainCode;
 
-#ifdef BUILD_BTC
+// EQB_TODO #ifdef moved down below definition of Hash temporarily for Base58Check (#211)
+// #ifdef BUILD_BTC
 
 /** A hasher class for Bitcoin's 256-bit hash (double SHA-256). */
 class CHash256 {
@@ -270,6 +271,8 @@ inline uint256 Hash(const T1 p1begin, const T1 p1end,
               .Finalize((unsigned char*)&result);
     return result;
 }
+
+#ifdef BUILD_BTC
 
 /** Compute the 160-bit hash an object. */
 template<typename T1>
