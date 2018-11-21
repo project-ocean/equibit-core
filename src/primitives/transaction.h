@@ -179,7 +179,6 @@ struct CMutableTransaction;
 
 #ifndef BUILD_BTC  // BUILD_EQB
 
-
 enum  EQBTypes : unsigned char {
 
     COINBASE = 0,
@@ -205,6 +204,8 @@ public:
     {
         SetNull();
     }
+
+    EQBPayload(const EQBPayload &newpayload) : content(newpayload.content) {};
 
     void SetNull()
     {
@@ -341,7 +342,7 @@ public:
     const int32_t nVersion;
 #ifndef BUILD_BTC  // BUILD_EQB
     const int8_t nEQBType;    // store the type of transaction
-    const int8_t nEQBPayload;  // store the Equibit payload 
+    const EQBPayload nEQBPayload;  // store the Equibit payload 
 #endif // END_BUILD
     const uint32_t nLockTime;
 
@@ -428,7 +429,7 @@ struct CMutableTransaction
     int32_t nVersion;
 #ifndef BUILD_BTC  // BUILD_EQB
     int8_t nEQBType;    // store the type of transaction
-    int8_t nEQBPayload;  // store the Equibit payload 
+    EQBPayload nEQBPayload;  // store the Equibit payload 
 #endif // END_BUILD
     uint32_t nLockTime;
 

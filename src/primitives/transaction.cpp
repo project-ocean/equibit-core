@@ -58,7 +58,7 @@ std::string CTxOut::ToString() const
 CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0) {}
 CMutableTransaction::CMutableTransaction(const CTransaction& tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime) {}
 #else // BUILD_EQB
-CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0), nEQBType(EQBTypes::COINBASE), nEQBPayload(0) {}
+CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0), nEQBType(EQBTypes::COINBASE), nEQBPayload() {}
 CMutableTransaction::CMutableTransaction(const CTransaction& tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nEQBType(tx.nEQBType), nEQBPayload(tx.nEQBPayload), nLockTime(tx.nLockTime) {
 }
 #endif // END_BUILD
@@ -106,7 +106,7 @@ CTransaction::CTransaction() : vin(), vout(), nVersion(CTransaction::CURRENT_VER
 CTransaction::CTransaction(const CMutableTransaction &tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime), hash(ComputeHash()) {}
 CTransaction::CTransaction(CMutableTransaction &&tx) : vin(std::move(tx.vin)), vout(std::move(tx.vout)), nVersion(tx.nVersion), nLockTime(tx.nLockTime), hash(ComputeHash()) {}
 #else  // BUILD_EQB
-CTransaction::CTransaction() : vin(), vout(), nVersion(CTransaction::CURRENT_VERSION), nEQBType(EQBTypes::COINBASE), nEQBPayload(0), nLockTime(0), hash() {}
+CTransaction::CTransaction() : vin(), vout(), nVersion(CTransaction::CURRENT_VERSION), nEQBType(EQBTypes::COINBASE), nEQBPayload(), nLockTime(0), hash() {}
 CTransaction::CTransaction(const CMutableTransaction &tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nEQBType(tx.nEQBType), nEQBPayload(tx.nEQBPayload), nLockTime(tx.nLockTime), hash(ComputeHash()) {}
 CTransaction::CTransaction(CMutableTransaction &&tx) : vin(std::move(tx.vin)), vout(std::move(tx.vout)), nVersion(tx.nVersion), nEQBType(tx.nEQBType), nEQBPayload(tx.nEQBPayload), nLockTime(tx.nLockTime), hash(ComputeHash()) {}
 #endif // END_BUILD
@@ -145,7 +145,7 @@ std::string CTransaction::ToString() const
         vin.size(),
         vout.size(),
         nLockTime,
-        nEQBPayload);
+        nEQBPayload.ToString());
 #endif // END_BUILD
     for (const auto& tx_in : vin)
         str += "    " + tx_in.ToString() + "\n";
