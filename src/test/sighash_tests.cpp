@@ -123,6 +123,7 @@ BOOST_FIXTURE_TEST_SUITE(sighash_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(sighash_test)
 {
+#ifdef BUILD_BTC
     SeedInsecureRand(false);
 
     #if defined(PRINT_SIGHASH_JSON)
@@ -163,6 +164,9 @@ BOOST_AUTO_TEST_CASE(sighash_test)
     #if defined(PRINT_SIGHASH_JSON)
     std::cout << "]\n";
     #endif
+#else // BUILD_EQB
+//! EQB_TODO: create tests
+#endif // END_BUILD
 }
 
 // Goal: check that SignatureHash generates correct hash
