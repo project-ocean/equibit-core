@@ -155,8 +155,7 @@ class P2PConnection(asyncore.dispatcher):
                 if len(self.recvbuf) < 4 + 12 + 4 + 4 + msglen:
                     return
                 msg = self.recvbuf[4+12+4+4:4+12+4+4+msglen]
-                th = sha3_256(msg)
-                h = sha3_256(th)
+                h = sha3_256(msg)
                 if checksum != h[:4]:
                     raise ValueError("got bad checksum " + repr(self.recvbuf))
                 self.recvbuf = self.recvbuf[4+12+4+4+msglen:]
@@ -216,8 +215,7 @@ class P2PConnection(asyncore.dispatcher):
         tmsg += command
         tmsg += b"\x00" * (12 - len(command))
         tmsg += struct.pack("<I", len(data))
-        th = sha3_256(data)
-        h = sha3_256(th)
+        h = sha3_256(data)
         tmsg += h[:4]
         tmsg += data
         with mininode_lock:
