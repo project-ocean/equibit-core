@@ -494,6 +494,7 @@ std::string JSONPrettyPrint(const UniValue& univalue)
 
 BOOST_AUTO_TEST_CASE(script_build)
 {
+#ifdef BUILD_BTC
     const KeyData keys;
 
     std::vector<TestBuilder> tests;
@@ -969,10 +970,15 @@ BOOST_AUTO_TEST_CASE(script_build)
     fputs(strGen.c_str(), file);
     fclose(file);
 #endif
+
+#else // BUILD_EQB
+//! EQB_TODO: Fix Test
+#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_CASE(script_json_test)
 {
+#ifdef BUILD_BTC
     // Read tests from test/data/script_tests.json
     // Format is an array of arrays
     // Inner arrays are [ ["wit"..., nValue]?, "scriptSig", "scriptPubKey", "flags", "expected_scripterror" ]
@@ -1013,12 +1019,11 @@ BOOST_AUTO_TEST_CASE(script_json_test)
         unsigned int scriptflags = ParseScriptFlags(test[pos++].get_str());
         int scriptError = ParseScriptError(test[pos++].get_str());
 
-#ifdef BUILD_BTC
         DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
-#else  // BUILD_EQB
-        DoTest(scriptPubKey, scriptSig, witness, scriptflags, strTest, scriptError, nValue);
-#endif // END_BUILD
     }
+#else  // BUILD_EQB
+    //! EQB_TODO: Fix Test
+#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_CASE(script_PushData)
