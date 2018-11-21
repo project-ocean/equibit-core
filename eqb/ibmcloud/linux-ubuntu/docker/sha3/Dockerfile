@@ -2,8 +2,8 @@ FROM registry.ng.bluemix.net/equibit/equibit-ubuntu:16.04
 
 MAINTAINER Harmeek Jhutty <hjhutty@coderise.io>
 
-ENV EQUIBIT_VERSION=0.2
-ENV EQUIBIT_FOLDER_VERSION=0.2
+ENV EQUIBIT_VERSION=0.3
+ENV EQUIBIT_FOLDER_VERSION=0.3
 ENV EQUIBIT_DATA=/home/equibit/.equibit \
     PATH=/opt/equibit-${EQUIBIT_FOLDER_VERSION}/:$PATH
 
@@ -33,5 +33,5 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 8332 8333 18332 18333 18444
 
-#CMD ["equibitd", "-reindex"]
-CMD ["equibitd", "-regtest"]
+CMD ["equibitd","-reindex"]
+#CMD ["equibitd"]
