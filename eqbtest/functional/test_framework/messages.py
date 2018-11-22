@@ -59,7 +59,7 @@ def hash256(s):
     return sha256(sha256(s))
 
 def hash3_256(s):
-    return sha3_256(sha3_256(s))
+    return sha3_256(s)
 
 def ser_compact_size(l):
     r = b""

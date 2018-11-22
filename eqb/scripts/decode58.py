@@ -1,4 +1,3 @@
-# Hello World program in Python
 import base58check
     
 

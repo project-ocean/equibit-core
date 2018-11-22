@@ -495,6 +495,7 @@ std::string JSONPrettyPrint(const UniValue& univalue)
 BOOST_AUTO_TEST_CASE(script_build)
 {
 #ifdef BUILD_BTC
+
     const KeyData keys;
 
     std::vector<TestBuilder> tests;
