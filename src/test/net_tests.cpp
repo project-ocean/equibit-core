@@ -134,6 +134,7 @@ BOOST_AUTO_TEST_CASE(caddrdb_read)
 
 BOOST_AUTO_TEST_CASE(caddrdb_read_corrupted)
 {
+#ifdef BUILD_BTC
     CAddrManCorrupted addrmanCorrupted;
     addrmanCorrupted.MakeDeterministic();
 
@@ -161,6 +162,10 @@ BOOST_AUTO_TEST_CASE(caddrdb_read_corrupted)
     BOOST_CHECK(addrman2.size() == 0);
     adb.Read(addrman2, ssPeers2);
     BOOST_CHECK(addrman2.size() == 0);
+
+#else // BUILD_EQB
+    //! EQB_TODO: Complete test 
+#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_CASE(cnode_simple_test)
