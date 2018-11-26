@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -48,7 +49,11 @@ struct BIP9Deployment {
  */
 struct Params {
     uint256 hashGenesisBlock;
+#ifdef BUILD_BTC
     int nSubsidyHalvingInterval;
+#else  // BUILD_EQB
+    int nSubsidyAccelerationFactor;
+#endif // END_BUILD
     /** Block height at which BIP16 becomes active */
     int BIP16Height;
     /** Block height and hash at which BIP34 becomes active */

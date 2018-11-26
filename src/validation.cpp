@@ -1149,6 +1149,7 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
+#ifdef BUILD_BTC
     int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
     // Force block reward to zero when right shift is undefined.
     if (halvings >= 64)
@@ -1157,6 +1158,26 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     CAmount nSubsidy = 50 * COIN;
     // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
     nSubsidy >>= halvings;
+#else  // BUILD_EQB
+
+    CAmount nSubsidy = GENESIS_BLOCK_REWARD;
+    if (nHeight > 0)
+    {
+        nHeight *= consensusParams.nSubsidyAccelerationFactor; // EQB_TODO: Is it assumed nHeight is a 32-bit int? why isn't it unsigned?
+
+        if (nHeight == 1)
+        {
+            nSubsidy = FIRST_BLOCK_REWARD;
+        }
+        else
+        {
+            long double aux = 1.0 + expm1(4.2 - nHeight / 100000.0);
+            nSubsidy = 210 * aux / powl((1 + aux), 2) * COIN;
+        }
+    }
+
+#endif // END_BUILD
+
     return nSubsidy;
 }
 
