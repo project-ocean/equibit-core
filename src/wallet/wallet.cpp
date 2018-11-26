@@ -2699,8 +2699,8 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletT
     //! EQB_TODO: This value should be passed to the function 
     txNew.nEQBType = (int8_t) 0;
     txNew.nEQBPayload = EQBPayload();
-    assert(sizeof(txNew.nEQBType) == 1);
-    assert(sizeof(txNew.nEQBPayload) == 1);
+    //assert(sizeof(txNew.nEQBType) == 1);
+    //assert(sizeof(txNew.nEQBPayload) == 1);
 #endif  // END_BUILD
     // Discourage fee sniping.
     //
