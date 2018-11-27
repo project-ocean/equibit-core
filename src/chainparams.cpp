@@ -43,6 +43,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
     return genesis;
 }
 
+#ifdef BUILD_BTC
 /**
  * Build the genesis block. Note that the output of its generation
  * transaction cannot be spent since it did not originally exist in the
@@ -54,7 +55,6 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  *     CTxOut(nValue=50.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
  *   vMerkleTree: 4a5e1e
  */
-#ifdef BUILD_BTC
 
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
@@ -65,25 +65,40 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 
 #else  // BUILD_EQB
 
+/**
+ * Build the genesis block. Note that the output of its generation
+ * transaction cannot be spent since it did not originally exist in the
+ * database.
+ *
+ * CBlock(hash=000000000019d6, ver=1, hashPrevBlock=00000000000000, hashMerkleRoot=4a5e1e, nTime=1543344629, nBits=1d00ffff, nNonce=???, vtx=1)
+ *   CTransaction(hash=4a5e1e, ver=1, vin.size=1, vout.size=1, nLockTime=0)
+ *     CTxIn(COutPoint(000000, -1), coinbase 04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73)
+ *     CTxOut(nValue=0.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
+ *   vMerkleTree: 4a5e1e
+ */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    //const char* pszTimestamp = "The Globe And Mail 28/Jun/2018 Blockchain has the pontential to do amazing things, but it needs a reboot";
     const char* pszTimestamp = "WSJ - 03/Jan/2018 - Billionaire Wagers Millions On Bitcoin";
+    // the below script is a pay-to-pubkey (P2PK) script to address. 
+    // genesis block produces 0 equibits 
     const CScript genesisOutputScript = CScript() << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
+// EQB_TODO: Temporary method to mine a genesis block
 static CBlock MineGenesisBlock(Consensus::Params& consensus)
 {
     CBlock genesis;
     unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
-
+    bool filter = true;
     for (uint32_t nonce = 0; ; nonce++) {
-        genesis = CreateGenesisBlock(1231006505, nonce, nPoWTarget, 1, 50 * COIN);
+        // GMT: Sunday, November 25, 2018 5:02:59 PM
+        genesis = CreateGenesisBlock(1543165379, nonce, nPoWTarget, 1, GENESIS_BLOCK_REWARD);
         consensus.hashGenesisBlock = genesis.GetHash();
-        //std::cout << "genesis " << nonce << std::endl;
-
+        if(nonce % 1000 == 0)
+            std::cout << ".";
         if (CheckProofOfWork(consensus.hashGenesisBlock, nPoWTarget, consensus)) {
+            std::cout << std::endl << "genesis nonce: " << nonce << " hash: " << consensus.hashGenesisBlock.GetHex() << " " << std::endl;
             break;
         }
     }
@@ -128,7 +143,7 @@ public:
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #else  // BUILD_EQB
        // EQB_TODO temporary to mine genesis block below
-        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #endif // END_BUILD
 #ifdef BUILD_BTC
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
@@ -153,9 +168,14 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1479168000; // November 15th, 2016.
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1510704000; // November 15th, 2017.
-
+        
         // The best chain should have at least this much work.
+#ifdef BUILD_BTC
         consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000f91c579d57cad4bc5278cc");
+#else // BUILD_EQB
+        //! EQB_TODO: Update in future iterations 
+        consensus.nMinimumChainWork = uint256S("0x00");
+#endif // END_BUILD
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000000000000005214481d2d96f898e3d5416e43359c145944a909d242e0"); //506067
@@ -180,7 +200,8 @@ public:
 #ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1231006505, 2083236893, 0x1d00ffff, 1, 50 * COIN);
 #else  // BUILD_EQB
-        genesis = CreateGenesisBlock(1231006505, 2083236893, 0x1d00ffff, 1, GENESIS_BLOCK_REWARD);
+        // genesis hash: 0000c06d6eb6ea2f13ec1a19b8ba8f3df22a6df8284c2bc2480a7c2c33261593
+        genesis = CreateGenesisBlock(1543165379, 25531, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
 #endif // END_BUILD 
 #ifdef BUILD_BTC
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -188,9 +209,9 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
         // EQB_TODO MineGenesisBlock is temporary
-        genesis = MineGenesisBlock(consensus);
+        // genesis = MineGenesisBlock(consensus);
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
+        // assert(consensus.hashGenesisBlock == uint256S("0x0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379"));
         //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #endif // END_BUILD
 
@@ -285,7 +306,7 @@ public:
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #else  // BUILD_EQB
         // EQB_TODO temporary to mine genesis block below
-        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #endif // END_BUILD
 #ifdef BUILD_BTC
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
@@ -312,7 +333,12 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1493596800; // May 1st 2017
 
         // The best chain should have at least this much work.
+#ifdef BUILD_BTC
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000002830dab7f76dbb7d63");
+#else // BUILD_EQB
+        //! EQB_TODO: Update in future iterations 
+        consensus.nMinimumChainWork = uint256S("0x00");
+#endif // END_BUILD
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000002e9e7b00e1f6dc5123a04aad68dd0f0968d8c7aa45f6640795c37b1"); //1135275
@@ -332,7 +358,8 @@ public:
 #ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, 50 * COIN);
 #else  // BUILD_EQB
-        genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, GENESIS_BLOCK_REWARD);
+        // genesis hash: 0000c06d6eb6ea2f13ec1a19b8ba8f3df22a6df8284c2bc2480a7c2c33261593
+        genesis = CreateGenesisBlock(1543165379, 25531, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
 #endif // END_BUILD 
 #ifdef BUILD_BTC
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -340,9 +367,9 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
         // EQB_TODO MineGenesisBlock is temporary
-        genesis = MineGenesisBlock(consensus);
+        // genesis = MineGenesisBlock(consensus);
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
+        //assert(consensus.hashGenesisBlock == uint256S("0x0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379"));
         //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #endif // END_BUILD
 
@@ -383,13 +410,21 @@ public:
         fRequireStandard = false;
         fMineBlocksOnDemand = false;
 
-
+#ifdef BUILD_BTC
         checkpointData = {
             {
                 // EQB_TODO: Update the checkpoint data once enough blocks are mined
                 {546, uint256S("000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70")},
             }
         };
+#else // BUILD_EQB
+        checkpointData = {
+            {
+                // EQB_TODO: Update the checkpoint data once enough blocks are mined
+                {0, uint256S("0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379")},
+            }
+        };
+#endif // END_BUILD
 
         // EQB_TODO: Update chainTxData 
         chainTxData = ChainTxData{
@@ -460,7 +495,8 @@ public:
 #ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1296688602, 2, 0x207fffff, 1, 50 * COIN);
 #else  // BUILD_EQB
-        genesis = CreateGenesisBlock(1296688602, 2, 0x207fffff, 1, GENESIS_BLOCK_REWARD);
+        // genesis hash: 7d4a17d8e93161edb365926d109f53c891b14a4269c85064476cd90b5f4c19b2
+        genesis = CreateGenesisBlock(1543165379, 1, 0x207fffff, 1, GENESIS_BLOCK_REWARD);
 #endif // END_BUILD 
 #ifdef BUILD_BTC
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -468,9 +504,9 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
         // EQB_TODO MineGenesisBlock is temporary
-        genesis = MineGenesisBlock(consensus);
+        // genesis = MineGenesisBlock(consensus);
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256S("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
+        //assert(consensus.hashGenesisBlock == uint256S("0x46ee01ff4a87d884bb8ebe9ff87c369e6ee3edf57fa0a64d797adc98f35224a3"));
         //assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #endif // END_BUILD
 
@@ -480,14 +516,22 @@ public:
         fDefaultConsistencyChecks = true;
         fRequireStandard = false;
         fMineBlocksOnDemand = true;
-
+#ifdef BUILD_BTC
         checkpointData = {
             {
                 // EQB_TODO: Update the checkpoint data once enough blocks are mined 
                 {0, uint256S("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206")},
             }
+    };
+#else // BUILD_EQB
+        checkpointData = {
+            {
+                // EQB_TODO: Update the checkpoint data once enough blocks are mined 
+                {0, uint256S("0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379")},
+            }
         };
-
+#endif // END_BUILD
+        
         chainTxData = ChainTxData{
             0,
             0,
