@@ -166,7 +166,11 @@ public:
         pchMessageStart[1] = 0xbe;
         pchMessageStart[2] = 0xb4;
         pchMessageStart[3] = 0xd9;
+#ifdef BUILD_BTC
         nDefaultPort = 8333;
+#else // BUILD_EQB
+        nDefaultPort = 8331;
+#endif // END_BUILD
         nPruneAfterHeight = 100000;
 
 #ifdef BUILD_BTC
@@ -306,7 +310,11 @@ public:
         pchMessageStart[1] = 0x11;
         pchMessageStart[2] = 0x09;
         pchMessageStart[3] = 0x07;
+#ifdef BUILD_BTC
         nDefaultPort = 18333;
+#else // BUILD_EQB
+        nDefaultPort = 18331;
+#endif // END_BUILD
         nPruneAfterHeight = 1000;
 
 #ifdef BUILD_BTC
@@ -422,7 +430,11 @@ public:
         pchMessageStart[1] = 0xbf;
         pchMessageStart[2] = 0xb5;
         pchMessageStart[3] = 0xda;
+#ifdef BUILD_BTC
         nDefaultPort = 18444;
+#else // BUILD_EQB
+        nDefaultPort = 18441;
+#endif // END_BUILD
         nPruneAfterHeight = 1000;
 
 #ifdef BUILD_BTC
