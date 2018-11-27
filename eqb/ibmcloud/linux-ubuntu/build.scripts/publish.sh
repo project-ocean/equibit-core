@@ -1,7 +1,7 @@
 #!/bin/bash
 
 EQUIBIT_ENV=dev
-EQUIBIT_VERSION=0.1
+EQUIBIT_VERSION=0.3
 BUILD_TIMESTAMP=$(date +%Y%m%d%H%M%S)
 
 echo -e "Checking for Equibit daemon"
@@ -33,4 +33,5 @@ git config --global user.email "hjhutty@coderise.io"
 
 git add ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}/
 git commit -m "Committed Equibit Binaries ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}"
-git push origin master
+# Temporarily disable publishing due to exceeding the maximum git file size (equibitd > 100 MB)
+# git push origin master
