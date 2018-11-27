@@ -79,7 +79,7 @@ static CBlock MineGenesisBlock(Consensus::Params& consensus)
     unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
 
     for (uint32_t nonce = 0; ; nonce++) {
-        genesis = CreateGenesisBlock(1231006505, nonce, nPoWTarget, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1543344629, nonce, nPoWTarget, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
         //std::cout << "genesis " << nonce << std::endl;
 
