@@ -13,7 +13,9 @@ typedef int64_t CAmount;
 
 static const CAmount COIN = 100000000;
 static const CAmount CENT = 1000000;
-
+#ifndef BUILD_BTC
+static const CAmount GENESIS_BLOCK_REWARD = 0 * COIN;
+#endif
 /** No amount larger than this (in satoshi) is valid.
  *
  * Note that this constant is *not* the total money supply, which in Bitcoin
