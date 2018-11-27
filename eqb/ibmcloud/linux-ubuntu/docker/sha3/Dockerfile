@@ -9,7 +9,7 @@ ENV EQUIBIT_DATA=/home/equibit/.equibit \
 
 WORKDIR /root/equibit/source
 
-RUN git clone -b issues/#229-switch-ibm-build-to-stage https://Equibit:76e049c3fcb3d35440e82121898a9f6c60cc6a96@github.com/Equibit/equibit-core.git
+RUN git clone -b issues/#219-stage https://Equibit:76e049c3fcb3d35440e82121898a9f6c60cc6a96@github.com/Equibit/equibit-core.git
 
 RUN cd /root/equibit/source/equibit-core/eqb/ibmcloud/linux-ubuntu/build.scripts/ && \
     ./build.core.sh && \
