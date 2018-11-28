@@ -1,7 +1,7 @@
 #!/bin/bash
 
 EQUIBIT_ENV=dev
-EQUIBIT_VERSION=0.3
+EQUIBIT_VERSION=0.16.2.0
 BUILD_TIMESTAMP=$(date +%Y%m%d%H%M%S)
 
 echo -e "Checking for Equibit daemon"
@@ -21,7 +21,7 @@ else
 fi
 
 echo "Publishing Core Binaries"
-git clone https://Equibit:f41c78627c23717323d6dc2a83fe9193b09b13f7@github.com/Equibit/CoreBinaries.git
+git clone https://Equibit:76e049c3fcb3d35440e82121898a9f6c60cc6a96@github.com/Equibit/CoreBinaries.git
 cd CoreBinaries
 
 mkdir -p ${EQUIBIT_ENV}/${EQUIBIT_VERSION}/${BUILD_TIMESTAMP}/
