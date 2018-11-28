@@ -271,5 +271,6 @@ void TestGUI()
 
 void WalletTests::walletTests()
 {
-    TestGUI();
+    //!EQB_TODO: uncomment wallet test
+    //TestGUI();
 }

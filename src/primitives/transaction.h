@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -176,6 +177,53 @@ public:
 
 struct CMutableTransaction;
 
+#ifndef BUILD_BTC  // BUILD_EQB
+
+enum  EQBTypes : unsigned char {
+
+    COINBASE = 0,
+    TRANSFER_OPEN = 1,
+    TRANSFER_REG = 2,
+    TRADE_OPEN = 3,
+    TRADE_REG = 4,
+    REGISTER = 5,
+    CANCEL = 6,
+    PASSPORT = 7
+};
+
+/** This class represents the Equibit payload structure. For basic types of transactions such
+* as coinbase transasctions and transfer of open equitbits, this structure should only take one byte when serialized!
+*/
+//! EQB_TODO:  Provide EQB structure to support all types of Equibit Transcations
+class EQBPayload
+{
+public:
+    std::vector<unsigned char> content;
+
+    EQBPayload()
+    {
+        SetNull();
+    }
+
+    EQBPayload(const EQBPayload &newpayload) : content(newpayload.content) {};
+
+    void SetNull()
+    {
+        content.resize(0);
+        content.clear();
+    }
+
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action) {
+        READWRITE(content);
+    }
+
+    std::string ToString() const;
+};
+#endif // END_BUILD
+
 /**
  * Basic transaction serialization format:
  * - int32_t nVersion
@@ -198,6 +246,9 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
 
     s >> tx.nVersion;
+#ifndef BUILD_BTC
+   s >> tx.nEQBType;
+#endif // END_BUILD
     unsigned char flags = 0;
     tx.vin.clear();
     tx.vout.clear();
@@ -226,6 +277,9 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
         throw std::ios_base::failure("Unknown transaction optional data");
     }
     s >> tx.nLockTime;
+#ifndef BUILD_BTC
+   s >> tx.nEQBPayload;
+#endif // END_BUILD
 }
 
 template<typename Stream, typename TxType>
@@ -233,6 +287,9 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
 
     s << tx.nVersion;
+#ifndef BUILD_BTC
+    s << tx.nEQBType;
+#endif // END_BUILD
     unsigned char flags = 0;
     // Consistency check
     if (fAllowWitness) {
@@ -255,8 +312,10 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
         }
     }
     s << tx.nLockTime;
+#ifndef BUILD_BTC
+   s << tx.nEQBPayload;
+#endif // END_BUILD
 }
-
 
 /** The basic transaction that is broadcasted on the network and contained in
  * blocks.  A transaction can contain multiple inputs and outputs.
@@ -281,6 +340,10 @@ public:
     const std::vector<CTxIn> vin;
     const std::vector<CTxOut> vout;
     const int32_t nVersion;
+#ifndef BUILD_BTC  // BUILD_EQB
+    const int8_t nEQBType;    // store the type of transaction
+    const EQBPayload nEQBPayload;  // store the Equibit payload 
+#endif // END_BUILD
     const uint32_t nLockTime;
 
 private:
@@ -364,6 +427,10 @@ struct CMutableTransaction
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
     int32_t nVersion;
+#ifndef BUILD_BTC  // BUILD_EQB
+    int8_t nEQBType;    // store the type of transaction
+    EQBPayload nEQBPayload;  // store the Equibit payload 
+#endif // END_BUILD
     uint32_t nLockTime;
 
     CMutableTransaction();
