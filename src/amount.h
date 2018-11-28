@@ -14,9 +14,6 @@ typedef int64_t CAmount;
 
 static const CAmount COIN = 100000000;
 static const CAmount CENT = 1000000;
-#ifndef BUILD_BTC
-static const CAmount GENESIS_BLOCK_REWARD = 0 * COIN;
-#endif
 /** No amount larger than this (in satoshi) is valid.
  *
  * Note that this constant is *not* the total money supply, which in Bitcoin
@@ -31,7 +28,7 @@ static const CAmount GENESIS_BLOCK_REWARD = 0 * COIN;
 static const CAmount MAX_MONEY = 21000000 * COIN;
 #else  // BUILD_EQB
 static const CAmount MAX_MONEY              = 22000000  * COIN;
-static const CAmount GENESIS_BLOCK_REWARD   =       50  * COIN; // EQB_TODO: Keeping reward same as Bitcoin to pass tests. It is unspendable in Bitcoin.
+static const CAmount GENESIS_BLOCK_REWARD   =       0  * COIN; // EQB_TODO: Keeping reward same as Bitcoin to pass tests. It is unspendable in Bitcoin.
 static const CAmount   FIRST_BLOCK_REWARD   =  131025772228310; // First BLock Reward = 1,000,000 + 2.1 * 10^7 / ( 1 + exp( 4.2 - (10^-5) * t ) ;   where t=1
 #endif // END_BUILD 
 

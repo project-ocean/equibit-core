@@ -89,18 +89,32 @@ static CBlock MineGenesisBlock(Consensus::Params& consensus)
 {
     CBlock genesis;
     unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
+    std::cout << "Target difficulty: " << nPoWTarget << std::endl;
+    std::cout << "Starting from highest to lowest..." << std::endl;
+    
     bool filter = true;
-    for (uint32_t nonce = 0; ; nonce++) {
-        genesis = CreateGenesisBlock(1543344629, nonce, nPoWTarget, 1, GENESIS_BLOCK_REWARD);
+    for (uint32_t nonce = 0xFFFFFFFF; ; nonce--) {
+            // 1: 1543344629
+        genesis = CreateGenesisBlock(1543406973, nonce, nPoWTarget, 1, GENESIS_BLOCK_REWARD);
         consensus.hashGenesisBlock = genesis.GetHash();
-        if(nonce % 1000 == 0)
+        if(nonce % 100000 == 0)
             std::cout << ".";
-        if(nonce >= 0xFFFFFF && filter)
+        
+        /*if(nonce >= 0xFFFFFFFF && filter)
         {
             std::cout << "Done one round!";
             filter = false;
         }
         if(nonce == 0)
+            filter = true;
+
+        */
+        if(nonce == 0 && filter)
+        {
+            std::cout << "Done one round!";
+            filter = false;
+        }
+        if(nonce == 0xFFFFFFFF)
             filter = true;
         
         if (CheckProofOfWork(consensus.hashGenesisBlock, nPoWTarget, consensus)) {
