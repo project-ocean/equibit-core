@@ -89,13 +89,22 @@ static CBlock MineGenesisBlock(Consensus::Params& consensus)
 {
     CBlock genesis;
     unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
-
+    bool filter = true;
     for (uint32_t nonce = 0; ; nonce++) {
         genesis = CreateGenesisBlock(1543344629, nonce, nPoWTarget, 1, GENESIS_BLOCK_REWARD);
         consensus.hashGenesisBlock = genesis.GetHash();
-        //std::cout << "genesis " << nonce << std::endl;
-
+        if(nonce % 1000 == 0)
+            std::cout << ".";
+        if(nonce >= 0xFFFFFF && filter)
+        {
+            std::cout << "Done one round!";
+            filter = false;
+        }
+        if(nonce == 0)
+            filter = true;
+        
         if (CheckProofOfWork(consensus.hashGenesisBlock, nPoWTarget, consensus)) {
+            std::cout << std::endl << "genesis nonce: " << nonce << " hash: " << consensus.hashGenesisBlock.GetHex() << " " << std::endl;
             break;
         }
     }
@@ -136,7 +145,7 @@ public:
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #else  // BUILD_EQB
        // EQB_TODO temporary to mine genesis block below
-        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #endif // END_BUILD
 #ifdef BUILD_BTC
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
@@ -285,7 +294,7 @@ public:
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #else  // BUILD_EQB
         // EQB_TODO temporary to mine genesis block below
-        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 #endif // END_BUILD
 #ifdef BUILD_BTC
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
