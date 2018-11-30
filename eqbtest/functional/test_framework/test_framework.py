@@ -329,9 +329,9 @@ class BitcoinTestFramework():
         mocktime then the mempools will not sync due to IBD.
 
         For backwared compatibility of the python scripts with previous
-        versions of the cache, this helper function sets mocktime to Jan 1,
-        2014 + (201 * 10 * 60)"""
-        self.mocktime = 1388534400 + (201 * 10 * 60)
+        versions of the cache, this helper function sets mocktime to
+        GMT: Sunday, 25 November 2018 г., 18:02:59 + (201 * 10 * 60)"""
+        self.mocktime = 1543168979 + (201 * 10 * 60)
 
     def disable_mocktime(self):
         self.mocktime = 0
