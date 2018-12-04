@@ -5,8 +5,16 @@
 #include <base58.h>
 
 #include <test/data/base58_encode_decode.json.h>
+#ifdef BUILD_BTC
 #include <test/data/base58_keys_invalid.json.h>
+#else // BUILD_EQB
+#include <test/data/base58_keys_invalid.json.h>
+#endif // END_BUILD
+#ifdef BUILD_BTC
 #include <test/data/base58_keys_valid.json.h>
+#else // BUILD_EQB
+#include <test/data/base58_keys_valid.json.h>
+#endif // END_BUILD
 
 #include <key.h>
 #include <script/script.h>
