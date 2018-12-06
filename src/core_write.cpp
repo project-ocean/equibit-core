@@ -163,9 +163,6 @@ void TxToUniv(const CTransaction& tx, const uint256& hashBlock, UniValue& entry,
     entry.pushKV("txid", tx.GetHash().GetHex());
     entry.pushKV("hash", tx.GetWitnessHash().GetHex());
     entry.pushKV("version", tx.nVersion);
-#ifndef BUILD_BTC
-    entry.pushKV("EQB_type", (int8_t) tx.nEQBType);
-#endif // END_BUILD
     entry.pushKV("size", (int)::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION));
     entry.pushKV("vsize", (GetTransactionWeight(tx) + WITNESS_SCALE_FACTOR - 1) / WITNESS_SCALE_FACTOR);
     entry.pushKV("locktime", (int64_t)tx.nLockTime);
@@ -211,9 +208,12 @@ void TxToUniv(const CTransaction& tx, const uint256& hashBlock, UniValue& entry,
         vout.push_back(out);
     }
     entry.pushKV("vout", vout);
+
 #ifndef BUILD_BTC
-    entry.pushKV("EQB_payload", tx.nEQBPayload.ToString());
+    entry.pushKV("EQB_type", (int8_t)tx.nEQBType);
+    entry.pushKV("EQB_payload", tx.eqbPayload.ToString());
 #endif // END_BUILD
+
     if (!hashBlock.IsNull())
         entry.pushKV("blockhash", hashBlock.GetHex());
 

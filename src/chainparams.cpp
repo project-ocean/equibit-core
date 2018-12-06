@@ -306,10 +306,10 @@ public:
 #ifdef BUILD_BTC
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
 #else  // BUILD_EQB
-        consensus.nPowTargetTimespan = 24 * 60 * 60; // 1 day
+        consensus.nPowTargetTimespan = 60 * 60; // 1 hour moving average window
 #endif // END_BUILD
         consensus.nPowTargetSpacing = 10 * 60;
-        consensus.fPowAllowMinDifficultyBlocks = true;
+        consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
@@ -352,22 +352,16 @@ public:
 
 #ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, 50 * COIN);
-#else  // BUILD_EQB
-        // genesis hash: 0000c06d6eb6ea2f13ec1a19b8ba8f3df22a6df8284c2bc2480a7c2c33261593
-        genesis = CreateGenesisBlock(1543165379, 25531, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
-#endif // END_BUILD 
-#ifdef BUILD_BTC
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
-        // EQB_TODO MineGenesisBlock is temporary
-        // genesis = MineGenesisBlock(consensus);
+        genesis = CreateGenesisBlock(1543165379, 116068, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);        
+        //genesis = MineGenesisBlock(consensus); // Use MineGenesisBlock if any parameters change
         consensus.hashGenesisBlock = genesis.GetHash();
-        // assert(consensus.hashGenesisBlock == uint256S("0x0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379"));
-        // assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
+        assert(consensus.hashGenesisBlock == uint256S("0x0000e9b3a79f70fb0be95b38604636441323450731e9ee1b5ef410791dac7184"));
+        assert(genesis.hashMerkleRoot == uint256S("0xea914133c255e8b47fb99d26b8627f90e12f5a9c3bc86269652d474d9814aaca"));
 #endif // END_BUILD
-
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -489,20 +483,15 @@ public:
 
 #ifdef BUILD_BTC
         genesis = CreateGenesisBlock(1296688602, 2, 0x207fffff, 1, 50 * COIN);
-#else  // BUILD_EQB
-        // genesis hash: 7d4a17d8e93161edb365926d109f53c891b14a4269c85064476cd90b5f4c19b2
-        genesis = CreateGenesisBlock(1543165379, 1, 0x207fffff, 1, GENESIS_BLOCK_REWARD);
-#endif // END_BUILD 
-#ifdef BUILD_BTC
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"));
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
-        // EQB_TODO MineGenesisBlock is temporary
-        // genesis = MineGenesisBlock(consensus);
+        genesis = CreateGenesisBlock(1543165379, 2, 0x207fffff, 1, GENESIS_BLOCK_REWARD);
+        //genesis = MineGenesisBlock(consensus); // Use MineGenesisBlock if any parameters change
         consensus.hashGenesisBlock = genesis.GetHash();
-        // assert(consensus.hashGenesisBlock == uint256S("0x46ee01ff4a87d884bb8ebe9ff87c369e6ee3edf57fa0a64d797adc98f35224a3"));
-        // assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
+        assert(consensus.hashGenesisBlock == uint256S("0x1511c0510788e6bc4d8aaf1549e710b849651e16af9a4087ef29cb7880c2efee"));
+        assert(genesis.hashMerkleRoot == uint256S("0xea914133c255e8b47fb99d26b8627f90e12f5a9c3bc86269652d474d9814aaca"));
 #endif // END_BUILD
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.

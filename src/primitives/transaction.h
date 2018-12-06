@@ -179,7 +179,7 @@ struct CMutableTransaction;
 
 #ifndef BUILD_BTC  // BUILD_EQB
 
-enum  EQBTypes : unsigned char {
+enum EQBTypes : unsigned char {
 
     COINBASE = 0,
     TRANSFER_OPEN = 1,
@@ -195,17 +195,17 @@ enum  EQBTypes : unsigned char {
 * as coinbase transasctions and transfer of open equitbits, this structure should only take one byte when serialized!
 */
 //! EQB_TODO:  Provide EQB structure to support all types of Equibit Transcations
-class EQBPayload
+class CEQBPayload
 {
 public:
     std::vector<unsigned char> content;
 
-    EQBPayload()
+    CEQBPayload()
     {
         SetNull();
     }
 
-    EQBPayload(const EQBPayload &newpayload) : content(newpayload.content) {};
+    CEQBPayload(const CEQBPayload &newpayload) : content(newpayload.content) {};
 
     void SetNull()
     {
@@ -240,15 +240,14 @@ public:
  * - if (flags & 1):
  *   - CTxWitness wit;
  * - uint32_t nLockTime
+ * - unsigned char EQB_type
+ * - CEQBPayload EQB_payload
  */
 template<typename Stream, typename TxType>
 inline void UnserializeTransaction(TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
 
     s >> tx.nVersion;
-#ifndef BUILD_BTC
-   s >> tx.nEQBType;
-#endif // END_BUILD
     unsigned char flags = 0;
     tx.vin.clear();
     tx.vout.clear();
@@ -277,8 +276,10 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
         throw std::ios_base::failure("Unknown transaction optional data");
     }
     s >> tx.nLockTime;
+
 #ifndef BUILD_BTC
-   s >> tx.nEQBPayload;
+    s >> tx.nEQBType;
+    s >> tx.eqbPayload;
 #endif // END_BUILD
 }
 
@@ -287,9 +288,6 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
     const bool fAllowWitness = !(s.GetVersion() & SERIALIZE_TRANSACTION_NO_WITNESS);
 
     s << tx.nVersion;
-#ifndef BUILD_BTC
-    s << tx.nEQBType;
-#endif // END_BUILD
     unsigned char flags = 0;
     // Consistency check
     if (fAllowWitness) {
@@ -312,8 +310,10 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
         }
     }
     s << tx.nLockTime;
+
 #ifndef BUILD_BTC
-   s << tx.nEQBPayload;
+    s << tx.nEQBType;
+    s << tx.eqbPayload;
 #endif // END_BUILD
 }
 
@@ -342,7 +342,7 @@ public:
     const int32_t nVersion;
 #ifndef BUILD_BTC  // BUILD_EQB
     const int8_t nEQBType;    // store the type of transaction
-    const EQBPayload nEQBPayload;  // store the Equibit payload 
+    const CEQBPayload eqbPayload;  // store the Equibit payload 
 #endif // END_BUILD
     const uint32_t nLockTime;
 
@@ -429,7 +429,7 @@ struct CMutableTransaction
     int32_t nVersion;
 #ifndef BUILD_BTC  // BUILD_EQB
     int8_t nEQBType;    // store the type of transaction
-    EQBPayload nEQBPayload;  // store the Equibit payload 
+    CEQBPayload eqbPayload;  // store the Equibit payload 
 #endif // END_BUILD
     uint32_t nLockTime;
 
