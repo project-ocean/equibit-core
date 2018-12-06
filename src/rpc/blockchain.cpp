@@ -67,13 +67,7 @@ double GetDifficulty(const CChain& chain, const CBlockIndex* blockindex)
     double dDiff =
         (double)0x0000ffff / (double)(blockindex->nBits & 0x00ffffff);
 
-    // EQB_NOTE: 
-    // nshift = 1f(31) for difficulty of 0x1f00ffff 
-    // blockindex->nBits & 0x00ffffff = 1f00ffff  & 00ffffff = 0x0000ffff 
-    // dDiff = 0x0000ffff / 0x0000ffff = 1
-    // bitcoin nShift = 29 but equibit nShift = 31, bitcoin returns dDiff = 1
-    // equibit dDiff = dDiff = dDiff / 256, run twice [from 31 to 29] 
-    // EQB_TODO: Change 31 to 29
+    //! EQB_TODO: Change 31 to 29
 #ifdef BUILD_BTC
     while (nShift < 29)
 #else // BUILD_EQB
