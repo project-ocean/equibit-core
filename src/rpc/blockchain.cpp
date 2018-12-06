@@ -75,18 +75,18 @@ double GetDifficulty(const CChain& chain, const CBlockIndex* blockindex)
     // equibit dDiff = dDiff = dDiff / 256, run twice [from 31 to 29] 
     // EQB_TODO: Change 31 to 29
 #ifdef BUILD_BTC
-    while(nShift < 29)
+    while (nShift < 29)
 #else // BUILD_EQB
-    while(nShift < 31)
+    while (nShift < 31)
 #endif // END_BUILD
     {
         dDiff *= 256.0;
         nShift++;
     }
 #ifdef BUILD_BTC
-    while(nShift > 29)
+    while (nShift > 29)
 #else // BUILD_EQB
-    while(nShift > 31)
+    while (nShift > 31)
 #endif // END_BUILD
     {
         dDiff /= 256.0;
