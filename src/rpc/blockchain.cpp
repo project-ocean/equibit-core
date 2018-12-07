@@ -67,12 +67,21 @@ double GetDifficulty(const CChain& chain, const CBlockIndex* blockindex)
     double dDiff =
         (double)0x0000ffff / (double)(blockindex->nBits & 0x00ffffff);
 
+    //! EQB_TODO: Change 31 to 29
+#ifdef BUILD_BTC
     while (nShift < 29)
+#else // BUILD_EQB
+    while (nShift < 31)
+#endif // END_BUILD
     {
         dDiff *= 256.0;
         nShift++;
     }
+#ifdef BUILD_BTC
     while (nShift > 29)
+#else // BUILD_EQB
+    while (nShift > 31)
+#endif // END_BUILD
     {
         dDiff /= 256.0;
         nShift--;
