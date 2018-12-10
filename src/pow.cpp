@@ -260,11 +260,6 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&
 
     bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
 
-    //arith_uint256 bnHash = UintToArith256(hash);
-    //std::stringstream ss, ss2, ss3;
-    //ss << bnHash.ToString() << " > " << std::endl;
-    //ss2 << bnTarget.ToString() << " = " << (bnHash > bnTarget) << std::endl;
-    //ss3 << hash.GetHex() << " < " << bnTarget.GetHex() << std::endl;
     // Check range
     if (fNegative || bnTarget == 0 || fOverflow || bnTarget > UintToArith256(params.powLimit))
         return false;
