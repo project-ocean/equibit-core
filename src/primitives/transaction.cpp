@@ -138,13 +138,13 @@ std::string CTransaction::ToString() const
         vout.size(),
         nLockTime);
 #else  // BUILD_EQB
-    str += strprintf("CTransaction(hash=%s, ver=%d, type=%d, vin.size=%u, vout.size=%u, nLockTime=%u, %EqbPayload=%d)\n",
+    str += strprintf("CTransaction(hash=%s, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u, eqbType=%d, eqbPayload=%s)\n",
         GetHash().ToString().substr(0, 10),
         nVersion,
-        nEQBType,
         vin.size(),
         vout.size(),
         nLockTime,
+        nEQBType,
         eqbPayload.ToString());
 #endif // END_BUILD
     for (const auto& tx_in : vin)
