@@ -15,9 +15,11 @@ JSON_TEST_FILES = \
   test/data/base58_keys_invalid.json \
   test/data/tx_invalid.json \
   test/data/tx_valid.json \
-  test/data/sighash.json 
+  test/data/sighash.json \
   test/data/eqb_base58_keys_valid.json \
-  test/data/eqb_base58_keys_invalid.json
+  test/data/eqb_base58_keys_invalid.json \
+  test/data/eqb_tx_valid.json \
+  test/data/eqb_tx_invalid.json
 
 RAW_TEST_FILES =
 
