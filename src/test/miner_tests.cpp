@@ -27,6 +27,10 @@
 
 BOOST_FIXTURE_TEST_SUITE(miner_tests, TestingSetup)
 
+#ifndef BUILD_BTC // BUILD_EQB
+    #define GENERATE_EQB_BLOCKS false
+#endif // END_BUILD
+
 // BOOST_CHECK_EXCEPTION predicates to check the specific validation error
 class HasReason {
 public:
@@ -89,34 +93,34 @@ static struct
     unsigned char   extranonce;
     unsigned int    nonce;
 } blockinfo[] = {
-                    { 0, 0xDBBB219B },{ 0, 0xEA1DB8D2 },{ 0, 0xF1D13F0D },{ 1, 0xC5ACDBED },
-                    { 0, 0xE6AC50B6 },{ 1, 0x4E4E5A7D },{ 1, 0x346D2162 },{ 1, 0x86F29799 },
-                    { 0, 0xF27319E3 },{ 0, 0x9E955051 },{ 0, 0xBEFDE3A0 },{ 0, 0x1FE95DBA },
-                    { 1, 0x7562FD48 },{ 0, 0xE43B2997 },{ 0, 0x40BB1859 },{ 1, 0xA123E5A4 },
-                    { 0, 0xEDCB2CBA },{ 0, 0x7F17B9F1 },{ 0, 0x48D10607 },{ 0, 0xABF8FBF5 },
-                    { 0, 0x6C4CFC02 },{ 0, 0xE531CF55 },{ 0, 0x9BCE97EC },{ 1, 0xA49B36C7 },
-                    { 1, 0x23D976FE },{ 1, 0x59B2CB79 },{ 0, 0xD3986C48 },{ 0, 0x3D815DCB },
-                    { 2, 0xF4757733 },{ 1, 0x64D0C198 },{ 1, 0x5C92DABB },{ 0, 0xEDCE6DE6 },
-                    { 0, 0x351DE156 },{ 1, 0x7FED7DD5 },{ 2, 0x190EEE72 },{ 0, 0x8156F973 },
-                    { 2, 0x5513DF57 },{ 0, 0x57E935E3 },{ 0, 0x21C00EFD },{ 0, 0x0860BC83 },
-                    { 0, 0x8856339B },{ 0, 0x200FD1BE },{ 2, 0x6A90BCCA },{ 0, 0x4AC1F4C3 },
-                    { 3, 0x7B20479D },{ 0, 0x7FD2BF6F },{ 1, 0x14FB17DC },{ 0, 0x53FC2C74 },
-                    { 0, 0xD59F443D },{ 0, 0x5A2B0497 },{ 0, 0xAAB8F2A5 },{ 1, 0x8C5A6763 },
-                    { 1, 0xAEAAE63A },{ 1, 0xC31F3CAC },{ 0, 0x0A3DF67F },{ 0, 0x0B6D2357 },
-                    { 0, 0xEFC4FBBE },{ 0, 0x25212779 },{ 0, 0x364F33A9 },{ 1, 0xA95D314E },
-                    { 0, 0x3FB10C76 },{ 1, 0x9078499D },{ 0, 0x62C65193 },{ 0, 0x92421B3E },
-                    { 1, 0x02C8402B },{ 0, 0x66F2370E },{ 0, 0x4DF9F085 },{ 1, 0x27829988 },
-                    { 2, 0x1B603CB9 },{ 0, 0xD3DF0556 },{ 0, 0xB3500ECB },{ 0, 0x2398CC42 },
-                    { 0, 0xF7746CF3 },{ 0, 0xBBDADD40 },{ 0, 0x628A1635 },{ 0, 0xBFF4F069 },
-                    { 0, 0x9FF5B7A5 },{ 0, 0xA289ACE8 },{ 0, 0x1B310C2D },{ 2, 0x4C33B224 },
-                    { 0, 0x63FBFE4B },{ 0, 0xADFE8E8E },{ 1, 0x51DBA6B9 },{ 0, 0x241F3DD5 },
-                    { 0, 0x37BC5863 },{ 0, 0x84362306 },{ 0, 0x96ABEAA0 },{ 0, 0x98F0AFFD },
-                    { 1, 0xC00A236A },{ 0, 0x1A16C3AF },{ 0, 0x608D3F52 },{ 0, 0x813AA2D8 },
-                    { 0, 0x4871CC5A },{ 2, 0x5E390F40 },{ 0, 0xFB519EEA },{ 0, 0x51C44EE7 },
-                    { 4, 0x2556CA27 },{ 0, 0x771657AD },{ 0, 0x1026EAC5 },{ 0, 0x34578215 },
-                    { 0, 0x459EDC98 },{ 0, 0x05CF3239 },{ 0, 0xC335208F },{ 1, 0x137E404C },
-                    { 0, 0x24C63C47 },{ 1, 0x6F3D93E8 },{ 1, 0x287D10FA },{ 0, 0xB059C70F },
-                    { 1, 0x129A1D38 },{ 0, 0x1FDC2D1A },
+                    { 0, 0xdbbb51cc },{ 0, 0xea1df10a },{ 0, 0xf1d1e00f },{ 1, 0xc5ad50ea },
+                    { 0, 0xe6aca4c6 },{ 1, 0x4e4f0ac3 },{ 1, 0x346d7fee },{ 1, 0x86f3446a },
+                    { 0, 0xf273f19d },{ 0, 0x9e95eded },{ 0, 0xbeff71c9 },{ 0, 0x1fe9fcd9 },
+                    { 1, 0x75631c0d },{ 0, 0xe43b4d9d },{ 0, 0x40bbe17d },{ 1, 0xa1246413 },
+                    { 0, 0xedcecfbb },{ 0, 0x7f185ccc },{ 0, 0x48d17583 },{ 0, 0xabfd9f28 },
+                    { 0, 0x6c4dbb10 },{ 0, 0xe532a4b8 },{ 0, 0x9bceafd3 },{ 1, 0xa49b5511 },
+                    { 1, 0x23d9c58a },{ 1, 0x59b39d9d },{ 0, 0xd398d5ec },{ 0, 0x3d826060 },
+                    { 2, 0xf475c9b6 },{ 1, 0x64d0ff96 },{ 1, 0x5c93d155 },{ 0, 0xedcea2b6 },
+                    { 0, 0x351e9b6a },{ 1, 0x7fee1b1a },{ 2, 0x190fec7a },{ 0, 0x8159646d },
+                    { 2, 0x551596c0 },{ 0, 0x57e9d321 },{ 0, 0x21c399f9 },{ 0, 0x8610d68 },
+                    { 0, 0x885960cd },{ 0, 0x20109a53 },{ 2, 0x6a917b83 },{ 0, 0x4ac379fa },
+                    { 3, 0x7b2235af },{ 0, 0x7fd5e2d6 },{ 1, 0x14fc110f },{ 0, 0x5400d723 },
+                    { 0, 0xd59f48d1 },{ 0, 0x5a2b398b },{ 0, 0xaab956b4 },{ 1, 0x8c5be509 },
+                    { 1, 0xaeab0bfa },{ 1, 0xc320b467 },{ 0, 0xa3f740f },{ 0, 0xb6d82ec },
+                    { 0, 0xefc5abb1 },{ 0, 0x252172ee },{ 0, 0x364f64a0 },{ 1, 0xa95e5ba7 },
+                    { 0, 0x3fb125fb },{ 1, 0x90787178 },{ 0, 0x62c7a58f },{ 0, 0x9242dfa8 },
+                    { 1, 0x2c95cbb },{ 0, 0x66f3ee9a },{ 0, 0x4dfa0a41 },{ 1, 0x278435e0 },
+                    { 2, 0x1b607f26 },{ 0, 0xd3dfbb44 },{ 0, 0xb351db62 },{ 0, 0x2398ef42 },
+                    { 0, 0xf777595e },{ 0, 0xbbdb4dc2 },{ 0, 0x628b46ed },{ 0, 0xbff5e363 },
+                    { 0, 0x9ff5dfd7 },{ 0, 0xa289ed4f },{ 0, 0x1b3195f7 },{ 2, 0x4c354126 },
+                    { 0, 0x63fc43eb },{ 0, 0xae0089e2 },{ 1, 0x51dc1de2 },{ 0, 0x241f74af },
+                    { 0, 0x37bd89eb },{ 0, 0x8436c465 },{ 0, 0x96ad19df },{ 0, 0x98f57d02 },
+                    { 1, 0xc00a4e17 },{ 0, 0x1a172df5 },{ 0, 0x608d9bc8 },{ 0, 0x813b30b8 },
+                    { 0, 0x48743ebf },{ 2, 0x5e3b97d3 },{ 0, 0xfb545759 },{ 0, 0x51c4591c },
+                    { 4, 0x25599225 },{ 0, 0x7716bcc9 },{ 0, 0x10288296 },{ 0, 0x345798b4 },
+                    { 0, 0x459f86ff },{ 0, 0x5cfbf90 },{ 0, 0xc335b63f },{ 1, 0x137e627f },
+                    { 0, 0x24c6c6b3 },{ 1, 0x6f3e2cd7 },{ 1, 0x287d2289 },{ 0, 0xb05b016e },
+                    { 1, 0x129a94a0 },{ 0, 0x1fdd55c4 },
                 };
 #endif // END_BUILD
 
@@ -274,7 +278,6 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
 // NOTE: These tests rely on CreateNewBlock doing its own self-validation!
 BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
 {
-//! EQB_TODO: Uncomment test
 
     // Note that by default, these tests run with size accounting enabled.
     const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
@@ -290,12 +293,6 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
 
     fCheckpointsEnabled = false;
 
-    // EQB_TODO_REMOVE: Trying to mine 102 blocks with lower difficulty
-    //Consensus::Params consensusParams = chainparams.GetConsensus();
-    //consensusParams.fPowAllowMinDifficultyBlocks = true;
-    //consensusParams.fPowNoRetargeting = true;
-    //consensusParams.powLimit = uint256S("0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-
     // Simple block creation, nothing special yet:
     BOOST_CHECK(pblocktemplate = AssemblerForTest(chainparams).CreateNewBlock(scriptPubKey));
 
@@ -307,8 +304,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     {
         CBlock *pblock = &pblocktemplate->block; // pointer for convenience
 
-        // EQB_TODO_REMOVE: Trying to mine 102 blocks with lower difficulty
-        //pblock->nBits = 0x207fffff;
+        //! EQB_TODO_REMOVE: Trying to mine 102 blocks with lower difficulty
         {
             LOCK(cs_main);
         RESTART:
@@ -331,17 +327,15 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
                 txFirst.push_back(pblock->vtx[0]);
             pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
             pblock->nNonce = blockinfo[i].nonce;
-
             // EQB_TODO_REMOVE: Mining pblock; i.e. finding the right nonce and extranonce
             //                  if correct values are not given in blockinfo
-            if(0)
+            if(GENERATE_EQB_BLOCKS)
             {
                 CBlock &b = const_cast<CBlock&>(*pblock);
                 bool triedZeroBefore = false;
                 b.nNonce = blockinfo[i].nonce;
                 uint32_t counter = 0;
-                //LogPrintf("Finding Nonce for Block...%s \n", b.ToString().c_str());
-                printf("\n*** Finding Nonce for Block[%d]:\n%s\n", chainActive.Height()+1, b.ToString().c_str());
+                std::cout << std::endl << "*** Finding Nonce for Block"<< chainActive.Height() + 1 << ":" << std::endl  << " ...";
                 while (!CheckProofOfWork(b.GetHash(), b.nBits, Params().GetConsensus()))
                 {
                     if (!(counter & 0xFFFFFF))
@@ -360,15 +354,17 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
                 }
                 if (triedZeroBefore && !counter)
                 {
-                    printf("\n*** Cannot find the nonce, incrementing extranonce in coinbase and try again\n");
+                    std::cout << std::endl << "*** Cannot find the nonce, incrementing extranonce in coinbase and try again" << std::endl;
                     blockinfo[i].extranonce++;
+                    std::cout << " Setting new extranonce of " << blockinfo[i].extranonce;
                     goto RESTART;
                 }
                 else
                 {
                     // Found a valid nonce
                     //LogPrintf("\nThe nonce is %08X, block hash: %s ", b.nNonce, b.GetHash().ToString().c_str());
-                    printf("\nThe nonce is %08X, block hash: %s ", b.nNonce, b.GetHash().ToString().c_str());
+                    std::cout << std::endl << "The nonce is "<< b.nNonce <<  ", hex: 0x" << std::hex << b.nNonce <<
+                        ", extra nonce is " << +blockinfo[i].extranonce << " block hash: " << b.GetHash().GetHex();
                     pblock->nNonce = b.nNonce;
                 }
             }
@@ -652,7 +648,6 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     TestPackageSelection(chainparams, scriptPubKey, txFirst);
 
     fCheckpointsEnabled = true;
-    
 }
 
 BOOST_AUTO_TEST_SUITE_END()
