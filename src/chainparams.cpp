@@ -196,7 +196,7 @@ public:
         genesis = CreateGenesisBlock(1231006505, 2083236893, 0x1d00ffff, 1, 50 * COIN);
 #else  // BUILD_EQB
         // genesis hash: 0000c06d6eb6ea2f13ec1a19b8ba8f3df22a6df8284c2bc2480a7c2c33261593
-        genesis = CreateGenesisBlock(1543165379, 25531, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
+        genesis = CreateGenesisBlock(1543165379, 116068, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
 #endif // END_BUILD 
 #ifdef BUILD_BTC
         consensus.hashGenesisBlock = genesis.GetHash();
