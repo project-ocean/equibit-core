@@ -86,8 +86,11 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
 {
     // EQB_TODO generate new test data
     return;
-
+#ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));
+#else // BUILD_EQB
+    UniValue tests = read_json(std::string(json_tests::eqb_base58_keys_valid, json_tests::eqb_base58_keys_valid + sizeof(json_tests::eqb_base58_keys_valid)));
+#endif // END_BUILD
     CBitcoinSecret secret;
     CTxDestination destination;
     SelectParams(CBaseChainParams::MAIN);
@@ -207,9 +210,11 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
 {
     // EQB_TODO generate new test data
     return;
-
+#ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));
-
+#else // BUILD_EQB
+    UniValue tests = read_json(std::string(json_tests::eqb_base58_keys_valid, json_tests::eqb_base58_keys_valid + sizeof(json_tests::eqb_base58_keys_valid)));
+#endif // END_BUILD
     for (unsigned int idx = 0; idx < tests.size(); idx++) {
         UniValue test = tests[idx];
         std::string strTest = test.write();
@@ -255,7 +260,11 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
 // Goal: check that base58 parsing code is robust against a variety of corrupted data
 BOOST_AUTO_TEST_CASE(base58_keys_invalid)
 {
+#ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_invalid, json_tests::base58_keys_invalid + sizeof(json_tests::base58_keys_invalid))); // Negative testcases
+#else // BUILD_EQB
+    UniValue tests = read_json(std::string(json_tests::eqb_base58_keys_invalid, json_tests::eqb_base58_keys_invalid + sizeof(json_tests::eqb_base58_keys_invalid))); // Negative testcases
+#endif // END_BUILD
     CBitcoinSecret secret;
     CTxDestination destination;
 
