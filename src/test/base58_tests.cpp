@@ -8,12 +8,12 @@
 #ifdef BUILD_BTC
 #include <test/data/base58_keys_invalid.json.h>
 #else // BUILD_EQB
-#include <test/data/base58_keys_invalid.json.h>
+#include <test/data/eqb_base58_keys_invalid.json.h>
 #endif // END_BUILD
 #ifdef BUILD_BTC
 #include <test/data/base58_keys_valid.json.h>
 #else // BUILD_EQB
-#include <test/data/base58_keys_valid.json.h>
+#include <test/data/eqb_base58_keys_valid.json.h>
 #endif // END_BUILD
 
 #include <key.h>
