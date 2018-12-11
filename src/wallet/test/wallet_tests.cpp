@@ -513,6 +513,9 @@ BOOST_FIXTURE_TEST_CASE(importwallet_rescan, TestChain100Setup)
         LOCK(wallet.cs_wallet);
         //! EQB_TODO: Fix Test -> BOOST_CHECK_EQUAL(wallet.mapWallet.size(), 3);
         //! EQB_TODO: Fix Test -> BOOST_CHECK_EQUAL(coinbaseTxns.size(), 103);
+#ifdef EQB_BREAK_TEST
+        BOOST_ERROR("TEST DISABLED!");
+#endif
         for (size_t i = 0; i < coinbaseTxns.size(); ++i) {
             bool found = wallet.GetWalletTx(coinbaseTxns[i].GetHash());
             bool expected = i >= 100;
@@ -723,7 +726,10 @@ BOOST_FIXTURE_TEST_CASE(ListCoins, ListCoinsTestingSetup)
     BOOST_CHECK_EQUAL(boost::get<CKeyID>(list.begin()->first).ToString(), coinbaseAddress);
     BOOST_CHECK_EQUAL(list.begin()->second.size(), 2);
 #else // BUILD_EQB
-    //! EQB_TODO: Add test back - Disabled due to changes to transaction structure. 
+    //! EQB_TODO: Add test back - Disabled due to changes to transaction structure.
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
 #endif // END_BUILD
 }
 

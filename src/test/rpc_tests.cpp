@@ -86,6 +86,9 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
 
 #else // BUILD_EQB
     //! EQB_TODO: Fix Test
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
 #endif // END_BUILD
 }
 
@@ -131,6 +134,9 @@ BOOST_AUTO_TEST_CASE(rpc_rawsign)
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == true);
 #else  // BUILD_EQB
        // EQB_TODO Generate new test data
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
 #endif // END_BUILD
 }
 

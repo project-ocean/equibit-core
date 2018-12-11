@@ -85,7 +85,11 @@ BOOST_AUTO_TEST_CASE(base58_DecodeBase58)
 BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
 {
     // EQB_TODO generate new test data
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
     return;
+
 #ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));
 #else // BUILD_EQB
@@ -209,6 +213,9 @@ BOOST_AUTO_TEST_CASE(base58_key_test_gen)
 BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
 {
     // EQB_TODO generate new test data
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
     return;
 #ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));

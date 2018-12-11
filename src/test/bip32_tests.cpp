@@ -215,16 +215,25 @@ void RunTest(const TestVector &test) {
 BOOST_FIXTURE_TEST_SUITE(bip32_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(bip32_test1) {
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
     // EQB_TODO generate new test data
     // RunTest(test1);
 }
 
 BOOST_AUTO_TEST_CASE(bip32_test2) {
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
     // EQB_TODO generate new test data
     // RunTest(test2);
 }
 
 BOOST_AUTO_TEST_CASE(bip32_test3) {
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
     // EQB_TODO generate new test data
     // RunTest(test3);
 }
