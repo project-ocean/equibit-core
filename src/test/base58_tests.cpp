@@ -89,7 +89,6 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
     BOOST_ERROR("TEST DISABLED!");
 #endif
     return;
-
 #ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));
 #else // BUILD_EQB

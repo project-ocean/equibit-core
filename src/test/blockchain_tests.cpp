@@ -124,6 +124,7 @@ BOOST_AUTO_TEST_CASE(get_difficulty_for_null_block_index)
 
     RejectDifficultyMismatch(difficulty, expected_difficulty);
 #else // BUILD_EQB
+
 #ifdef EQB_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
@@ -152,9 +153,9 @@ BOOST_AUTO_TEST_CASE(get_difficulty_for_block_index_overrides_tip)
 #else // BUILD_EQB
 #ifdef EQB_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
-#endif
     //! EQB_TODO: Update difficulty related tests 
 #endif // END_BUILD
+#endif
 
 }
 
