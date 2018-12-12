@@ -974,6 +974,9 @@ BOOST_AUTO_TEST_CASE(script_build)
 
 #else // BUILD_EQB
 //! EQB_TODO: Fix Test
+#ifdef EQB_BREAK_TEST
+BOOST_ERROR("TEST DISABLED!");
+#endif
 #endif // END_BUILD
 }
 
@@ -1024,6 +1027,9 @@ BOOST_AUTO_TEST_CASE(script_json_test)
     }
 #else  // BUILD_EQB
     //! EQB_TODO: Fix Test
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
 #endif // END_BUILD
 }
 
