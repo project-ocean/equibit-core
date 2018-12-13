@@ -165,6 +165,9 @@ BOOST_AUTO_TEST_CASE(caddrdb_read_corrupted)
     BOOST_CHECK(addrman2.size() == 0)
 #else // BUILD_EQB
     // !EQB_TODO: Fix Tests
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
 #endif // END_BUILD
 }
 

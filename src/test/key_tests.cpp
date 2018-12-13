@@ -54,6 +54,9 @@ BOOST_FIXTURE_TEST_SUITE(key_tests, BasicTestingSetup)
 BOOST_AUTO_TEST_CASE(key_test1)
 {
     // EQB_TODO generate new test data
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
     return;
 
     CBitcoinSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;

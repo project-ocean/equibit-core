@@ -96,6 +96,9 @@ BOOST_FIXTURE_TEST_SUITE(transaction_tests, BasicTestingSetup)
 BOOST_AUTO_TEST_CASE(tx_valid)
 {
     // EQB_TODO: Uncomment the following code 
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
     /*
     // Read tests from test/data/tx_valid.json
     // Format is an array of arrays
@@ -273,6 +276,9 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
     }
 #else  // BUILD_EQB
     //! EQB_TODO Generate new test data
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
 #endif // END_BUILD
 }
 
@@ -292,7 +298,10 @@ BOOST_AUTO_TEST_CASE(basic_transaction_tests)
     tx.vin.push_back(tx.vin[0]);
     //! EQB_TODO: Fix Test -> BOOST_CHECK_MESSAGE(!CheckTransaction(tx, state) || !state.IsValid(), "Transaction with duplicate txins should be invalid.");
 #else // BUILD_EQB
-    //! EQB_TODO: Add test back - Disabled due to changes to transaction structure. 
+    //! EQB_TODO: Add test back - Disabled due to changes to transaction structure.
+#ifdef EQB_BREAK_TEST
+    BOOST_ERROR("TEST DISABLED!");
+#endif
 #endif // END_BUILD
 }
 
