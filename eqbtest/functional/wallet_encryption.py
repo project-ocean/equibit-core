@@ -27,7 +27,7 @@ class WalletEncryptionTest(BitcoinTestFramework):
         # Make sure the wallet isn't encrypted first
         address = self.nodes[0].getnewaddress()
         privkey = self.nodes[0].dumpprivkey(address)
-        assert_equal(privkey[:1], "A")
+        assert_equal(privkey[:1], "6")
         assert_equal(len(privkey), 54)
 
         # Encrypt the wallet
