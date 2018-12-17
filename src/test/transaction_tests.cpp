@@ -2,8 +2,13 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#ifdef BUILD_BTC
 #include <test/data/tx_invalid.json.h>
 #include <test/data/tx_valid.json.h>
+#else // BUILD_EQB
+#include <test/data/eqb_tx_invalid.json.h>
+#include <test/data/eqb_tx_valid.json.h>
+#endif // END_BUILD
 #include <test/test_bitcoin.h>
 
 #include <clientversion.h>
@@ -99,7 +104,7 @@ BOOST_AUTO_TEST_CASE(tx_valid)
 #ifdef EQB_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
-    /*
+
     // Read tests from test/data/tx_valid.json
     // Format is an array of arrays
     // Inner arrays are either [ "comment" ]
@@ -107,7 +112,11 @@ BOOST_AUTO_TEST_CASE(tx_valid)
     // ... where all scripts are stringified scripts.
     //
     // verifyFlags is a comma separated list of script verification flags to apply, or "NONE"
+#ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::tx_valid, json_tests::tx_valid + sizeof(json_tests::tx_valid)));
+#else // BUILD_EQB
+    UniValue tests = read_json(std::string(json_tests::eqb_tx_valid, json_tests::eqb_tx_valid + sizeof(json_tests::eqb_tx_valid)));
+#endif // END_BUILD
 
     ScriptError err;
     for (unsigned int idx = 0; idx < tests.size(); idx++) {
@@ -115,17 +124,18 @@ BOOST_AUTO_TEST_CASE(tx_valid)
         std::string strTest = test.write();
         if (test[0].isArray())
         {
+           
             if (test.size() != 3 || !test[1].isStr() || !test[2].isStr())
             {
                 BOOST_ERROR("Bad test: " << strTest);
                 continue;
             }
-
+        
             std::map<COutPoint, CScript> mapprevOutScriptPubKeys;
             std::map<COutPoint, int64_t> mapprevOutValues;
             UniValue inputs = test[0].get_array();
             bool fValid = true;
-	    for (unsigned int inpIdx = 0; inpIdx < inputs.size(); inpIdx++) {
+	    for (unsigned int inpIdx = 0; inpIdx < inputs.size(); inpIdx++) { 
 	        const UniValue& input = inputs[inpIdx];
                 if (!input.isArray())
                 {
@@ -145,16 +155,18 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                     mapprevOutValues[outpoint] = vinput[3].get_int64();
                 }
             }
+  
             if (!fValid)
             {
                 BOOST_ERROR("Bad test: " << strTest);
                 continue;
             }
-
+        
             std::string transaction = test[1].get_str();
             CDataStream stream(ParseHex(transaction), SER_NETWORK, PROTOCOL_VERSION);
             CTransaction tx(deserialize, stream);
 
+            /*
             CValidationState state;
             BOOST_CHECK_MESSAGE(CheckTransaction(tx, state), strTest);
             BOOST_CHECK(state.IsValid());
@@ -173,7 +185,7 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                     amount = mapprevOutValues[tx.vin[i].prevout];
                 }
                 unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
-                const CScriptWitness *witness = &tx.vin[i].scriptWitness;
+                const CScriptWitness *witness = &tx.vin[i].scriptWitness; 
 #ifdef BUILD_BTC
                 BOOST_CHECK_MESSAGE(VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
                                                  witness, verify_flags, TransactionSignatureChecker(&tx, i, amount, txdata), &err),
@@ -182,10 +194,10 @@ BOOST_AUTO_TEST_CASE(tx_valid)
 #else  // BUILD_EQB
        // EQB_TODO Generate new test data
 #endif // END_BUILD
-            }
+
+            }*/
         }
     }
-    */
 }
 
 BOOST_AUTO_TEST_CASE(tx_invalid)
