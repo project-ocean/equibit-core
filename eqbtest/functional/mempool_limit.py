@@ -14,7 +14,6 @@ class MempoolLimitTest(BitcoinTestFramework):
         self.extra_args = [["-maxmempool=5", "-spendzeroconfchange=0"]]
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         txouts = gen_return_txouts()
         relayfee = self.nodes[0].getnetworkinfo()['relayfee']
 
