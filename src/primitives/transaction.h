@@ -278,8 +278,8 @@ inline void UnserializeTransaction(TxType& tx, Stream& s) {
     s >> tx.nLockTime;
 
 #ifndef BUILD_BTC
-    s >> tx.nEQBType;
-    s >> tx.eqbPayload;
+    //s >> tx.nEQBType;
+    //s >> tx.eqbPayload;
 #endif // END_BUILD
 }
 
@@ -312,8 +312,8 @@ inline void SerializeTransaction(const TxType& tx, Stream& s) {
     s << tx.nLockTime;
 
 #ifndef BUILD_BTC
-    s << tx.nEQBType;
-    s << tx.eqbPayload;
+    //s << tx.nEQBType;
+    //s << tx.eqbPayload;
 #endif // END_BUILD
 }
 

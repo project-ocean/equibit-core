@@ -309,7 +309,7 @@ public:
         consensus.nPowTargetTimespan = 60 * 60; // 1 hour moving average window
 #endif // END_BUILD
         consensus.nPowTargetSpacing = 10 * 60;
-        consensus.fPowAllowMinDifficultyBlocks = false;
+        consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
@@ -357,8 +357,8 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 #else  // BUILD_EQB
         // 000042550b9e7a0bf450cd7c44c74d636f84af1d0e646d3c7099a318ea65b5e2
-        genesis = CreateGenesisBlock(1543165379, 34458, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
-        //genesis = MineGenesisBlock(consensus); // Use MineGenesisBlock if any parameters change
+        //genesis = CreateGenesisBlock(1543165379, 34458, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
+        genesis = MineGenesisBlock(consensus); // Use MineGenesisBlock if any parameters change
         consensus.hashGenesisBlock = genesis.GetHash();
         //assert(consensus.hashGenesisBlock == uint256S("0x0000e9b3a79f70fb0be95b38604636441323450731e9ee1b5ef410791dac7184"));
         //assert(genesis.hashMerkleRoot == uint256S("0xea914133c255e8b47fb99d26b8627f90e12f5a9c3bc86269652d474d9814aaca"));
