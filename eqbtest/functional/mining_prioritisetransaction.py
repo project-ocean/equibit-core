@@ -15,7 +15,6 @@ class PrioritiseTransactionTest(BitcoinTestFramework):
         self.extra_args = [["-printpriority=1"], ["-printpriority=1"]]
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         # Test `prioritisetransaction` required parameters
         assert_raises_rpc_error(-1, "prioritisetransaction", self.nodes[0].prioritisetransaction)
         assert_raises_rpc_error(-1, "prioritisetransaction", self.nodes[0].prioritisetransaction, '')
