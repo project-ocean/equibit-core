@@ -14,7 +14,6 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
         self.extra_args = [["-checkmempool"]]
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         node0_address = self.nodes[0].getnewaddress()
         # Spend block 1/2/3's coinbase transactions
         # Mine a block.
@@ -28,13 +27,14 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
 
         b = [ self.nodes[0].getblockhash(n) for n in range(1, 4) ]
         coinbase_txids = [ self.nodes[0].getblock(h)['tx'][0] for h in b ]
-        spends1_raw = [ create_tx(self.nodes[0], txid, node0_address, 49.99) for txid in coinbase_txids ]
+        coinbase_amnts = [self.nodes[0].gettransaction(t)['details'][0]['amount'] for t in coinbase_txids]
+        spends1_raw = [create_tx(self.nodes[0], txid, node0_address, amount - Decimal('0.01')) for txid, amount in zip(coinbase_txids, coinbase_amnts)]
         spends1_id = [ self.nodes[0].sendrawtransaction(tx) for tx in spends1_raw ]
 
         blocks = []
         blocks.extend(self.nodes[0].generate(1))
 
-        spends2_raw = [ create_tx(self.nodes[0], txid, node0_address, 49.98) for txid in spends1_id ]
+        spends2_raw = [ create_tx(self.nodes[0], txid, node0_address, amount - Decimal('0.02')) for txid, amount in zip(spends1_id, coinbase_amnts)]
         spends2_id = [ self.nodes[0].sendrawtransaction(tx) for tx in spends2_raw ]
 
         blocks.extend(self.nodes[0].generate(1))
