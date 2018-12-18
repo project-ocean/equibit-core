@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(tx_valid)
 #ifdef EQB_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
-
+    /*
     // Read tests from test/data/tx_valid.json
     // Format is an array of arrays
     // Inner arrays are either [ "comment" ]
@@ -162,9 +162,10 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                 continue;
             }
         
-            std::string transaction = test[1].get_str();
-            CDataStream stream(ParseHex(transaction), SER_NETWORK, PROTOCOL_VERSION);
-            CTransaction tx(deserialize, stream);
+            //std::string transaction = test[1].get_str();
+            //CDataStream stream(ParseHex(transaction), SER_NETWORK, PROTOCOL_VERSION);
+            //CTransaction tx(deserialize, stream);
+  */
 
             /*
             CValidationState state;
@@ -196,9 +197,9 @@ BOOST_AUTO_TEST_CASE(tx_valid)
 #endif // END_BUILD
 
             }*/
-        }
-    }
-}
+     /*   }
+    }*/
+} 
 
 BOOST_AUTO_TEST_CASE(tx_invalid)
 {
