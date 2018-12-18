@@ -86,7 +86,7 @@ class WalletTest(BitcoinTestFramework):
         assert_equal(txout['value'], block_reward(1))
         
         # EQB_TODO: modify amounts
-        # Send 21 BTC from 0 to 2 using sendtoaddress call.
+        # Send 3 EQB (was 21 BTC) from 0 to 2 using sendtoaddress call.
         # Locked memory should use at least 32 bytes to sign each transaction
         self.log.info("test getmemoryinfo")
         memory_before = self.nodes[0].getmemoryinfo()
@@ -170,8 +170,8 @@ class WalletTest(BitcoinTestFramework):
         self.sync_all([self.nodes[0:3]])
 
         assert_equal(self.nodes[0].getbalance(), 0)
-        assert_equal(self.nodes[2].getbalance(), 94)  # 14.81529746
-        assert_equal(self.nodes[2].getbalance("from1"), 94-21)  # Decimal('14.81529746') - Decimal('3.00000000') 11.81529746
+        assert_equal(self.nodes[2].getbalance(), Decimal('14.81529746'))
+        assert_equal(self.nodes[2].getbalance("from1"), Decimal('14.81529746') - Decimal('3.00000000'))  # Decimal('14.81529746') - Decimal('3.00000000') 11.81529746 was 94-21
 
         # Verify that a spent output cannot be locked anymore
         spent_0 = {"txid": node0utxos[0]["txid"], "vout": node0utxos[0]["vout"]}
@@ -184,32 +184,33 @@ class WalletTest(BitcoinTestFramework):
         txid = self.nodes[2].sendtoaddress(address, 10, "", "", False)
         self.nodes[2].generate(1)
         self.sync_all([self.nodes[0:3]])
-        node_2_bal = self.check_fee_amount(self.nodes[2].getbalance(), Decimal('84'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
+        node_2_bal = self.check_fee_amount(self.nodes[2].getbalance(), Decimal('4.81529746'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
         assert_equal(self.nodes[0].getbalance(), Decimal('10'))
 
         # Send 10 BTC with subtract fee from amount
-        txid = self.nodes[2].sendtoaddress(address, 10, "", "", True)
+        txid = self.nodes[2].sendtoaddress(address, 1, "", "", True)
         self.nodes[2].generate(1)
         self.sync_all([self.nodes[0:3]])
-        node_2_bal -= Decimal('10')
+        node_2_bal -= Decimal('1')
         assert_equal(self.nodes[2].getbalance(), node_2_bal)
-        node_0_bal = self.check_fee_amount(self.nodes[0].getbalance(), Decimal('20'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
+        node_0_bal = self.check_fee_amount(self.nodes[0].getbalance(), Decimal('11'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
 
         # Sendmany 10 BTC
-        txid = self.nodes[2].sendmany('from1', {address: 10}, 0, "", [])
+        txid = self.nodes[2].sendmany('from1', {address: 2}, 0, "", [])
         self.nodes[2].generate(1)
         self.sync_all([self.nodes[0:3]])
-        node_0_bal += Decimal('10')
-        node_2_bal = self.check_fee_amount(self.nodes[2].getbalance(), node_2_bal - Decimal('10'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
+        node_0_bal += Decimal('2')
+        node_2_bal = self.check_fee_amount(self.nodes[2].getbalance(), node_2_bal - Decimal('2'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
         assert_equal(self.nodes[0].getbalance(), node_0_bal)
 
         # Sendmany 10 BTC with subtract fee from amount
-        txid = self.nodes[2].sendmany('from1', {address: 10}, 0, "", [address])
+        txid = self.nodes[2].sendmany('from1', {address: 1}, 0, "", [address])
         self.nodes[2].generate(1)
         self.sync_all([self.nodes[0:3]])
-        node_2_bal -= Decimal('10')
+        node_2_bal -= Decimal('1')
         assert_equal(self.nodes[2].getbalance(), node_2_bal)
-        node_0_bal = self.check_fee_amount(self.nodes[0].getbalance(), node_0_bal + Decimal('10'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
+        node_0_bal = self.check_fee_amount(self.nodes[0].getbalance(), node_0_bal + Decimal('1'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
+        assert_equal(self.nodes[0].getbalance(), node_0_bal)
 
         # Test ResendWalletTransactions:
         # Create a couple of transactions, then start up a fourth
@@ -240,7 +241,7 @@ class WalletTest(BitcoinTestFramework):
         #4. check if recipient (node0) can list the zero value tx
         usp = self.nodes[1].listunspent()
         inputs = [{"txid":usp[0]['txid'], "vout":usp[0]['vout']}]
-        outputs = {self.nodes[1].getnewaddress(): 49.998, self.nodes[0].getnewaddress(): 11.11}
+        outputs = {self.nodes[1].getnewaddress(): usp[0]['amount'] - Decimal('0.002'), self.nodes[0].getnewaddress(): 11.11}
 
         rawTx = self.nodes[1].createrawtransaction(inputs, outputs).replace("c0833842", "00000000") #replace 11.11 with 0.0 (int32)
         decRawTx = self.nodes[1].decoderawtransaction(rawTx)
