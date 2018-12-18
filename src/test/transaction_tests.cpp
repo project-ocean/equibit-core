@@ -162,12 +162,10 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                 continue;
             }
         
-            //std::string transaction = test[1].get_str();
-            //CDataStream stream(ParseHex(transaction), SER_NETWORK, PROTOCOL_VERSION);
-            //CTransaction tx(deserialize, stream);
-  */
+            std::string transaction = test[1].get_str();
+            CDataStream stream(ParseHex(transaction), SER_NETWORK, PROTOCOL_VERSION);
+            CTransaction tx(deserialize, stream);
 
-            /*
             CValidationState state;
             BOOST_CHECK_MESSAGE(CheckTransaction(tx, state), strTest);
             BOOST_CHECK(state.IsValid());
@@ -196,8 +194,8 @@ BOOST_AUTO_TEST_CASE(tx_valid)
        // EQB_TODO Generate new test data
 #endif // END_BUILD
 
-            }*/
-     /*   }
+            }
+        }
     }*/
 } 
 
