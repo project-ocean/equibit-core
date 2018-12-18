@@ -14,7 +14,6 @@
     "P2SH"
   ],
 
-
   [ "The following is 553e480ac01484f9fffdef6f978fb78353735ef6edc7ee2fe2e4ee7835701ad2" ],
   [ "It is a segwit enabled test using P2SH base58 address format" ],
   [ "Transfering 1.2EQB to an address on a different wallet account TQsPL2ToGmSh5b44jXZxY7PHtqbT95GY9atZ" ],
@@ -24,16 +23,19 @@
     "P2SH"
   ],
 
+  [ "The following is 5fb46570ace6750e772ea1c708212359a7337814df466aef5bb6d779c996e219" ],
+  [ "It is a segwit enabled test using Segwit Bech32 address format" ],
+  [ "Transfering 1.4EQB to address eqrt1q3h33e30j0g2ye64unqy08vyclq9ylvstngylpu" ],
+  [
+    [ [ "553e480ac01484f9fffdef6f978fb78353735ef6edc7ee2fe2e4ee7835701ad2", 0, "0x00 0x14 1262bd777cb545b814d5f6c409bbffd72e5d9cf7" ] ],
+    "02000000000102d21a703578eee4e22feec7edf65e735383b78f976feffdfff98414c00a483e5501000000171600141262bd777cb545b814d5f6c409bbffd72e5d9cf7feffffffecb297fc237bc093c1e5e82d554d38a03eb6895ffde978c5a6393fc976dce6db010000006b483045022100822026c955dfbfc7d4d3bbf681789dc3d9a1dfab9a2a559b33b2bc25252963b0022036e417d61584805f3b1939968dabd744cd04142e90c59c1cab4afd6f8ed3c968012102be893a34019f57c370ffdeae9746433d48c889016ed3e5d44772b8b9713a9f8cfeffffff0280a4bf07000000001600148de31cc5f27a144ceabc9808f3b098f80a4fb20bd6f4900300000000160014dcc9eadbe7db10d835d33934be3cf0504f00837502473044022032b568d3aa8561e8ef972676f5ac95837c9a915209f320ec3c5ba06ae98a2347022013b860a32ea99e6bc935932f4e9369e1262cc715bda748c45b8d31feffd4ddc0012102ac32084df8e33f6d48aec2398449d80568ab9f5ef6cee34ef89831bb6b7d203f006f0000000000",
+    "P2SH"
+  ],
 
   [ "The following is " ],
   [ "It is a segwit enabled test using P2SH base58 address format" ],
   [ "Transfering 1.3EQB to an address on a different wallet account " ],
   [ "The address of the sender does not belong to a miner" ],
-
-  [ "The following is " ],
-  [ "It is a segwit enabled test using Segwit Bech32 address format" ],
-  [ "Transfering 1.4EQB to address " ],
-
 
   [ "The following is " ],
   [ "It is a segwit enabled test using Segwit Bech32 address format" ],
