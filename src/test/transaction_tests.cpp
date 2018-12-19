@@ -100,11 +100,6 @@ BOOST_FIXTURE_TEST_SUITE(transaction_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(tx_valid)
 {
-    // EQB_TODO: Uncomment the following code 
-#ifdef EQB_BREAK_TEST
-    BOOST_ERROR("TEST DISABLED!");
-#endif
-    /*
     // Read tests from test/data/tx_valid.json
     // Format is an array of arrays
     // Inner arrays are either [ "comment" ]
@@ -124,7 +119,7 @@ BOOST_AUTO_TEST_CASE(tx_valid)
         std::string strTest = test.write();
         if (test[0].isArray())
         {
-           
+            
             if (test.size() != 3 || !test[1].isStr() || !test[2].isStr())
             {
                 BOOST_ERROR("Bad test: " << strTest);
@@ -135,19 +130,23 @@ BOOST_AUTO_TEST_CASE(tx_valid)
             std::map<COutPoint, int64_t> mapprevOutValues;
             UniValue inputs = test[0].get_array();
             bool fValid = true;
+        
 	    for (unsigned int inpIdx = 0; inpIdx < inputs.size(); inpIdx++) { 
+         
 	        const UniValue& input = inputs[inpIdx];
                 if (!input.isArray())
                 {
                     fValid = false;
                     break;
                 }
+               
                 UniValue vinput = input.get_array();
                 if (vinput.size() < 3 || vinput.size() > 4)
                 {
                     fValid = false;
                     break;
                 }
+               
                 COutPoint outpoint(uint256S(vinput[0].get_str()), vinput[1].get_int());
                 mapprevOutScriptPubKeys[outpoint] = ParseScript(vinput[2].get_str());
                 if (vinput.size() >= 4)
@@ -155,7 +154,7 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                     mapprevOutValues[outpoint] = vinput[3].get_int64();
                 }
             }
-  
+        
             if (!fValid)
             {
                 BOOST_ERROR("Bad test: " << strTest);
@@ -185,18 +184,14 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                 }
                 unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
                 const CScriptWitness *witness = &tx.vin[i].scriptWitness; 
-#ifdef BUILD_BTC
                 BOOST_CHECK_MESSAGE(VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
                                                  witness, verify_flags, TransactionSignatureChecker(&tx, i, amount, txdata), &err),
                                     strTest);
                 BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
-#else  // BUILD_EQB
-       // EQB_TODO Generate new test data
-#endif // END_BUILD
 
             }
         }
-    }*/
+    }
 } 
 
 BOOST_AUTO_TEST_CASE(tx_invalid)

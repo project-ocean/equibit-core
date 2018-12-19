@@ -7,41 +7,12 @@
 
   [ "The following is dbe6dc76c93f39a6c578e9fd5f89b63ea0384d552de8e5c193c07b23fc97b2ec" ],
   [ "It is a segwit enabled test using P2SH base58 address format" ],
-  [ "Transfering 1.1EQB, generated through mining, to address TQaSbVXixpYUvQgzjWdLyGFMUfJDqR1DP88n" ],
+  [ "Transfering 1.1EQB, generated through mining, to P2PK address TQaSbVXixpYUvQgzjWdLyGFMUfJDqR1DP88n" ],
   [
-    [ [ "f541a712f2d4d31e15ba07af9573b4e2cc84ebf1c1ff3bb1c015f7b5100c215a", 0, "0x00 0x14 c4aeb84a2a705f98a22d65218eee6d1f5a260159" ] ],
+    [ [ "f541a712f2d4d31e15ba07af9573b4e2cc84ebf1c1ff3bb1c015f7b5100c215a", 1, "0x00 0x14 0xc4aeb84a2a705f98a22d65218eee6d1f5a260159" ] ],
     "020000000001015a210c10b5f715c0b13bffc1f1eb84cce2b47395af07ba151ed3d4f212a741f50100000017160014c4aeb84a2a705f98a22d65218eee6d1f5a260159feffffff028ee95a050000000017a9144b2e399eff5a3674ecd54006686171fb936cc8198780778e06000000001976a914901007ba13785cc7ba6abfb7b9cbcf7c14be3cc888ac02483045022100988d736c41d768a221da3802583fba8bcfb8a12af088e07994f0dbb847d052f5022076aa6103b1eef74c225fbb212ac3652df688c5858027da1edeb95104334982cc0121027b835d886ea4579737790eeb8586f37eef745ddf4b2578e6cb9ef574376958c56c0000000000",
     "P2SH"
   ],
-
-  [ "The following is 553e480ac01484f9fffdef6f978fb78353735ef6edc7ee2fe2e4ee7835701ad2" ],
-  [ "It is a segwit enabled test using P2SH base58 address format" ],
-  [ "Transfering 1.2EQB to an address on a different wallet account TQsPL2ToGmSh5b44jXZxY7PHtqbT95GY9atZ" ],
-  [
-    [ [ "dbe6dc76c93f39a6c578e9fd5f89b63ea0384d552de8e5c193c07b23fc97b2ec", 0, "0x00 0x14 b44cb24191d6dfe3101241396d3d5c77f5d077f7" ] ],
-    "020000000001025a210c10b5f715c0b13bffc1f1eb84cce2b47395af07ba151ed3d4f212a741f5000000006a47304402200a66f878d43811c8f2012d8f30f6b05a2d1b02ac0fc22e425b5a67dedfa7b778022036e35c2e5f62fe0d8941610a4ef1f5292a23ceaae44f2ed979964bf8738586810121034c63983b70d992bdaa8727b83c93c8885232ae824dc37c734f9906f41fe90851feffffffecb297fc237bc093c1e5e82d554d38a03eb6895ffde978c5a6393fc976dce6db0000000017160014b44cb24191d6dfe3101241396d3d5c77f5d077f7feffffff02000e27070000000017a914abe6d75bcc5845adad59c67c379c07b7755b7cb1875e3ac2040000000017a914d37bad622e2ca20c62553ec5220ecdcdddb2627f87000248304502210093d57620c86cb64483ee9f42211eaadb76466e7e8820a9242493eb7968643f8002207ae3f7179d3ed706976491089a7c293de64e082e9e13ed34e2816fcd23121167012103bc96d5268e01b8710a7896b87092416ebe962b85688d458a4d870bf020b30331660000000000",
-    "P2SH"
-  ],
-
-  [ "The following is 5fb46570ace6750e772ea1c708212359a7337814df466aef5bb6d779c996e219" ],
-  [ "It is a segwit enabled test using Segwit Bech32 address format" ],
-  [ "Transfering 1.4EQB to address eqrt1q3h33e30j0g2ye64unqy08vyclq9ylvstngylpu" ],
-  [
-    [ [ "553e480ac01484f9fffdef6f978fb78353735ef6edc7ee2fe2e4ee7835701ad2", 0, "0x00 0x14 1262bd777cb545b814d5f6c409bbffd72e5d9cf7" ] ],
-    "02000000000102d21a703578eee4e22feec7edf65e735383b78f976feffdfff98414c00a483e5501000000171600141262bd777cb545b814d5f6c409bbffd72e5d9cf7feffffffecb297fc237bc093c1e5e82d554d38a03eb6895ffde978c5a6393fc976dce6db010000006b483045022100822026c955dfbfc7d4d3bbf681789dc3d9a1dfab9a2a559b33b2bc25252963b0022036e417d61584805f3b1939968dabd744cd04142e90c59c1cab4afd6f8ed3c968012102be893a34019f57c370ffdeae9746433d48c889016ed3e5d44772b8b9713a9f8cfeffffff0280a4bf07000000001600148de31cc5f27a144ceabc9808f3b098f80a4fb20bd6f4900300000000160014dcc9eadbe7db10d835d33934be3cf0504f00837502473044022032b568d3aa8561e8ef972676f5ac95837c9a915209f320ec3c5ba06ae98a2347022013b860a32ea99e6bc935932f4e9369e1262cc715bda748c45b8d31feffd4ddc0012102ac32084df8e33f6d48aec2398449d80568ab9f5ef6cee34ef89831bb6b7d203f006f0000000000",
-    "P2SH"
-  ],
-
-  [ "The following is " ],
-  [ "It is a segwit enabled test using P2SH base58 address format" ],
-  [ "Transfering 1.3EQB to an address on a different wallet account " ],
-  [ "The address of the sender does not belong to a miner" ],
-
-  [ "The following is " ],
-  [ "It is a segwit enabled test using Segwit Bech32 address format" ],
-  [ "Transfering 1.4EQB to address " ],
-  [ "The address of the sender does not belong to a miner" ],
-
 
   [ "Make diffs cleaner by leaving a comment here without comma at the end" ]
 ]
