@@ -20,7 +20,7 @@ class MultiWalletTest(BitcoinTestFramework):
         self.supports_cli = True
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         node = self.nodes[0]
 
         data_dir = lambda *p: os.path.join(node.datadir, 'regtest', *p)

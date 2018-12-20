@@ -25,7 +25,6 @@ class MerkleBlockTest(BitcoinTestFramework):
         self.sync_all()
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         self.log.info("Mining blocks...")
         self.nodes[0].generate(105)
         self.sync_all()
@@ -36,9 +35,13 @@ class MerkleBlockTest(BitcoinTestFramework):
         assert_equal(self.nodes[2].getbalance(), 0)
 
         node0utxos = self.nodes[0].listunspent(1)
-        tx1 = self.nodes[0].createrawtransaction([node0utxos.pop()], {self.nodes[1].getnewaddress(): 49.99})
+        tx1tx = node0utxos.pop()
+        tx1amt = tx1tx['amount']
+        tx1 = self.nodes[0].createrawtransaction([tx1tx], {self.nodes[1].getnewaddress(): tx1amt - Decimal('0.01')})
         txid1 = self.nodes[0].sendrawtransaction(self.nodes[0].signrawtransaction(tx1)["hex"])
-        tx2 = self.nodes[0].createrawtransaction([node0utxos.pop()], {self.nodes[1].getnewaddress(): 49.99})
+        tx2tx = node0utxos.pop()
+        tx2amt = tx2tx['amount']
+        tx2 = self.nodes[0].createrawtransaction([tx2tx], {self.nodes[1].getnewaddress(): tx2amt - Decimal('0.01')})
         txid2 = self.nodes[0].sendrawtransaction(self.nodes[0].signrawtransaction(tx2)["hex"])
         # This will raise an exception because the transaction is not yet in a block
         assert_raises_rpc_error(-5, "Transaction not yet in block", self.nodes[0].gettxoutproof, [txid1])
@@ -57,7 +60,8 @@ class MerkleBlockTest(BitcoinTestFramework):
         assert_equal(self.nodes[2].verifytxoutproof(self.nodes[2].gettxoutproof([txid1, txid2], blockhash)), txlist)
 
         txin_spent = self.nodes[1].listunspent(1).pop()
-        tx3 = self.nodes[1].createrawtransaction([txin_spent], {self.nodes[0].getnewaddress(): 49.98})
+        txin_amount = txin_spent['amount']
+        tx3 = self.nodes[1].createrawtransaction([txin_spent], {self.nodes[0].getnewaddress(): txin_amount - Decimal('0.02')})
         txid3 = self.nodes[0].sendrawtransaction(self.nodes[1].signrawtransaction(tx3)["hex"])
         self.nodes[0].generate(1)
         self.sync_all()

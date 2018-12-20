@@ -34,7 +34,7 @@ def getutxo(txid):
 def find_unspent(node, min_value):
     for utxo in node.listunspent():
         if utxo['amount'] >= min_value:
-            return utxo
+            return utxo, utxo['amount']
 
 class SegWitTest(BitcoinTestFramework):
     def set_test_params(self):
@@ -71,7 +71,7 @@ class SegWitTest(BitcoinTestFramework):
         sync_blocks(self.nodes)
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         self.nodes[0].generate(161) #block 161
 
         self.log.info("Verify sigops are counted in GBT with pre-BIP141 rules before the fork")
@@ -102,7 +102,8 @@ class SegWitTest(BitcoinTestFramework):
             bip173_addr = self.nodes[i].addwitnessaddress(newaddress, False)
             p2sh_ms_addr = self.nodes[i].addmultisigaddress(1, [self.pubkey[-1]], '', 'p2sh-segwit')['address']
             bip173_ms_addr = self.nodes[i].addmultisigaddress(1, [self.pubkey[-1]], '', 'bech32')['address']
-            assert_equal(p2sh_addr, key_to_p2sh_p2wpkh(self.pubkey[-1]))
+            a2 = key_to_p2sh_p2wpkh(self.pubkey[-1])
+            assert_equal(p2sh_addr, a2)
             assert_equal(bip173_addr, key_to_p2wpkh(self.pubkey[-1]))
             assert_equal(p2sh_ms_addr, script_to_p2sh_p2wsh(multiscript))
             assert_equal(bip173_ms_addr, script_to_p2wsh(multiscript))
@@ -115,8 +116,10 @@ class SegWitTest(BitcoinTestFramework):
         for i in range(5):
             for n in range(3):
                 for v in range(2):
-                    wit_ids[n][v].append(send_to_witness(v, self.nodes[0], find_unspent(self.nodes[0], 50), self.pubkey[n], False, Decimal("49.999")))
-                    p2sh_ids[n][v].append(send_to_witness(v, self.nodes[0], find_unspent(self.nodes[0], 50), self.pubkey[n], True, Decimal("49.999")))
+                    tx, amount = find_unspent(self.nodes[0], 3)
+                    wit_ids[n][v].append(send_to_witness(v, self.nodes[0], tx, self.pubkey[n], False, amount - Decimal("0.001")))
+                    tx, amount = find_unspent(self.nodes[0], 3)
+                    p2sh_ids[n][v].append(send_to_witness(v, self.nodes[0], tx, self.pubkey[n], True, amount - Decimal("0.001")))
 
         self.nodes[0].generate(1) #block 163
         sync_blocks(self.nodes)

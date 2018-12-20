@@ -26,7 +26,6 @@ class KeypoolRestoreTest(BitcoinTestFramework):
         self.extra_args = [[], ['-keypool=100', '-keypoolmin=20']]
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         self.tmpdir = self.options.tmpdir
         self.nodes[0].generate(101)
 
@@ -47,9 +46,9 @@ class KeypoolRestoreTest(BitcoinTestFramework):
 
         self.log.info("Send funds to wallet")
 
-        self.nodes[0].sendtoaddress(addr_oldpool, 10)
+        self.nodes[0].sendtoaddress(addr_oldpool, 2)
         self.nodes[0].generate(1)
-        self.nodes[0].sendtoaddress(addr_extpool, 5)
+        self.nodes[0].sendtoaddress(addr_extpool, 1)
         self.nodes[0].generate(1)
         sync_blocks(self.nodes)
 
@@ -65,7 +64,7 @@ class KeypoolRestoreTest(BitcoinTestFramework):
         connect_nodes_bi(self.nodes, 0, 1)
         self.sync_all()
 
-        assert_equal(self.nodes[1].getbalance(), 15)
+        assert_equal(self.nodes[1].getbalance(), 3)
         assert_equal(self.nodes[1].listtransactions()[0]['category'], "receive")
 
         # Check that we have marked all keys up to the used keypool key as used

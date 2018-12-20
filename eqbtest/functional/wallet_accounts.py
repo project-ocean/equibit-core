@@ -14,7 +14,7 @@ RPCs tested are:
 """
 
 from test_framework.test_framework import BitcoinTestFramework, SkipTest
-from test_framework.util import assert_equal
+from test_framework.util import assert_equal, block_reward
 
 class WalletAccountsTest(BitcoinTestFramework):
     def set_test_params(self):
@@ -23,7 +23,7 @@ class WalletAccountsTest(BitcoinTestFramework):
         self.extra_args = [[]]
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         node = self.nodes[0]
         # Check that there's no UTXO on any of the nodes
         assert_equal(len(node.listunspent()), 0)
@@ -32,7 +32,7 @@ class WalletAccountsTest(BitcoinTestFramework):
         # the same address, so we call twice to get two addresses w/50 each
         node.generate(1)
         node.generate(101)
-        assert_equal(node.getbalance(), 100)
+        assert_equal(node.getbalance(), block_reward(1) + block_reward(2))
 
         # there should be 2 address groups
         # each with 1 address with a balance of 50 Bitcoins
@@ -41,19 +41,19 @@ class WalletAccountsTest(BitcoinTestFramework):
         # the addresses aren't linked now, but will be after we send to the
         # common address
         linked_addresses = set()
-        for address_group in address_groups:
+        for blkNum, address_group in enumerate(address_groups):
             assert_equal(len(address_group), 1)
             assert_equal(len(address_group[0]), 2)
-            assert_equal(address_group[0][1], 50)
+            assert_equal(address_group[0][1], block_reward(blkNum + 1))
             linked_addresses.add(address_group[0][0])
 
         # send 50 from each address to a third address not in this wallet
         # There's some fee that will come back to us when the miner reward
         # matures.
-        common_address = "mxngmFUMu6XKpdruZ84nTg4Q97cbTXfUFu"
+        common_address = "TQsJyFbQh33itk7wYdhcChAacZTYXg9h3fFN"
         txid = node.sendmany(
             fromaccount="",
-            amounts={common_address: 100},
+            amounts={common_address: 6},
             subtractfeefrom=[common_address],
             minconf=1,
         )

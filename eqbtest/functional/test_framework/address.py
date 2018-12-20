@@ -14,8 +14,9 @@ chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 def byte_to_base58(b, version):
     result = ''
     str = bytes_to_hex_str(b)
-    str = bytes_to_hex_str(chr(version).encode('latin-1')) + str
-    checksum = bytes_to_hex_str(hash3_256(hex_str_to_bytes(str)))
+    #str = bytes_to_hex_str(chr(version).encode('latin-1')) + str
+    str = "035e87" + str  # TQs prefix
+    checksum = bytes_to_hex_str(hash256(hex_str_to_bytes(str)))  # hash3_256()
     str += checksum[:8]
     value = int('0x'+str,0)
     while value > 0:
@@ -57,7 +58,7 @@ def program_to_witness(version, program, main = False):
     assert 0 <= version <= 16
     assert 2 <= len(program) <= 40
     assert version > 0 or len(program) in [20, 32]
-    return segwit_addr.encode("bc" if main else "bcrt", version, program)
+    return segwit_addr.encode("bc" if main else "eqrt", version, program)
 
 def script_to_p2wsh(script, main = False):
     script = check_script(script)

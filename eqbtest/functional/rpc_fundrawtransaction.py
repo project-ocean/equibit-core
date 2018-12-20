@@ -28,7 +28,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         connect_nodes_bi(self.nodes, 0, 3)
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         min_relay_tx_fee = self.nodes[0].getnetworkinfo()['relayfee']
         # This test is not meant to test fee estimation and we'd like
         # to be sure all txs are sent at a consistent desired feerate
@@ -49,13 +49,13 @@ class RawTransactionsTest(BitcoinTestFramework):
         self.sync_all()
 
         # ensure that setting changePosition in fundraw with an exact match is handled properly
-        rawmatch = self.nodes[2].createrawtransaction([], {self.nodes[2].getnewaddress():50})
+        rawmatch = self.nodes[2].createrawtransaction([], {self.nodes[2].getnewaddress():Decimal('3.09851350')})
         rawmatch = self.nodes[2].fundrawtransaction(rawmatch, {"changePosition":1, "subtractFeeFromOutputs":[0]})
         assert_equal(rawmatch["changepos"], -1)
 
         watchonly_address = self.nodes[0].getnewaddress()
         watchonly_pubkey = self.nodes[0].validateaddress(watchonly_address)["pubkey"]
-        watchonly_amount = Decimal(200)
+        watchonly_amount = Decimal(70)
         self.nodes[3].importpubkey(watchonly_pubkey, "", True)
         watchonly_txid = self.nodes[0].sendtoaddress(watchonly_address, watchonly_amount)
         self.nodes[0].sendtoaddress(self.nodes[3].getnewaddress(), watchonly_amount / 10)
@@ -506,8 +506,8 @@ class RawTransactionsTest(BitcoinTestFramework):
         self.nodes[1].generate(1)
         self.sync_all()
 
-        # make sure funds are received at node1
-        assert_equal(oldBalance+Decimal('51.10000000'), self.nodes[0].getbalance())
+        # make sure funds are received at node1 (4.34231287 came from immature_balance for block #26 coinbase)
+        assert_equal(oldBalance + Decimal('4.34231287') + Decimal('1.10000000'), self.nodes[0].getbalance())
 
 
         ###############################################

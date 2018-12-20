@@ -33,22 +33,6 @@ class WalletTest(BitcoinTestFramework):
 
     def run_test(self):
         #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
-        # Block reward
-        nSubsidyAccelerationFactor = 1400
-        def block_reward(t):
-            def truncate(f, n):
-                """ Truncates/pads a float f to n decimal places without rounding """
-                s = '%.12f' % f
-                i, p, d = s.partition('.')
-                return Decimal('.'.join([i, (d + '0' * n)[:n]]))
-            t *= nSubsidyAccelerationFactor
-            return truncate((210 * exp(4.2 - 0.00001 * t)) / (1 + exp(-0.00001 * (t - 420000))) ** 2, 8)
-        def block_reward1(t):
-            return (210 * (1 + expm1(4.2 - 0.00001 * t))) / (1 + 1 + expm1(-0.00001 * (t - 420000))) ** 2
-        def block_reward2(t):
-            coin = 100000000
-            aux = 1.0 + expm1(4.2 - t / 100000.0)
-            return 210 * aux / pow((1 + aux), 2) * coin
         # Check that there's no UTXO on none of the nodes
         assert_equal(len(self.nodes[0].listunspent()), 0)
         assert_equal(len(self.nodes[1].listunspent()), 0)
