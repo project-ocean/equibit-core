@@ -474,6 +474,9 @@ def block_reward(blkHeight):
     reward = (210 * exp(4.2 - 0.00001 * blkHeight)) / (1 + exp(-0.00001 * (blkHeight - 420000))) ** 2
     return Decimal(reward).quantize(Decimal('0.00000001'), rounding=ROUND_DOWN)
 
+def acc_block_rewards(firstBlock, lastBlock):
+    return sum([block_reward(x) for x in range(firstBlock, lastBlock + 1)])
+
 def random_transaction(nodes, amount, min_fee, fee_increment, fee_variants):
     """
     Create a random transaction.
