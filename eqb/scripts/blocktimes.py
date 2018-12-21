@@ -5,9 +5,17 @@
 
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from datetime import datetime
-    
+from sys import argv, exit
+
 # rpc_user and rpc_password are set in the bitcoin.conf file
-rpc_connection = AuthServiceProxy("http://equibit:equibit@127.0.0.1:18333")
+if len(argv) != 4:
+    print("Usage: python blocktimes.py nodeAddress:rpcPort rpcUser rpcPassword")
+    exit(1)
+
+rpcAddr = argv[1]
+rpcUser = argv[2]
+rpcPass = argv[3]
+rpc_connection = AuthServiceProxy("http://{}:{}@{}".format(rpcUser, rpcPass, rpcAddr))
 best_block_hash = rpc_connection.getbestblockhash()
 tip = rpc_connection.getblock(best_block_hash)
 # print(tip)

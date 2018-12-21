@@ -32,18 +32,19 @@ def public_compressed(pk):
 	return prefix + x
 
 def checkSum(pk):
-	return codecs.encode(hashlib.new('sha3_256', (hashlib.new('sha3_256', codecs.decode(pk, 'hex')).digest())).digest(), 'hex')[0:8]
-
+	# return codecs.encode(hashlib.new('sha3_256', (hashlib.new('sha3_256', codecs.decode(pk, 'hex')).digest())).digest(), 'hex')[0:8]
+	return codecs.encode((hashlib.new('sha3_256', codecs.decode(pk, 'hex')).digest()), 'hex')[0:8]
+        
 def encode58(int_byteString):
 	return base58check.b58encode(codecs.decode(int_byteString, 'hex'))
 
 privateKey_base58_str = sys.argv[1]
 privateKey_hex_str = codecs.encode((base58check.b58decode(privateKey_base58_str)), 'hex')
 print("Base58 decoded Private Key: {}".format(privateKey_hex_str))
-privKey_networkPrefix = privateKey_hex_str[0:2]
+privKey_networkPrefix = privateKey_hex_str[0:6]  # 0:2
 privKey_crc = privateKey_hex_str[-8:]
-privKey_clean = privateKey_hex_str[2:66]
-privKey_compressionFlag = privateKey_hex_str[66:68] if len(privateKey_hex_str) == 76 else None
+privKey_clean = privateKey_hex_str[6:70]  # 2:66
+privKey_compressionFlag = privateKey_hex_str[70:72] if len(privateKey_hex_str) == 80 else None  # 66:68   == 76
 print("Network prefix:   {}".format(privKey_networkPrefix))
 print("Private Key:      {}".format(privKey_clean))
 print("Compression flag: {}".format(privKey_compressionFlag))
