@@ -512,7 +512,11 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     // If the caller is indicating segwit support, then allow CreateNewBlock()
     // to select witness transactions, after segwit activates (otherwise
     // don't).
+#ifdef BUILD_BTC
     bool fSupportsSegwit = setClientRules.find(segwit_info.name) != setClientRules.end();
+#else // BUILD_EQB
+    bool fSupportsSegwit = true; // Always include segwit transactions
+#endif // END_BUILD
 
     // Update block
     static CBlockIndex* pindexPrev;
