@@ -44,7 +44,6 @@ class WalletAccountsTest(BitcoinTestFramework):
         for blkNum, address_group in enumerate(address_groups):
             assert_equal(len(address_group), 1)
             assert_equal(len(address_group[0]), 2)
-            #assert_equal(address_group[0][1], block_reward(blkNum + 1))
             addr_balances += address_group[0][1]
             linked_addresses.add(address_group[0][0])
         assert_equal(addr_balances, block_reward(1) + block_reward(2))
