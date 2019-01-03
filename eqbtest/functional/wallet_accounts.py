@@ -30,7 +30,7 @@ class WalletAccountsTest(BitcoinTestFramework):
         # Note each time we call generate, all generated coins go into
         # the same address, so we call twice to get two addresses w/50 each
         node.generate(1)
-        node.generate(101)
+        node.generate(11)  # EQB_TODO: 11 -> 101 when maturity = 100
         assert_equal(node.getbalance(), block_reward(1) + block_reward(2))
 
         # there should be 2 address groups

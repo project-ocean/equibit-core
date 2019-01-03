@@ -124,7 +124,7 @@ class MultiWalletTest(BitcoinTestFramework):
         w4_name = w4.getwalletinfo()['walletname']
         assert_equal(w4_name, "w")
 
-        w1.generate(101)
+        w1.generate(11)  # EQB_TODO: 11 -> 101 when maturity = 100
         assert_equal(w1.getbalance(), acc_block_rewards(2, 3))
         assert_equal(w2.getbalance(), 0)
         assert_equal(w3.getbalance(), 0)
