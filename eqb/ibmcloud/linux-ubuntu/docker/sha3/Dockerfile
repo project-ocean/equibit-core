@@ -25,9 +25,9 @@ VOLUME ["/home/equibit/.equibit"]
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
-RUN cd /root/equibit/source/equibit-core/eqb/ibmcloud/linux-ubuntu/build.scripts/ && \
-    chmod +x /root/equibit/source/equibit-core/eqb/ibmcloud/linux-ubuntu/build.scripts/publish.sh && \
-    /root/equibit/source/equibit-core/eqb/ibmcloud/linux-ubuntu/build.scripts/publish.sh
+#RUN cd /root/equibit/source/equibit-core/eqb/ibmcloud/linux-ubuntu/build.scripts/ && \
+#    chmod +x /root/equibit/source/equibit-core/eqb/ibmcloud/linux-ubuntu/build.scripts/publish.sh && \
+#    /root/equibit/source/equibit-core/eqb/ibmcloud/linux-ubuntu/build.scripts/publish.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
