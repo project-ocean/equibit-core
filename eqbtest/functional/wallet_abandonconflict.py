@@ -10,7 +10,7 @@
  which are not included in a block and are not currently in the mempool. It has
  no effect on transactions which are already conflicted or abandoned.
 """
-from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
 
 class AbandonConflictTest(BitcoinTestFramework):
@@ -19,7 +19,10 @@ class AbandonConflictTest(BitcoinTestFramework):
         self.extra_args = [["-minrelaytxfee=0.00001"], []]
 
     def run_test(self):
+<<<<<<< HEAD
         #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+=======
+>>>>>>> parent of fea8f47ab... Issues/#20 tx structure (#220)
         self.nodes[1].generate(100)
         sync_blocks(self.nodes)
         balance = self.nodes[0].getbalance()

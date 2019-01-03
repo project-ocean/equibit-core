@@ -470,9 +470,9 @@ public:
         nPruneAfterHeight = 100000;
 
         // genesis hash: 000042550b9e7a0bf450cd7c44c74d636f84af1d0e646d3c7099a318ea65b5e2
-        genesis = CreateGenesisBlock(1543165379, 34458, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
+        genesis = CreateGenesisBlock(1543165379, 7335, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
         // EQB_TODO MineGenesisBlock is temporary
-        //genesis = MineGenesisBlock(consensus);
+        // genesis = MineGenesisBlock(consensus);
         consensus.hashGenesisBlock = genesis.GetHash();
         // assert(consensus.hashGenesisBlock == uint256S("0x0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379"));
         // assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
@@ -578,8 +578,7 @@ public:
         nDefaultPort = 18331;
         nPruneAfterHeight = 1000;
 
-        // 000042550b9e7a0bf450cd7c44c74d636f84af1d0e646d3c7099a318ea65b5e2
-        genesis = CreateGenesisBlock(1543165379, 34458, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
+        genesis = CreateGenesisBlock(1543165379, 7335, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
         //genesis = MineGenesisBlock(consensus); // Use MineGenesisBlock if any parameters change
         consensus.hashGenesisBlock = genesis.GetHash();
         //assert(consensus.hashGenesisBlock == uint256S("0x0000e9b3a79f70fb0be95b38604636441323450731e9ee1b5ef410791dac7184"));
@@ -588,7 +587,7 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
-       // EQB_TODO Add EQB testnet seeds
+        // EQB_TODO Add EQB testnet seeds
 
         base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x5d }; // "TQa" prefix on address
         base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x87 }; // "TQs" prefix on address

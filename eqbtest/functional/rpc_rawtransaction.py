@@ -13,7 +13,7 @@ Test the following RPCs:
    - getrawtransaction
 """
 
-from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
 
 
@@ -22,7 +22,7 @@ class multidict(dict):
 
     Constructed with a list of (key, value) tuples. When dumped by the json module,
     will output invalid json with repeated keys, eg:
-    >> json.dumps(multidict([(1,2),(1,2)])
+    >>> json.dumps(multidict([(1,2),(1,2)])
     '{"1": 2, "1": 2}'
 
     Used to test calls to rpc methods with repeated keys in the json object."""
@@ -47,7 +47,6 @@ class RawTransactionsTest(BitcoinTestFramework):
         connect_nodes_bi(self.nodes,0,2)
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
 
         #prepare some coins for multiple *rawtransaction commands
         self.nodes[2].generate(1)

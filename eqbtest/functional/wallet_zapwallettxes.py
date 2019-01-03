@@ -14,7 +14,7 @@
   transactions are still available, but that the unconfirmed transaction has
   been zapped.
 """
-from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
@@ -27,7 +27,6 @@ class ZapWalletTXesTest (BitcoinTestFramework):
         self.num_nodes = 2
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         self.log.info("Mining blocks...")
         self.nodes[0].generate(1)
         self.sync_all()

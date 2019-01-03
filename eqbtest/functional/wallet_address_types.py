@@ -53,7 +53,7 @@ Test that the nodes generate the correct change address type:
 from decimal import Decimal
 import itertools
 
-from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_equal,
     assert_greater_than,
@@ -159,7 +159,10 @@ class AddressTypeTest(BitcoinTestFramework):
         self.test_address(node_sender, change_addresses[0], multisig=False, typ=expected_type)
 
     def run_test(self):
+<<<<<<< HEAD
         #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+=======
+>>>>>>> parent of fea8f47ab... Issues/#20 tx structure (#220)
         # Mine 101 blocks on node5 to bring nodes out of IBD and make sure that
         # no coinbases are maturing for the nodes-under-test during the test
         self.nodes[5].generate(101)

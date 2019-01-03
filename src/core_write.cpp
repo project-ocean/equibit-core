@@ -209,11 +209,6 @@ void TxToUniv(const CTransaction& tx, const uint256& hashBlock, UniValue& entry,
     }
     entry.pushKV("vout", vout);
 
-#ifndef BUILD_BTC
-    entry.pushKV("EQB_type", (int8_t)tx.nEQBType);
-    entry.pushKV("EQB_payload", tx.eqbPayload.ToString());
-#endif // END_BUILD
-
     if (!hashBlock.IsNull())
         entry.pushKV("blockhash", hashBlock.GetHex());
 

@@ -147,8 +147,7 @@ BOOST_AUTO_TEST_CASE(caddrdb_read_corrupted)
         unsigned char pchMsgTmp[4];
         //! EQB_TODO: Fix Test -> ssPeers1 >> FLATDATA(pchMsgTmp);
         ssPeers1 >> addrman1;
-    }
-    catch(const std::exception& e) {
+    } catch (const std::exception& e) {
         exceptionThrown = true;
     }
     // Even through de-serialization failed addrman is not left in a clean state.
@@ -162,12 +161,10 @@ BOOST_AUTO_TEST_CASE(caddrdb_read_corrupted)
     CAddrDB adb;
     BOOST_CHECK(addrman2.size() == 0);
     adb.Read(addrman2, ssPeers2);
-    BOOST_CHECK(addrman2.size() == 0)
+    BOOST_CHECK(addrman2.size() == 0);
+
 #else // BUILD_EQB
-    // !EQB_TODO: Fix Tests
-#ifdef EQB_BREAK_TEST
-    BOOST_ERROR("TEST DISABLED!");
-#endif
+    //! EQB_TODO: Complete test 
 #endif // END_BUILD
 }
 
