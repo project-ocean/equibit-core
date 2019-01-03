@@ -16,6 +16,7 @@ import random
 import re
 from subprocess import CalledProcessError
 import time
+from math import exp
 
 from . import coverage
 from .authproxy import AuthServiceProxy, JSONRPCException
@@ -463,6 +464,18 @@ def make_change(from_node, amount_in, amount_out, fee):
     if change > 0:
         outputs[from_node.getnewaddress()] = change
     return outputs
+
+def block_reward(blkHeight):
+    """
+    Calculate block reward.
+    """
+    nSubsidyAccelerationFactor = 1400
+    blkHeight *= nSubsidyAccelerationFactor
+    reward = (210 * exp(4.2 - 0.00001 * blkHeight)) / (1 + exp(-0.00001 * (blkHeight - 420000))) ** 2
+    return Decimal(reward).quantize(Decimal('0.00000001'), rounding=ROUND_DOWN)
+
+def acc_block_rewards(firstBlock, lastBlock):
+    return sum([block_reward(x) for x in range(firstBlock, lastBlock + 1)])
 
 def random_transaction(nodes, amount, min_fee, fee_increment, fee_variants):
     """

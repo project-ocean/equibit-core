@@ -24,30 +24,31 @@ class TxnMallTest(BitcoinTestFramework):
         disconnect_nodes(self.nodes[2], 1)
 
     def run_test(self):
+        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         if self.options.segwit:
             output_type="p2sh-segwit"
         else:
             output_type="legacy"
 
-        # All nodes should start with 1,250 BTC:
-        starting_balance = 1250
+        # All nodes should start with mining rewards for 25 blocks (was: 1,250 BTC):
+        starting_balance = [acc_block_rewards(i, i + 24) for i in range(1, 101, 25)]
         for i in range(4):
-            assert_equal(self.nodes[i].getbalance(), starting_balance)
+            assert_equal(self.nodes[i].getbalance(), starting_balance[i])
             self.nodes[i].getnewaddress("")  # bug workaround, coins generated assigned to first getnewaddress!
 
         # Assign coins to foo and bar accounts:
         self.nodes[0].settxfee(.001)
 
         node0_address_foo = self.nodes[0].getnewaddress("foo", output_type)
-        fund_foo_txid = self.nodes[0].sendfrom("", node0_address_foo, 1219)
+        fund_foo_txid = self.nodes[0].sendfrom("", node0_address_foo, 87)
         fund_foo_tx = self.nodes[0].gettransaction(fund_foo_txid)
 
         node0_address_bar = self.nodes[0].getnewaddress("bar", output_type)
-        fund_bar_txid = self.nodes[0].sendfrom("", node0_address_bar, 29)
+        fund_bar_txid = self.nodes[0].sendfrom("", node0_address_bar, 2)
         fund_bar_tx = self.nodes[0].gettransaction(fund_bar_txid)
 
         assert_equal(self.nodes[0].getbalance(""),
-                     starting_balance - 1219 - 29 + fund_foo_tx["fee"] + fund_bar_tx["fee"])
+                     starting_balance[0] - 87 - 2 + fund_foo_tx["fee"] + fund_bar_tx["fee"])
 
         # Coins are sent to node1_address
         node1_address = self.nodes[1].getnewaddress("from0")

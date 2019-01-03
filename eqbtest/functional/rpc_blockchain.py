@@ -43,6 +43,7 @@ class BlockchainTest(BitcoinTestFramework):
         self._test_getchaintxstats()
         self._test_gettxoutsetinfo()
         self._test_getblockheader()
+        # EQB_TODO: Modify difficulty test according to DGW
         self._test_getdifficulty()
         self._test_getnetworkhashps()
         self._test_stopatheight()
@@ -133,7 +134,7 @@ class BlockchainTest(BitcoinTestFramework):
         node = self.nodes[0]
         res = node.gettxoutsetinfo()
 
-        assert_equal(res['total_amount'], Decimal('8725.00000000'))
+        assert_equal(res['total_amount'], Decimal('2760.78479039'))
         assert_equal(res['transactions'], 200)
         assert_equal(res['height'], 200)
         assert_equal(res['txouts'], 200)

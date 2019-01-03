@@ -9,8 +9,8 @@ Verify that a bitcoind node can load multiple wallet files
 import os
 import shutil
 
-from test_framework.test_framework import BitcoinTestFramework
-from test_framework.util import assert_equal, assert_raises_rpc_error
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.util import assert_equal, assert_raises_rpc_error, block_reward, acc_block_rewards
 
 class MultiWalletTest(BitcoinTestFramework):
     def set_test_params(self):
@@ -83,7 +83,7 @@ class MultiWalletTest(BitcoinTestFramework):
         assert_equal(set(node.listwallets()), {"w4", "w5"})
         w5 = wallet("w5")
         w5_info = w5.getwalletinfo()
-        assert_equal(w5_info['immature_balance'], 50)
+        assert_equal(w5_info['immature_balance'], block_reward(1))
 
         competing_wallet_dir = os.path.join(self.options.tmpdir, 'competing_walletdir')
         os.mkdir(competing_wallet_dir)
@@ -108,7 +108,7 @@ class MultiWalletTest(BitcoinTestFramework):
 
         # check w1 wallet balance
         w1_info = w1.getwalletinfo()
-        assert_equal(w1_info['immature_balance'], 50)
+        assert_equal(w1_info['immature_balance'], block_reward(2))
         w1_name = w1_info['walletname']
         assert_equal(w1_name, "w1")
 
@@ -124,8 +124,8 @@ class MultiWalletTest(BitcoinTestFramework):
         w4_name = w4.getwalletinfo()['walletname']
         assert_equal(w4_name, "w")
 
-        w1.generate(101)
-        assert_equal(w1.getbalance(), 100)
+        w1.generate(11)  # EQB_TODO: 11 -> 101 when maturity = 100
+        assert_equal(w1.getbalance(), acc_block_rewards(2, 3))
         assert_equal(w2.getbalance(), 0)
         assert_equal(w3.getbalance(), 0)
         assert_equal(w4.getbalance(), 0)
