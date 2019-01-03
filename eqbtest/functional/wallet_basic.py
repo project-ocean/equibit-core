@@ -47,7 +47,7 @@ class WalletTest(BitcoinTestFramework):
         assert_equal(walletinfo['balance'], 0)
 
         self.sync_all([self.nodes[0:3]])
-        self.nodes[1].generate(101)
+        self.nodes[1].generate(11)  # EQB_TODO: maturity (101)
         self.sync_all([self.nodes[0:3]])
 
         assert_equal(self.nodes[0].getbalance(), block_reward(1))
@@ -121,12 +121,12 @@ class WalletTest(BitcoinTestFramework):
                               [{"txid": unspent_0["txid"], "vout": 999}])
 
         # Have node1 generate 100 blocks (so node0 can recover the fee)
-        self.nodes[1].generate(100)
+        self.nodes[1].generate(10)  # EQB_TODO: maturity (100)
         self.sync_all([self.nodes[0:3]])
 
         # node0 should end up with 3.09851350 + 11.77678396 eqb in block rewards (blocks #1 & #103) plus fees, but
         # minus 3.0 plus fees sent to node2
-        assert_equal(float(self.nodes[0].getbalance()), round(3.09851350 + 11.77678396 - 3.0, 8))
+        assert_equal(self.nodes[0].getbalance(), block_reward(1) + block_reward(13) - Decimal('3.0'))
         assert_equal(self.nodes[2].getbalance(), 3.0)
 
         # Node0 should have two unspent outputs.
@@ -154,8 +154,8 @@ class WalletTest(BitcoinTestFramework):
         self.sync_all([self.nodes[0:3]])
 
         assert_equal(self.nodes[0].getbalance(), 0)
-        assert_equal(self.nodes[2].getbalance(), Decimal('14.81529746'))
-        assert_equal(self.nodes[2].getbalance("from1"), Decimal('14.81529746') - Decimal('3.00000000'))  # Decimal('14.81529746') - Decimal('3.00000000') 11.81529746 was 94-21
+        assert_equal(self.nodes[2].getbalance(), Decimal('6.68385294'))  # was 14.81529746
+        assert_equal(self.nodes[2].getbalance("from1"), Decimal('6.68385294') - Decimal('3.00000000'))  # Decimal('14.81529746') - Decimal('3.00000000') 11.81529746 was 94-21
 
         # Verify that a spent output cannot be locked anymore
         spent_0 = {"txid": node0utxos[0]["txid"], "vout": node0utxos[0]["vout"]}
@@ -165,11 +165,11 @@ class WalletTest(BitcoinTestFramework):
         address = self.nodes[0].getnewaddress("test")
         fee_per_byte = Decimal('0.001') / 1000
         self.nodes[2].settxfee(fee_per_byte * 1000)
-        txid = self.nodes[2].sendtoaddress(address, 10, "", "", False)
+        txid = self.nodes[2].sendtoaddress(address, 5, "", "", False)
         self.nodes[2].generate(1)
         self.sync_all([self.nodes[0:3]])
-        node_2_bal = self.check_fee_amount(self.nodes[2].getbalance(), Decimal('4.81529746'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
-        assert_equal(self.nodes[0].getbalance(), Decimal('10'))
+        node_2_bal = self.check_fee_amount(self.nodes[2].getbalance(), Decimal('6.68385294') - Decimal('5.0'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
+        assert_equal(self.nodes[0].getbalance(), Decimal('5'))
 
         # Send 10 BTC with subtract fee from amount
         txid = self.nodes[2].sendtoaddress(address, 1, "", "", True)
@@ -177,23 +177,23 @@ class WalletTest(BitcoinTestFramework):
         self.sync_all([self.nodes[0:3]])
         node_2_bal -= Decimal('1')
         assert_equal(self.nodes[2].getbalance(), node_2_bal)
-        node_0_bal = self.check_fee_amount(self.nodes[0].getbalance(), Decimal('11'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
+        node_0_bal = self.check_fee_amount(self.nodes[0].getbalance(), Decimal('6'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
 
         # Sendmany 10 BTC
-        txid = self.nodes[2].sendmany('from1', {address: 2}, 0, "", [])
+        txid = self.nodes[2].sendmany('from1', {address: 0.2}, 0, "", [])
         self.nodes[2].generate(1)
         self.sync_all([self.nodes[0:3]])
-        node_0_bal += Decimal('2')
-        node_2_bal = self.check_fee_amount(self.nodes[2].getbalance(), node_2_bal - Decimal('2'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
+        node_0_bal += Decimal('0.2')
+        node_2_bal = self.check_fee_amount(self.nodes[2].getbalance(), node_2_bal - Decimal('0.2'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
         assert_equal(self.nodes[0].getbalance(), node_0_bal)
 
         # Sendmany 10 BTC with subtract fee from amount
-        txid = self.nodes[2].sendmany('from1', {address: 1}, 0, "", [address])
+        txid = self.nodes[2].sendmany('from1', {address: 0.1}, 0, "", [address])
         self.nodes[2].generate(1)
         self.sync_all([self.nodes[0:3]])
-        node_2_bal -= Decimal('1')
+        node_2_bal -= Decimal('0.1')
         assert_equal(self.nodes[2].getbalance(), node_2_bal)
-        node_0_bal = self.check_fee_amount(self.nodes[0].getbalance(), node_0_bal + Decimal('1'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
+        node_0_bal = self.check_fee_amount(self.nodes[0].getbalance(), node_0_bal + Decimal('0.1'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
         assert_equal(self.nodes[0].getbalance(), node_0_bal)
 
         # Test ResendWalletTransactions:
@@ -313,7 +313,7 @@ class WalletTest(BitcoinTestFramework):
         # Import address and private key to check correct behavior of spendable unspents
         # 1. Send some coins to generate new UTXO
         address_to_import = self.nodes[2].getnewaddress()
-        txid = self.nodes[0].sendtoaddress(address_to_import, 1)
+        txid = self.nodes[0].sendtoaddress(address_to_import, 0.1)
         self.nodes[0].generate(1)
         self.sync_all([self.nodes[0:3]])
 
