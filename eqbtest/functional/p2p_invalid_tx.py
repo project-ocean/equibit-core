@@ -7,7 +7,7 @@
 In this test we connect to one node over p2p, and test tx requests.
 """
 
-from test_framework.test_framework import ComparisonTestFramework
+from test_framework.test_framework import ComparisonTestFramework, SkipTest
 from test_framework.comptool import TestManager, TestInstance, RejectResult
 from test_framework.blocktools import *
 import time
@@ -24,6 +24,7 @@ class InvalidTxRequestTest(ComparisonTestFramework):
         self.setup_clean_chain = True
 
     def run_test(self):
+        raise SkipTest("Disabled")  # EQB_TODO: disabled test
         test = TestManager(self, self.options.tmpdir)
         test.add_all_connections(self.nodes)
         self.tip = None

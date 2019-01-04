@@ -95,7 +95,7 @@ class P2PLeakTest(BitcoinTestFramework):
         self.extra_args = [['-banscore='+str(banscore)]]
 
     def run_test(self):
-        #raise SkipTest("Disabled after Genesis Block timestamp change in issues /#121-reconf")  # EQB_TODO: disabled test
+        raise SkipTest("Disabled after Genesis Block timestamp change in issues /#121-reconf")  # EQB_TODO: disabled test
         self.nodes[0].setmocktime(1501545600)  # 1501545600 August 1st 2017   NO25-2017 - genesis 1543251779: + 24h
 
         no_version_bannode = self.nodes[0].add_p2p_connection(CNodeNoVersionBan(), send_version=False)

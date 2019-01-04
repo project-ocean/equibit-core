@@ -52,7 +52,7 @@ Node1 is unused in tests 3-7:
 """
 
 from test_framework.mininode import *
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.util import *
 import time
 from test_framework.blocktools import create_block, create_coinbase, create_transaction
@@ -77,6 +77,7 @@ class AcceptBlockTest(BitcoinTestFramework):
         self.setup_nodes()
 
     def run_test(self):
+        raise SkipTest("Disabled")  # EQB_TODO: disabled test
         # Setup the p2p connections and start up the network thread.
         # test_node connects to node0 (not whitelisted)
         test_node = self.nodes[0].add_p2p_connection(P2PInterface())

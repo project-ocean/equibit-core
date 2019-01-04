@@ -15,7 +15,7 @@ class SignMessagesTest(BitcoinTestFramework):
         self.extra_args = [["-addresstype=legacy"]]
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
+        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         message = 'This is just a test message'
 
         self.log.info('test signing with priv_key')

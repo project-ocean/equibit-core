@@ -101,7 +101,7 @@ from test_framework.mininode import (
     msg_inv,
     msg_sendheaders,
 )
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.util import (
     assert_equal,
     sync_blocks,
@@ -238,6 +238,7 @@ class SendHeadersTest(BitcoinTestFramework):
         return [int(x, 16) for x in all_hashes]
 
     def run_test(self):
+        raise SkipTest("Disabled")  # EQB_TODO: disabled test
         # Setup the p2p connections and start up the network thread.
         inv_node = self.nodes[0].add_p2p_connection(BaseNode())
         # Make sure NODE_NETWORK is not set for test_node, so no block download

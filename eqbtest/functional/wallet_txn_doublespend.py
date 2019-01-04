@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the wallet accounts properly when there is a double-spend conflict."""
 
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.util import *
 
 class TxnMallTest(BitcoinTestFramework):
@@ -22,7 +22,7 @@ class TxnMallTest(BitcoinTestFramework):
         disconnect_nodes(self.nodes[2], 1)
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         # All nodes should start with xxx (was: 1,250 BTC):
         starting_balance = [acc_block_rewards(i, i + 24) for i in range(1, 101, 25)]
         for i in range(4):

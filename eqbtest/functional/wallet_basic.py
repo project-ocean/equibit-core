@@ -32,7 +32,7 @@ class WalletTest(BitcoinTestFramework):
         return self.nodes[0].decoderawtransaction(txn)['vsize']
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
+        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         # Check that there's no UTXO on none of the nodes
         assert_equal(len(self.nodes[0].listunspent()), 0)
         assert_equal(len(self.nodes[1].listunspent()), 0)

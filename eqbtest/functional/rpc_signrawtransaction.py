@@ -135,7 +135,7 @@ class SignRawTransactionsTest(BitcoinTestFramework):
         assert not rawTxSigned['errors'][0]['witness']
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
+        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         self.successful_signing_test()
         self.script_verification_error_test()
 

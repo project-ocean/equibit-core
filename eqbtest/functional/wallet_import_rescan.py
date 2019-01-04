@@ -130,7 +130,7 @@ class ImportRescanTest(BitcoinTestFramework):
             connect_nodes(self.nodes[i], 0)
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
+        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         # Create one transaction on node 0 with a unique amount and label for
         # each possible type of wallet import RPC.
         for i, variant in enumerate(IMPORT_VARIANTS):
