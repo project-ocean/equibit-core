@@ -5,7 +5,7 @@
 """Test the listreceivedbyaddress RPC."""
 from decimal import Decimal
 
-from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
     assert_array_result,
     assert_equal,

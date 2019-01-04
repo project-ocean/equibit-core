@@ -20,7 +20,7 @@ class SignRawTransactionsTest(BitcoinTestFramework):
 
         1) The transaction has a complete set of signatures
         2) No script verification error occurred"""
-        privKeys = ['cQYWhTVsyUpsRowrYm54Z7FrTYfPiEJfwL6tq152kE67N1QHZzT1', 'cP3378jH9bbhAgfDsRZCAgKPgxTcrmko1RBZ6eNAYbQwRzb85ekz']
+        privKeys = ['6z1Kn5ec6AdS1wMRNY1cKsCSkrm67KF3qsm7foDhpXtyMAyW3skU7s', '6z1KvqTTmVXCpd6CY5Bd6TotkvuxqkCGGEFKX1yGXf9tSKJ5u8MMTu']
 
         inputs = [
             # Valid pay-to-pubkey scripts
@@ -30,7 +30,7 @@ class SignRawTransactionsTest(BitcoinTestFramework):
              'scriptPubKey': '76a91469ffa2665166571b00cfd242d6a00dfa6b14439e88ac'},
         ]
 
-        outputs = {'2MwjxKAyA1CppX6xpy4P9hHzsLuvRD1zyof': 0.1}
+        outputs = {'TQsLXNEZCwGjkLpep8FLbfspEunaet2mX3W6': 0.1}
 
         rawTx = self.nodes[0].createrawtransaction(inputs, outputs)
         rawTxSigned = self.nodes[0].signrawtransaction(rawTx, inputs, privKeys)

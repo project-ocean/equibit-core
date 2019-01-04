@@ -22,7 +22,7 @@ class multidict(dict):
 
     Constructed with a list of (key, value) tuples. When dumped by the json module,
     will output invalid json with repeated keys, eg:
-    >> json.dumps(multidict([(1,2),(1,2)])
+    >>> json.dumps(multidict([(1,2),(1,2)])
     '{"1": 2, "1": 2}'
 
     Used to test calls to rpc methods with repeated keys in the json object."""
@@ -56,7 +56,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         self.sync_all()
         self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(),1.5)
         self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(),1.0)
-        self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(),5.0)
+        self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(),0.5)
         self.sync_all()
         self.nodes[0].generate(5)
         self.sync_all()
@@ -266,7 +266,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         self.sync_all()
         self.nodes[0].generate(1)
         self.sync_all()
-        assert_equal(self.nodes[0].getbalance(), bal+Decimal('50.00000000')+Decimal('2.19000000')) #block reward + tx
+        assert_equal(self.nodes[0].getbalance(), bal + block_reward(12) + Decimal('2.19000000')) #block reward + tx
 
         # 2of2 test for combining transactions
         bal = self.nodes[2].getbalance()
@@ -315,7 +315,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         self.sync_all()
         self.nodes[0].generate(1)
         self.sync_all()
-        assert_equal(self.nodes[0].getbalance(), bal+Decimal('50.00000000')+Decimal('2.19000000')) #block reward + tx
+        assert_equal(self.nodes[0].getbalance(), bal + block_reward(14) + Decimal('2.19000000')) #block reward + tx
 
         # decoderawtransaction tests
         # witness transaction

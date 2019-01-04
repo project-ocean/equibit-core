@@ -77,7 +77,7 @@ class AcceptBlockTest(BitcoinTestFramework):
         self.setup_nodes()
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        raise SkipTest("Disabled")  # EQB_TODO: disabled test
         # Setup the p2p connections and start up the network thread.
         # test_node connects to node0 (not whitelisted)
         test_node = self.nodes[0].add_p2p_connection(P2PInterface())

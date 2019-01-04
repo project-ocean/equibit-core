@@ -2695,13 +2695,6 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CWalletT
     wtxNew.BindWallet(this);
     CMutableTransaction txNew;
 
-#ifndef BUILD_BTC
-    //! EQB_TODO: This value should be passed to the function 
-    txNew.nEQBType = (int8_t) 0;
-    txNew.eqbPayload = CEQBPayload();
-    //assert(sizeof(txNew.nEQBType) == 1);
-    //assert(sizeof(txNew.nEQBPayload) == 1);
-#endif  // END_BUILD
     // Discourage fee sniping.
     //
     // For a large miner the value of the transactions in the best block and

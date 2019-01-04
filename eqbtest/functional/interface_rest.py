@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the REST API."""
 
-from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
 from struct import *
 from io import BytesIO
@@ -52,7 +52,6 @@ class RESTTest (BitcoinTestFramework):
         connect_nodes_bi(self.nodes, 0, 2)
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         url = urllib.parse.urlparse(self.nodes[0].url)
         self.log.info("Mining blocks...")
 
@@ -61,7 +60,7 @@ class RESTTest (BitcoinTestFramework):
         self.nodes[2].generate(100)
         self.sync_all()
 
-        assert_equal(self.nodes[0].getbalance(), 50)
+        assert_equal(self.nodes[0].getbalance(), block_reward(1))
 
         txid = self.nodes[0].sendtoaddress(self.nodes[1].getnewaddress(), 0.1)
         self.sync_all()
@@ -281,9 +280,9 @@ class RESTTest (BitcoinTestFramework):
         # check block tx details
         # let's make 3 tx and mine them on node 1
         txs = []
-        txs.append(self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 11))
-        txs.append(self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 11))
-        txs.append(self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 11))
+        txs.append(self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), Decimal('0.5')))
+        txs.append(self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), Decimal('0.5')))
+        txs.append(self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), Decimal('0.5')))
         self.sync_all()
 
         # check that there are exactly 3 transactions in the TX memory pool before generating the block

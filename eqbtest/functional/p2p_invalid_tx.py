@@ -24,7 +24,7 @@ class InvalidTxRequestTest(ComparisonTestFramework):
         self.setup_clean_chain = True
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        raise SkipTest("Disabled")  # EQB_TODO: disabled test
         test = TestManager(self, self.options.tmpdir)
         test.add_all_connections(self.nodes)
         self.tip = None

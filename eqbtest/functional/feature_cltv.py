@@ -66,7 +66,7 @@ class BIP65Test(BitcoinTestFramework):
         self.setup_clean_chain = True
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         self.nodes[0].add_p2p_connection(P2PInterface())
 
         network_thread_start()

@@ -12,7 +12,7 @@ in the next block are accepted into the memory pool,
 but less mature coinbase spends are NOT.
 """
 
-from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
 
 # Create one-input, one-output, no-fee transaction:
@@ -20,19 +20,21 @@ class MempoolSpendCoinbaseTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.extra_args = [["-checkmempool"]]
+        self.setup_clean_chain = True  # EQB_TODO: remove when maturity = 100
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        self.nodes[0].generate(20)
         chain_height = self.nodes[0].getblockcount()
-        assert_equal(chain_height, 200)
+        assert_equal(chain_height, 20)  # EQB_TODO: 20 -> 200 when maturity = 100
         node0_address = self.nodes[0].getnewaddress()
 
         # Coinbase at height chain_height-100+1 ok in mempool, should
         # get mined. Coinbase at height chain_height-100+2 is
         # is too immature to spend.
-        b = [ self.nodes[0].getblockhash(n) for n in range(101, 103) ]
+        b = [ self.nodes[0].getblockhash(n) for n in range(11, 13) ]  # EQB_TODO: (11, 13) -> (101, 103) when maturity = 100
         coinbase_txids = [ self.nodes[0].getblock(h)['tx'][0] for h in b ]
-        spends_raw = [ create_tx(self.nodes[0], txid, node0_address, 49.99) for txid in coinbase_txids ]
+        coinbase_amnts = [self.nodes[0].gettransaction(t)['details'][0]['amount'] for t in coinbase_txids]
+        spends_raw = [create_tx(self.nodes[0], txid, node0_address, amount - Decimal('0.01')) for txid, amount in zip(coinbase_txids, coinbase_amnts)]
 
         spend_101_id = self.nodes[0].sendrawtransaction(spends_raw[0])
 

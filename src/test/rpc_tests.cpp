@@ -42,7 +42,6 @@ BOOST_FIXTURE_TEST_SUITE(rpc_tests, TestingSetup)
 
 BOOST_AUTO_TEST_CASE(rpc_rawparams)
 {
-#ifdef BUILD_BTC
     // Test raw transaction API argument handling
     UniValue r;
 
@@ -83,13 +82,6 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
     BOOST_CHECK_THROW(CallRPC("sendrawtransaction null"), std::runtime_error);
     BOOST_CHECK_THROW(CallRPC("sendrawtransaction DEADBEEF"), std::runtime_error);
     BOOST_CHECK_THROW(CallRPC(std::string("sendrawtransaction ")+rawtx+" extra"), std::runtime_error);
-
-#else // BUILD_EQB
-    //! EQB_TODO: Fix Test
-#ifdef EQB_BREAK_TEST
-    BOOST_ERROR("TEST DISABLED!");
-#endif
-#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_CASE(rpc_togglenetwork)

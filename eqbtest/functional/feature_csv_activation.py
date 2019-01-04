@@ -98,7 +98,7 @@ class BIP68_112_113Test(ComparisonTestFramework):
         self.extra_args = [['-whitelist=127.0.0.1', '-blockversion=4', '-addresstype=legacy']]
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        raise SkipTest("Disabled")  # EQB_TODO: disabled test
         test = TestManager(self, self.options.tmpdir)
         test.add_all_connections(self.nodes)
         network_thread_start()

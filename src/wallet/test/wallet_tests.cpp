@@ -682,13 +682,12 @@ public:
 
 BOOST_FIXTURE_TEST_CASE(ListCoins, ListCoinsTestingSetup)
 {
-#ifdef BUILD_BTC
     std::string coinbaseAddress = coinbaseKey.GetPubKey().GetID().ToString();
 
     // Confirm ListCoins initially returns 1 coin grouped under coinbaseKey
     // address.
     auto list = wallet->ListCoins();
-    //! EQB_TODO: Fix Test -> BOOST_CHECK_EQUAL(list.size(), 1);
+    BOOST_CHECK_EQUAL(list.size(), 1);
     BOOST_CHECK_EQUAL(boost::get<CKeyID>(list.begin()->first).ToString(), coinbaseAddress);
     BOOST_CHECK_EQUAL(list.begin()->second.size(), 1);
 
@@ -728,12 +727,6 @@ BOOST_FIXTURE_TEST_CASE(ListCoins, ListCoinsTestingSetup)
     BOOST_CHECK_EQUAL(list.size(), 1);
     BOOST_CHECK_EQUAL(boost::get<CKeyID>(list.begin()->first).ToString(), coinbaseAddress);
     BOOST_CHECK_EQUAL(list.begin()->second.size(), 2);
-#else // BUILD_EQB
-    //! EQB_TODO: Add test back - Disabled due to changes to transaction structure.
-#ifdef EQB_BREAK_TEST
-    BOOST_ERROR("TEST DISABLED!");
-#endif
-#endif // END_BUILD
 }
 
 BOOST_AUTO_TEST_SUITE_END()

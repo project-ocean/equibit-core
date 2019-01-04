@@ -45,7 +45,7 @@ class NULLDUMMYTest(BitcoinTestFramework):
         self.extra_args = [['-whitelist=127.0.0.1', '-walletprematurewitness', '-vbparams=segwit:0:999999999999', '-addresstype=legacy', "-deprecatedrpc=addwitnessaddress"]]
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        raise SkipTest("Disabled")  # EQB_TODO: disabled test
         self.address = self.nodes[0].getnewaddress()
         self.ms_address = self.nodes[0].addmultisigaddress(1,[self.address])['address']
         self.wit_address = self.nodes[0].addwitnessaddress(self.address)

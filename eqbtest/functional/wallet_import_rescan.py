@@ -137,8 +137,8 @@ class ImportRescanTest(BitcoinTestFramework):
             variant.label = "label {} {}".format(i, variant)
             variant.address = self.nodes[1].validateaddress(self.nodes[1].getnewaddress(variant.label))
             variant.key = self.nodes[1].dumpprivkey(variant.address["address"])
-            variant.initial_amount = 10 - (i + 1) / 4.0
-            variant.initial_txid = self.nodes[0].sendtoaddress(variant.address["address"], variant.initial_amount)
+            variant.initial_amount = 4 - (i + 1) / 12.0
+            variant.initial_txid = self.nodes[0].sendtoaddress(variant.address["address"], (round(variant.initial_amount, 8)))
 
         # Generate a block containing the initial transactions, then another
         # block further in the future (past the rescan window).
