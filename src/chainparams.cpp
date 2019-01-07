@@ -543,7 +543,7 @@ public:
         consensus.BIP66Height = 0;
         // EQB_TODO temporary to mine genesis block below
         consensus.powLimit = uint256S("0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 60 * 60; // 1 hour moving average window
+        consensus.nPowTargetTimespan = 2 * 60 * 60; // 2 hour moving average window
         consensus.nPowTargetSpacing = 10 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
