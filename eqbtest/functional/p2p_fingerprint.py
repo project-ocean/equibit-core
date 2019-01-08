@@ -82,16 +82,16 @@ class P2PFingerprintTest(BitcoinTestFramework):
         node0.wait_for_verack()
 
         # Set node time to 60 days ago
-        self.nodes[0].setmocktime(int(time.time()) - 60 * 24 * 60 * 60)
+        self.nodes[0].setmocktime(int(time.time()) - 40 * 24 * 60 * 60)  # EQB_TODO: 40 days -> 60
 
         # Generating a chain of 10 blocks
-        block_hashes = self.nodes[0].generate(nblocks=10)
+        block_hashes = self.nodes[0].generate(nblocks=10)  # 10
 
         # Create longer chain starting 2 blocks before current tip
         height = len(block_hashes) - 2
         block_hash = block_hashes[height - 1]
         block_time = self.nodes[0].getblockheader(block_hash)["mediantime"] + 1
-        new_blocks = self.build_chain(5, block_hash, height, block_time)
+        new_blocks = self.build_chain(5, block_hash, height, block_time)  # 5
 
         # Force reorg to a longer chain
         node0.send_message(msg_headers(new_blocks))

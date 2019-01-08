@@ -16,13 +16,16 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.extra_args = [["-checkmempool"]] * 2
+        self.setup_clean_chain = True  # EQB_TODO: remove when maturity = 100
 
     alert_filename = None  # Set by setup_network
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         # Start with a 200 block chain
-        assert_equal(self.nodes[0].getblockcount(), 200)
+        self.nodes[0].generate(20)  # EQB_TODO: remove when maturity = 100
+        self.sync_all()  # EQB_TODO: remove when maturity = 100
+        assert_equal(self.nodes[0].getblockcount(), 20)  # EQB_TODO: 20 -> 200 when maturity = 100
 
         # Mine four blocks. After this, nodes[0] blocks
         # 101, 102, and 103 are spend-able.
@@ -38,7 +41,7 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
         # 3. Indirect (coinbase and child both in chain) : spend_103 and spend_103_1
         # Use invalidatblock to make all of the above coinbase spends invalid (immature coinbase),
         # and make sure the mempool code behaves correctly.
-        b = [ self.nodes[0].getblockhash(n) for n in range(101, 105) ]
+        b = [ self.nodes[0].getblockhash(n) for n in range(11, 15) ]  # EQB_TODO: (11, 15) -> (101, 105) when maturity = 100
         coinbase_txids = [ self.nodes[0].getblock(h)['tx'][0] for h in b ]
         coinbase_amnts = [self.nodes[0].gettransaction(t)['details'][0]['amount'] for t in coinbase_txids]
         spend_101_raw = create_tx(self.nodes[0], coinbase_txids[1], node1_address, coinbase_amnts[1] - Decimal('0.01'))
