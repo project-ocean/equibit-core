@@ -34,7 +34,8 @@ def getutxo(txid):
 def find_unspent(node, min_value):
     for utxo in node.listunspent():
         if utxo['amount'] >= min_value:
-            return utxo, utxo['amount']
+            block_index = node.getblock(node.gettransaction(utxo['txid'])['blockhash'])['height']
+            return utxo, utxo['amount'], block_index
 
 class SegWitTest(BitcoinTestFramework):
     def set_test_params(self):
@@ -51,27 +52,31 @@ class SegWitTest(BitcoinTestFramework):
         self.sync_all()
 
     def success_mine(self, node, txid, sign, redeem_script=""):
-        send_to_witness(1, node, getutxo(txid), self.pubkey[0], False, Decimal("49.998"), sign, redeem_script)
+        amnt = abs(node.gettransaction(txid)['details'][0]['amount']) - Decimal('0.002')
+        send_to_witness(1, node, getutxo(txid), self.pubkey[0], False, amnt, sign, redeem_script)
         block = node.generate(1)
         assert_equal(len(node.getblock(block[0])["tx"]), 2)
         sync_blocks(self.nodes)
 
     def skip_mine(self, node, txid, sign, redeem_script=""):
-        send_to_witness(1, node, getutxo(txid), self.pubkey[0], False, Decimal("49.998"), sign, redeem_script)
+        amnt = node.gettransaction(txid)['details'][0]['amount'] - Decimal('0.002')
+        send_to_witness(1, node, getutxo(txid), self.pubkey[0], False, amnt, sign, redeem_script)
         block = node.generate(1)
         assert_equal(len(node.getblock(block[0])["tx"]), 1)
         sync_blocks(self.nodes)
 
     def fail_accept(self, node, error_msg, txid, sign, redeem_script=""):
-        assert_raises_rpc_error(-26, error_msg, send_to_witness, 1, node, getutxo(txid), self.pubkey[0], False, Decimal("49.998"), sign, redeem_script)
+        amnt = abs(node.gettransaction(txid)['details'][0]['amount']) - Decimal('0.002')
+        assert_raises_rpc_error(-26, error_msg, send_to_witness, 1, node, getutxo(txid), self.pubkey[0], False, amnt, sign, redeem_script)  # amnt: Decimal("49.998")
 
     def fail_mine(self, node, txid, sign, redeem_script=""):
-        send_to_witness(1, node, getutxo(txid), self.pubkey[0], False, Decimal("49.998"), sign, redeem_script)
+        amnt = node.gettransaction(txid)['details'][0]['amount'] - Decimal('0.002')
+        send_to_witness(1, node, getutxo(txid), self.pubkey[0], False, amnt, sign, redeem_script)
         assert_raises_rpc_error(-1, "CreateNewBlock: TestBlockValidity failed", node.generate, 1)
         sync_blocks(self.nodes)
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         self.nodes[0].generate(161) #block 161
 
         self.log.info("Verify sigops are counted in GBT with pre-BIP141 rules before the fork")
@@ -113,21 +118,28 @@ class SegWitTest(BitcoinTestFramework):
                 p2sh_ids[i].append([])
                 wit_ids[i].append([])
 
+        amount_spent = [{'amt': 0, 'blkIdxs': []}, {'amt': 0, 'blkIdxs': []}, {'amt': 0, 'blkIdxs': []}]
         for i in range(5):
             for n in range(3):
                 for v in range(2):
-                    tx, amount = find_unspent(self.nodes[0], 3)
+                    tx, amount, blkIdx = find_unspent(self.nodes[0], 3)
+                    amount_spent[n]['amt'] += (amount - Decimal('0.001'))
+                    amount_spent[n]['blkIdxs'].append(blkIdx)
                     wit_ids[n][v].append(send_to_witness(v, self.nodes[0], tx, self.pubkey[n], False, amount - Decimal("0.001")))
-                    tx, amount = find_unspent(self.nodes[0], 3)
+                    tx, amount, blkIdx = find_unspent(self.nodes[0], 3)
+                    amount_spent[n]['amt'] += (amount - Decimal('0.001'))
+                    amount_spent[n]['blkIdxs'].append(blkIdx)
                     p2sh_ids[n][v].append(send_to_witness(v, self.nodes[0], tx, self.pubkey[n], True, amount - Decimal("0.001")))
 
         self.nodes[0].generate(1) #block 163
         sync_blocks(self.nodes)
 
         # Make sure all nodes recognize the transactions as theirs
-        assert_equal(self.nodes[0].getbalance(), balance_presetup - 60*50 + 20*Decimal("49.999") + 50)
-        assert_equal(self.nodes[1].getbalance(), 20*Decimal("49.999"))
-        assert_equal(self.nodes[2].getbalance(), 20*Decimal("49.999"))
+        assert_equal(self.nodes[0].getbalance(), balance_presetup - sum(map(block_reward, amount_spent[0]['blkIdxs'] + amount_spent[1]['blkIdxs'] + amount_spent[2]['blkIdxs'])) + amount_spent[0]['amt'] + block_reward(153))  # EQB_TODO: was "60*50 + 20*Decimal("49.999") + 50" for maturity = 100
+        ## balance_presetup - Decimal('590.09220726') + (amount_spent[0]) + block_reward(153)
+        # balance_presetup - (sum(map(block_reward, amount_spent[0]['blkIdxs'])) + sum(map(block_reward, amount_spent[1]['blkIdxs'])) + sum(map(block_reward, amount_spent[2]['blkIdxs']))) + amount_spent[0]['amt'] + block_reward(153)
+        assert_equal(self.nodes[1].getbalance(), amount_spent[1]['amt'])  # was 20*Decimal("49.999")
+        assert_equal(self.nodes[2].getbalance(), amount_spent[2]['amt'])  # was 20*Decimal("49.999")
 
         self.nodes[0].generate(260) #block 423
         sync_blocks(self.nodes)
@@ -214,7 +226,8 @@ class SegWitTest(BitcoinTestFramework):
         #                      tx2 (segwit input, paying to a non-segwit output) ->
         #                      tx3 (non-segwit input, paying to a non-segwit output).
         # tx1 is allowed to appear in the block, but no others.
-        txid1 = send_to_witness(1, self.nodes[0], find_unspent(self.nodes[0], 50), self.pubkey[0], False, Decimal("49.996"))
+        ut, am, _ = find_unspent(self.nodes[0], 50)
+        txid1 = send_to_witness(1, self.nodes[0], ut, self.pubkey[0], False, am - Decimal("0.004"))
         hex_tx = self.nodes[0].gettransaction(txid)['hex']
         tx = FromHex(CTransaction(), hex_tx)
         assert(tx.wit.is_null()) # This should not be a segwit input
@@ -223,7 +236,8 @@ class SegWitTest(BitcoinTestFramework):
         # Now create tx2, which will spend from txid1.
         tx = CTransaction()
         tx.vin.append(CTxIn(COutPoint(int(txid1, 16), 0), b''))
-        tx.vout.append(CTxOut(int(49.99 * COIN), CScript([OP_TRUE, OP_DROP] * 15 + [OP_TRUE])))
+        amnt = abs(self.nodes[0].gettransaction(txid1)['details'][0]['amount'])
+        tx.vout.append(CTxOut(int((amnt - Decimal('0.01')) * COIN), CScript([OP_TRUE, OP_DROP] * 15 + [OP_TRUE])))  # 49.99
         tx2_hex = self.nodes[0].signrawtransaction(ToHex(tx))['hex']
         txid2 = self.nodes[0].sendrawtransaction(tx2_hex)
         tx = FromHex(CTransaction(), tx2_hex)
@@ -232,7 +246,8 @@ class SegWitTest(BitcoinTestFramework):
         # Now create tx3, which will spend from txid2
         tx = CTransaction()
         tx.vin.append(CTxIn(COutPoint(int(txid2, 16), 0), b""))
-        tx.vout.append(CTxOut(int(49.95 * COIN), CScript([OP_TRUE, OP_DROP] * 15 + [OP_TRUE])))  # Huge fee
+        amnt = abs(self.nodes[0].gettransaction(txid2)['details'][0]['amount'])
+        tx.vout.append(CTxOut(int((amnt - Decimal('0.05')) * COIN), CScript([OP_TRUE, OP_DROP] * 15 + [OP_TRUE])))  # Huge fee
         tx.calc_sha3_256()
         txid3 = self.nodes[0].sendrawtransaction(ToHex(tx))
         assert(tx.wit.is_null())
