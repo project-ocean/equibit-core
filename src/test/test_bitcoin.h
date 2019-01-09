@@ -118,9 +118,9 @@ struct TestMemPoolEntryHelper
     TestMemPoolEntryHelper &SigOpsCost(unsigned int _sigopsCost) { sigOpCost = _sigopsCost; return *this; }
 };
 
+#ifdef BUILD_BTC
 CBlock getBlock13b8a();
-
-#ifndef BUILD_BTC
+#else  // BUILD_EQB
 CBlock getBlockEquibit();
 #endif // END_BUILD
 
