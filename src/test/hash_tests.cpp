@@ -134,8 +134,7 @@ BOOST_AUTO_TEST_CASE(siphash)
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(SipHashUint256(1, 2, ss.GetHash()), 0x79751e980c2a0a35ULL);
 #else  // BUILD_EQB
-    // EQB_TODO generate new test data
-    // BOOST_CHECK_EQUAL(SipHashUint256(1, 2, ss.GetHash()), 0x85dbcc0731d60d00ULL);
+    BOOST_CHECK_EQUAL(SipHashUint256(1, 2, ss.GetHash()), 0x810237de8fd7d8b4ULL);
 #endif // END_BUILD
 
     // Check consistency between CSipHasher and SipHashUint256[Extra].
