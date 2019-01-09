@@ -18,12 +18,6 @@ BOOST_FIXTURE_TEST_SUITE(merkleblock_tests, BasicTestingSetup)
  */
 BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_found)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
-    BOOST_ERROR("TEST DISABLED!");
-#endif
-    return;
-
 #ifdef BUILD_BTC
     CBlock block = getBlock13b8a();
 
@@ -63,10 +57,10 @@ BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_found)
     std::set<uint256> txids;
 
     // Last txn in block.
-    uint256 txhash1 = uint256S("0xdcf3a378f6b6467087f78361b8288b11f85cdd84b6e53554a0ff949128905a5c");
+    uint256 txhash1 = uint256S("0x7d19ff6409e2487d24ad7fb6a73f54219c20865063da1c29153703d74adeaa6a");
 
     // Second txn in block.
-    uint256 txhash2 = uint256S("0xa4e6f3972f903d4c8ef3e876072b905aeebe9bd7aa0f9b78996dd7bac5f86e26");
+    uint256 txhash2 = uint256S("0x7ae177b10a7e5059d443a3993430ee2808d7134517503edb6296554f74b5d157");
 
     txids.insert(txhash1);
     txids.insert(txhash2);
@@ -89,7 +83,7 @@ BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_found)
     BOOST_CHECK_EQUAL(vIndex[0], 1);
 
     BOOST_CHECK_EQUAL(vMatched[1].ToString(), txhash1.ToString());
-    BOOST_CHECK_EQUAL(vIndex[1], 2);
+    BOOST_CHECK_EQUAL(vIndex[1], 4);
 #endif // END_BUILD
 }
 
@@ -100,12 +94,6 @@ BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_found)
  */
 BOOST_AUTO_TEST_CASE(merkleblock_construct_from_txids_not_found)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
-    BOOST_ERROR("TEST DISABLED!");
-#endif
-    return;
-
 #ifdef BUILD_BTC
     CBlock block = getBlock13b8a();
 
