@@ -39,7 +39,7 @@ class BlockchainTest(BitcoinTestFramework):
         self.extra_args = [['-stopatheight=207', '-prune=1']]
 
     def run_test(self):
-        raise SkipTest("Disabled")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         self._test_getblockchaininfo()
         self._test_getchaintxstats()
         self._test_gettxoutsetinfo()
@@ -203,7 +203,8 @@ class BlockchainTest(BitcoinTestFramework):
         difficulty = self.nodes[0].getdifficulty()
         # 1 hash in 2 should be valid, so difficulty should be 1/2**31
         # binary => decimal => binary math is why we do this check
-        assert abs(difficulty * 2**31 - 1) < 0.0001
+        #assert abs(difficulty * 2**31 - 1) < 0.0001
+        assert_equal(float(difficulty), 0.00003051711610163642)
 
     def _test_getnetworkhashps(self):
         hashes_per_second = self.nodes[0].getnetworkhashps()
