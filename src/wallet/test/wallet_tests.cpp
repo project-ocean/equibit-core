@@ -398,8 +398,7 @@ BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
 #ifdef BUILD_BTC
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 100 * COIN);
 #else  // BUILD_EQB
-        // EQB_TODO
-        // BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), BLOCK_140000_REWARD + BLOCK_141400_REWARD);
+        BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), BLOCK_140000_REWARD + BLOCK_141400_REWARD);
 #endif // END_BUILD
     }
 
@@ -418,8 +417,7 @@ BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
 #ifdef BUILD_BTC
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 50 * COIN);
 #else  // BUILD_EQB
-        // EQB_TODO
-        // BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), BLOCK_141400_REWARD);
+        BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), BLOCK_141400_REWARD);
 #endif // END_BUILD
     }
 
@@ -554,8 +552,7 @@ BOOST_FIXTURE_TEST_CASE(coin_mark_dirty_immature_credit, TestChain100Setup)
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), 50*COIN);
 #else  // BUILD_EQB
-    // EQB_TODO
-    // BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), BLOCK_140000_REWARD);
+    BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), BLOCK_140000_REWARD);
 #endif // END_BUILD
 }
 
