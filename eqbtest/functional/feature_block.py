@@ -70,7 +70,7 @@ class FullBlockTest(ComparisonTestFramework):
         parser.add_option("--runbarelyexpensive", dest="runbarelyexpensive", default=True)
 
     def run_test(self):
-        raise SkipTest("Disabled")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         self.test = TestManager(self, self.options.tmpdir)
         self.test.add_all_connections(self.nodes)
         network_thread_start()
