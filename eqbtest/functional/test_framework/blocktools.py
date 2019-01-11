@@ -23,7 +23,7 @@ from .script import (
     hash160,
     hash160_sha3_256
 )
-from .util import assert_equal
+from .util import assert_equal, block_reward
 
 # Create a block (with regtest difficulty)
 def create_block(hashprev, coinbase, nTime=None):
@@ -91,14 +91,14 @@ def create_coinbase(height, pubkey = None):
     coinbase.vin.append(CTxIn(COutPoint(0, 0xffffffff), 
                 ser_string(serialize_script_num(height)), 0xffffffff))
     coinbaseoutput = CTxOut()
-    coinbaseoutput.nValue = 50 * COIN
-    halvings = int(height/150) # regtest
+    coinbaseoutput.nValue = int(block_reward(height) * COIN)
+    halvings = int(height / 150)  # regtest
     coinbaseoutput.nValue >>= halvings
     if (pubkey != None):
         coinbaseoutput.scriptPubKey = CScript([pubkey, OP_CHECKSIG])
     else:
         coinbaseoutput.scriptPubKey = CScript([OP_TRUE])
-    coinbase.vout = [ coinbaseoutput ]
+    coinbase.vout = [coinbaseoutput]
     coinbase.calc_sha3_256()  # Switched to sha3
     return coinbase
 

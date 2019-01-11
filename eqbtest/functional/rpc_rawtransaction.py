@@ -22,7 +22,7 @@ class multidict(dict):
 
     Constructed with a list of (key, value) tuples. When dumped by the json module,
     will output invalid json with repeated keys, eg:
-    >>> json.dumps(multidict([(1,2),(1,2)])
+    ->>> json.dumps(multidict([(1,2),(1,2)])
     '{"1": 2, "1": 2}'
 
     Used to test calls to rpc methods with repeated keys in the json object."""

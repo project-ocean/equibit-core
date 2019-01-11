@@ -70,7 +70,7 @@ class FullBlockTest(ComparisonTestFramework):
         parser.add_option("--runbarelyexpensive", dest="runbarelyexpensive", default=True)
 
     def run_test(self):
-        raise SkipTest("Disabled")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         self.test = TestManager(self, self.options.tmpdir)
         self.test.add_all_connections(self.nodes)
         network_thread_start()
@@ -841,7 +841,8 @@ class FullBlockTest(ComparisonTestFramework):
         #
         tip(60)
         b61 = block(61, spend=out[18])
-        b61.vtx[0].vin[0].scriptSig = b60.vtx[0].vin[0].scriptSig  #equalize the coinbases
+        b61.vtx[0].vin[0].scriptSig = b60.vtx[0].vin[0].scriptSig  # equalize the coinbases
+        b61.vtx[0].vout[0].nValue = b60.vtx[0].vout[0].nValue      # coinbase rewards are different for neighbour blocks, equalize
         b61.vtx[0].rehash()
         b61 = update_block(61, [])
         assert_equal(b60.vtx[0].serialize(), b61.vtx[0].serialize())
@@ -1137,18 +1138,18 @@ class FullBlockTest(ComparisonTestFramework):
         #
         tip(76)
         block(77)
-        tx77 = create_and_sign_tx(out[24].tx, out[24].n, 10*COIN)
+        tx77 = create_and_sign_tx(out[24].tx, out[24].n, 2*COIN)
         update_block(77, [tx77])
         yield accepted()
         save_spendable_output()
 
         block(78)
-        tx78 = create_tx(tx77, 0, 9*COIN)
+        tx78 = create_tx(tx77, 0, 1*COIN)
         update_block(78, [tx78])
         yield accepted()
 
         block(79)
-        tx79 = create_tx(tx78, 0, 8*COIN)
+        tx79 = create_tx(tx78, 0, int(0.5*COIN))
         update_block(79, [tx79])
         yield accepted()
 
