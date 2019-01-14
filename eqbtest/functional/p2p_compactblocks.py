@@ -789,7 +789,7 @@ class CompactBlocksTest(BitcoinTestFramework):
         assert_equal(int(node.getbestblockhash(), 16), block.sha256)
 
     def run_test(self):
-        raise SkipTest("Disabled")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         # Setup the p2p connections and start up the network thread.
         self.test_node = self.nodes[0].add_p2p_connection(TestNode())
         self.segwit_node = self.nodes[1].add_p2p_connection(TestNode(), services=NODE_NETWORK|NODE_WITNESS)

@@ -30,7 +30,7 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         self.setup_clean_chain = True
 
     def run_test(self):
-        raise SkipTest("Disabled")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         test = TestManager(self, self.options.tmpdir)
         test.add_all_connections(self.nodes)
         self.tip = None
@@ -80,8 +80,9 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         self.block_time += 1
 
         # b'0x51' is OP_TRUE
-        tx1 = create_transaction(self.block1.vtx[0], 0, b'\x51', 50 * COIN)
-        tx2 = create_transaction(tx1, 0, b'\x51', 50 * COIN)
+        amnt = block_reward(self.nodes[0].getblock(self.block1.hash)['height'])
+        tx1 = create_transaction(self.block1.vtx[0], 0, b'\x51', int(amnt * COIN))
+        tx2 = create_transaction(tx1, 0, b'\x51', int(amnt * COIN))
 
         block2.vtx.extend([tx1, tx2])
         block2.hashMerkleRoot = block2.calc_merkle_root()
@@ -97,8 +98,6 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         assert(block2_orig.vtx != block2.vtx)
 
         self.tip = block2.sha256
-        # EQB_TODO: [btc 0.16.3 merge] check this block after Bitcoin 0.16.3 merge
-        #yield TestInstance([[block2, RejectResult(16, b'bad-txns-duplicate')], [block2_orig, True]])
         yield TestInstance([[block2, RejectResult(16, b'bad-txns-duplicate')]])
 
         # Check transactions for duplicate inputs
@@ -111,7 +110,6 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         block2_dup.rehash()
         block2_dup.solve()
         yield TestInstance([[block2_dup, RejectResult(16, b'bad-txns-inputs-duplicate')], [block2_orig, True]])
-        # EQB_TODO:  [btc 0.16.3 merge] end
         height += 1
 
         '''
