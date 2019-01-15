@@ -2,7 +2,11 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#ifdef BUILD_BTC
 #include <test/data/script_tests.json.h>
+#else // BUILD_EQB 
+#include <test/data/eqb_script_tests.json.h>
+#endif // END_BUILD
 
 #include <core_io.h>
 #include <key.h>
@@ -494,9 +498,6 @@ std::string JSONPrettyPrint(const UniValue& univalue)
 
 BOOST_AUTO_TEST_CASE(script_build)
 {
-    // EQB_TODO generate new test data
-    return;
-
     const KeyData keys;
 
     std::vector<TestBuilder> tests;
@@ -946,7 +947,11 @@ BOOST_AUTO_TEST_CASE(script_build)
     std::set<std::string> tests_set;
 
     {
+#ifdef BUILD_BTC
         UniValue json_tests = read_json(std::string(json_tests::script_tests, json_tests::script_tests + sizeof(json_tests::script_tests)));
+#else // BUILD_EQB 
+        UniValue json_tests = read_json(std::string(json_tests::eqb_script_tests, json_tests::eqb_script_tests + sizeof(json_tests::eqb_script_tests)));
+#endif // END_BUILD
 
         for (unsigned int idx = 0; idx < json_tests.size(); idx++) {
             const UniValue& tv = json_tests[idx];
@@ -976,9 +981,6 @@ BOOST_AUTO_TEST_CASE(script_build)
 
 BOOST_AUTO_TEST_CASE(script_json_test)
 {
-    // EQB_TODO generate new test data
-    return;
-
     // Read tests from test/data/script_tests.json
     // Format is an array of arrays
     // Inner arrays are [ ["wit"..., nValue]?, "scriptSig", "scriptPubKey", "flags", "expected_scripterror" ]
@@ -986,7 +988,11 @@ BOOST_AUTO_TEST_CASE(script_json_test)
     // scripts.
     // If a witness is given, then the last value in the array should be the
     // amount (nValue) to use in the crediting tx
+#ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::script_tests, json_tests::script_tests + sizeof(json_tests::script_tests)));
+#else // BUILD_EQB 
+    UniValue tests = read_json(std::string(json_tests::eqb_script_tests, json_tests::eqb_script_tests + sizeof(json_tests::eqb_script_tests)));
+#endif // END_BUILD
 
     for (unsigned int idx = 0; idx < tests.size(); idx++) {
         UniValue test = tests[idx];
