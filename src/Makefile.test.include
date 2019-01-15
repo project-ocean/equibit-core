@@ -18,6 +18,7 @@ JSON_TEST_FILES = \
   test/data/sighash.json \
   test/data/eqb_base58_keys_valid.json \
   test/data/eqb_base58_keys_invalid.json \
+  test/data/eqb_sighash.json \
   test/data/eqb_tx_valid.json \
   test/data/eqb_tx_invalid.json
 

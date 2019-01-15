@@ -4,7 +4,11 @@
 
 #include <consensus/tx_verify.h>
 #include <consensus/validation.h>
+#ifdef BUILD_BTC
 #include <test/data/sighash.json.h>
+#else  // BUILD_EQB
+#include <test/data/eqb_sighash.json.h>
+#endif // END_BUILD
 #include <hash.h>
 #include <script/interpreter.h>
 #include <script/script.h>
@@ -20,6 +24,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include <univalue.h>
+
+//#define PRINT_SIGHASH_JSON
 
 extern UniValue read_json(const std::string& jsondata);
 
@@ -168,10 +174,11 @@ BOOST_AUTO_TEST_CASE(sighash_test)
 // Goal: check that SignatureHash generates correct hash
 BOOST_AUTO_TEST_CASE(sighash_from_data)
 {
-    // EQB_TODO generate new test data
-    return;
-
+#ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::sighash, json_tests::sighash + sizeof(json_tests::sighash)));
+#else  // BUILD_EQB
+    UniValue tests = read_json(std::string(json_tests::eqb_sighash, json_tests::eqb_sighash + sizeof(json_tests::eqb_sighash)));
+#endif // END_BUILD
 
     for (unsigned int idx = 0; idx < tests.size(); idx++) {
         UniValue test = tests[idx];
