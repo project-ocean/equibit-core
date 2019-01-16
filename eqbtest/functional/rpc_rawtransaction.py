@@ -47,7 +47,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         connect_nodes_bi(self.nodes,0,2)
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
+        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
 
         #prepare some coins for multiple *rawtransaction commands
         self.nodes[2].generate(1)
@@ -99,7 +99,6 @@ class RawTransactionsTest(BitcoinTestFramework):
 
         # Test `createrawtransaction` invalid `replaceable`
         assert_raises_rpc_error(-3, "Expected type bool", self.nodes[0].createrawtransaction, [], {}, 0, 'foo')
-        # EQB_TODO: [btc 0.16.3 merge] check this new block after Bitcoin 0.16.3 merge
         for type in ["bech32", "p2sh-segwit", "legacy"]:
             addr = self.nodes[0].getnewaddress("", type)
             addrinfo = self.nodes[0].validateaddress(addr)
@@ -150,7 +149,6 @@ class RawTransactionsTest(BitcoinTestFramework):
                     "amount": 1
                 }
             ])
-        # EQB_TODO:  [btc 0.16.3 merge] end
 
         #########################################
         # sendrawtransaction with missing input #
