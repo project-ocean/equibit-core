@@ -47,7 +47,7 @@ class WalletTest(BitcoinTestFramework):
         assert_equal(walletinfo['balance'], 0)
 
         self.sync_all([self.nodes[0:3]])
-        self.nodes[1].generate(11)  # EQB_TODO: maturity (101)
+        self.nodes[1].generate(101)  # EQB_TODO: maturity (101)
         self.sync_all([self.nodes[0:3]])
 
         assert_equal(self.nodes[0].getbalance(), block_reward(1))
@@ -121,12 +121,12 @@ class WalletTest(BitcoinTestFramework):
                               [{"txid": unspent_0["txid"], "vout": 999}])
 
         # Have node1 generate 100 blocks (so node0 can recover the fee)
-        self.nodes[1].generate(10)  # EQB_TODO: maturity (100)
+        self.nodes[1].generate(100)  # EQB_TODO: maturity (100)
         self.sync_all([self.nodes[0:3]])
 
         # node0 should end up with 3.09851350 + 11.77678396 eqb in block rewards (blocks #1 & #103) plus fees, but
         # minus 3.0 plus fees sent to node2
-        assert_equal(self.nodes[0].getbalance(), block_reward(1) + block_reward(13) - Decimal('3.0'))
+        assert_equal(self.nodes[0].getbalance(), block_reward(1) + block_reward(103) - Decimal('3.0'))
         assert_equal(self.nodes[2].getbalance(), 3.0)
 
         # Node0 should have two unspent outputs.
@@ -154,8 +154,8 @@ class WalletTest(BitcoinTestFramework):
         self.sync_all([self.nodes[0:3]])
 
         assert_equal(self.nodes[0].getbalance(), 0)
-        assert_equal(self.nodes[2].getbalance(), Decimal('6.68385294'))  # was 14.81529746
-        assert_equal(self.nodes[2].getbalance("from1"), Decimal('6.68385294') - Decimal('3.00000000'))  # Decimal('14.81529746') - Decimal('3.00000000') 11.81529746 was 94-21
+        assert_equal(self.nodes[2].getbalance(), Decimal('14.81529746'))
+        assert_equal(self.nodes[2].getbalance("from1"), Decimal('14.81529746') - Decimal('3.00000000'))  # Decimal('14.81529746') - Decimal('3.00000000') 11.81529746 was 94-21
 
         # Verify that a spent output cannot be locked anymore
         spent_0 = {"txid": node0utxos[0]["txid"], "vout": node0utxos[0]["vout"]}
@@ -168,7 +168,7 @@ class WalletTest(BitcoinTestFramework):
         txid = self.nodes[2].sendtoaddress(address, 5, "", "", False)
         self.nodes[2].generate(1)
         self.sync_all([self.nodes[0:3]])
-        node_2_bal = self.check_fee_amount(self.nodes[2].getbalance(), Decimal('6.68385294') - Decimal('5.0'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
+        node_2_bal = self.check_fee_amount(self.nodes[2].getbalance(), Decimal('14.81529746') - Decimal('5.0'), fee_per_byte, self.get_vsize(self.nodes[2].getrawtransaction(txid)))
         assert_equal(self.nodes[0].getbalance(), Decimal('5'))
 
         # Send 10 BTC with subtract fee from amount
