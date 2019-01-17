@@ -82,7 +82,7 @@ bool AppInit(int argc, char* argv[])
                   "  bitcoind [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
 #else // BUILD_EQB
 			strUsage += "\n" + _("Usage:") + "\n" +
-                        "  equibitd [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
+                  "  equibitd [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
 #endif // END_BUILD
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
@@ -117,7 +117,11 @@ bool AppInit(int argc, char* argv[])
         // Error out when loose non-argument tokens are encountered on command line
         for (int i = 1; i < argc; i++) {
             if (!IsSwitchChar(argv[i][0])) {
+#ifdef BUILD_BTC
                 fprintf(stderr, "Error: Command line contains unexpected token '%s', see bitcoind -h for a list of options.\n", argv[i]);
+#else // BUILD_EQB
+                fprintf(stderr, "Error: Command line contains unexpected token '%s', see equibitd -h for a list of options.\n", argv[i]);
+#endif // END_BUILD
                 return false;
             }
         }
@@ -145,7 +149,11 @@ bool AppInit(int argc, char* argv[])
         if (gArgs.GetBoolArg("-daemon", false))
         {
 #if HAVE_DECL_DAEMON
+#ifdef BUILD_BTC
             fprintf(stdout, "Bitcoin server starting\n");
+#else // BUILD_EQB
+            fprintf(stdout, "Equibit server starting\n");
+#endif // END_BUILD
 
             // Daemonize
             if (daemon(1, 0)) { // don't chdir (1), do close FDs (0)
