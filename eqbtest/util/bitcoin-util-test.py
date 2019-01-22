@@ -179,6 +179,6 @@ def parse_output(a, fmt):
 
 if __name__ == '__main__':
     # EQB_TODO: all tests are disabled
-    # main()
-    print("ALL TX-BUILDER UTILITY TESTS ARE DISABLED!!!")
+    main()
+    #print("ALL TX-BUILDER UTILITY TESTS ARE DISABLED!!!")
 
