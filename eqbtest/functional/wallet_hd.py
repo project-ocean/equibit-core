@@ -19,7 +19,6 @@ class WalletHDTest(BitcoinTestFramework):
         self.extra_args = [[], ['-keypool=0']]
 
     def run_test (self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         tmpdir = self.options.tmpdir
 
         # Make sure can't switch off usehd after wallet creation
