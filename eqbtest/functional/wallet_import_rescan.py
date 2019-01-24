@@ -71,7 +71,7 @@ class Variant(collections.namedtuple("Variant", "call data rescan prune")):
         """Verify that getbalance/listtransactions return expected values."""
 
         balance = self.node.getbalance(self.label, 0, True)
-        assert_equal(balance, self.expected_balance)
+        assert_equal(float(balance), round(self.expected_balance, 8))
 
         txs = self.node.listtransactions(self.label, 10000, 0, True)
         assert_equal(len(txs), self.expected_txs)
@@ -80,7 +80,7 @@ class Variant(collections.namedtuple("Variant", "call data rescan prune")):
             tx, = [tx for tx in txs if tx["txid"] == txid]
             assert_equal(tx["account"], self.label)
             assert_equal(tx["address"], self.address["address"])
-            assert_equal(tx["amount"], amount)
+            assert_equal(float(tx["amount"]), round(amount, 8))
             assert_equal(tx["category"], "receive")
             assert_equal(tx["label"], self.label)
             assert_equal(tx["txid"], txid)
@@ -130,7 +130,6 @@ class ImportRescanTest(BitcoinTestFramework):
             connect_nodes(self.nodes[i], 0)
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         # Create one transaction on node 0 with a unique amount and label for
         # each possible type of wallet import RPC.
         for i, variant in enumerate(IMPORT_VARIANTS):
@@ -167,7 +166,7 @@ class ImportRescanTest(BitcoinTestFramework):
 
         # Create new transactions sending to each address.
         for i, variant in enumerate(IMPORT_VARIANTS):
-            variant.sent_amount = 10 - (2 * i + 1) / 8.0
+            variant.sent_amount = (10 - (2 * i + 1) / 8.0) / 10
             variant.sent_txid = self.nodes[0].sendtoaddress(variant.address["address"], variant.sent_amount)
 
         # Generate a block containing the new transactions.
