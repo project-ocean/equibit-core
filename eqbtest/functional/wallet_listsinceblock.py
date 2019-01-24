@@ -13,7 +13,6 @@ class ListSinceBlockTest (BitcoinTestFramework):
         self.setup_clean_chain = True
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         self.nodes[2].generate(101)
         self.sync_all()
 
