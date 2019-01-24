@@ -12,7 +12,6 @@ class ImportPrunedFundsTest(BitcoinTestFramework):
         self.num_nodes = 2
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         self.log.info("Mining blocks...")
         self.nodes[0].generate(101)
 
