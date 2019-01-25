@@ -1,0 +1,1 @@
+<Playlist Version="1.0"><Add Test="bloom_tests/bloom_create_insert_key" /><Add Test="net_tests/caddrdb_read_corrupted" /><Add Test="base58_tests/base58_keys_valid_parse" /><Add Test="key_tests/key_test1" /><Add Test="wallet_tests/importwallet_rescan" /><Add Test="base58_tests/base58_keys_valid_gen" /></Playlist>

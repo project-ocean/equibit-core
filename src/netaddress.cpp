@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -47,7 +48,11 @@ bool CNetAddr::SetInternal(const std::string &name)
         return false;
     }
     unsigned char hash[32] = {};
+#ifdef BUILD_BTC
     CSHA256().Write((const unsigned char*)name.data(), name.size()).Finalize(hash);
+#else // BUILD_EQB
+    SHA3().Write((const unsigned char*)name.data(), name.size()).Finalize(hash);
+#endif // END_BUILD
     memcpy(ip, g_internal_prefix, sizeof(g_internal_prefix));
     memcpy(ip + sizeof(g_internal_prefix), hash, sizeof(ip) - sizeof(g_internal_prefix));
     return true;
@@ -391,7 +396,11 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
 
 uint64_t CNetAddr::GetHash() const
 {
+ #ifdef BUILD_BTC
     uint256 hash = Hash(&ip[0], &ip[16]);
+#else // BUILD_EQB
+    uint256 hash = SHA3Hash(&ip[0], &ip[16]);
+#endif // END_BUILD
     uint64_t nRet;
     memcpy(&nRet, &hash, sizeof(nRet));
     return nRet;

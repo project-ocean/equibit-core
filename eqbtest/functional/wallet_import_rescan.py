@@ -19,7 +19,7 @@ importing nodes pick up the new transactions regardless of whether rescans
 happened previously.
 """
 
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.util import (assert_raises_rpc_error, connect_nodes, sync_blocks, assert_equal, set_node_times)
 
 import collections
@@ -71,7 +71,7 @@ class Variant(collections.namedtuple("Variant", "call data rescan prune")):
         """Verify that getbalance/listtransactions return expected values."""
 
         balance = self.node.getbalance(self.label, 0, True)
-        assert_equal(balance, self.expected_balance)
+        assert_equal(float(balance), round(self.expected_balance, 8))
 
         txs = self.node.listtransactions(self.label, 10000, 0, True)
         assert_equal(len(txs), self.expected_txs)
@@ -80,7 +80,7 @@ class Variant(collections.namedtuple("Variant", "call data rescan prune")):
             tx, = [tx for tx in txs if tx["txid"] == txid]
             assert_equal(tx["account"], self.label)
             assert_equal(tx["address"], self.address["address"])
-            assert_equal(tx["amount"], amount)
+            assert_equal(float(tx["amount"]), round(amount, 8))
             assert_equal(tx["category"], "receive")
             assert_equal(tx["label"], self.label)
             assert_equal(tx["txid"], txid)
@@ -136,8 +136,8 @@ class ImportRescanTest(BitcoinTestFramework):
             variant.label = "label {} {}".format(i, variant)
             variant.address = self.nodes[1].validateaddress(self.nodes[1].getnewaddress(variant.label))
             variant.key = self.nodes[1].dumpprivkey(variant.address["address"])
-            variant.initial_amount = 10 - (i + 1) / 4.0
-            variant.initial_txid = self.nodes[0].sendtoaddress(variant.address["address"], variant.initial_amount)
+            variant.initial_amount = 4 - (i + 1) / 12.0
+            variant.initial_txid = self.nodes[0].sendtoaddress(variant.address["address"], (round(variant.initial_amount, 8)))
 
         # Generate a block containing the initial transactions, then another
         # block further in the future (past the rescan window).
@@ -166,7 +166,7 @@ class ImportRescanTest(BitcoinTestFramework):
 
         # Create new transactions sending to each address.
         for i, variant in enumerate(IMPORT_VARIANTS):
-            variant.sent_amount = 10 - (2 * i + 1) / 8.0
+            variant.sent_amount = (10 - (2 * i + 1) / 8.0) / 10
             variant.sent_txid = self.nodes[0].sendtoaddress(variant.address["address"], variant.sent_amount)
 
         # Generate a block containing the new transactions.

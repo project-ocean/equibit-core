@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2015-2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Utilities for manipulating blocks and transactions."""
@@ -20,8 +21,9 @@ from .script import (
     OP_RETURN,
     OP_TRUE,
     hash160,
+    hash160_sha3_256
 )
-from .util import assert_equal
+from .util import assert_equal, block_reward
 
 # Create a block (with regtest difficulty)
 def create_block(hashprev, coinbase, nTime=None):
@@ -35,7 +37,7 @@ def create_block(hashprev, coinbase, nTime=None):
     block.nBits = 0x207fffff # Will break after a difficulty adjustment...
     block.vtx.append(coinbase)
     block.hashMerkleRoot = block.calc_merkle_root()
-    block.calc_sha256()
+    block.calc_sha3_256()  # Switched to sha3
     return block
 
 # From BIP141
@@ -43,7 +45,7 @@ WITNESS_COMMITMENT_HEADER = b"\xaa\x21\xa9\xed"
 
 
 def get_witness_script(witness_root, witness_nonce):
-    witness_commitment = uint256_from_str(hash256(ser_uint256(witness_root)+ser_uint256(witness_nonce)))
+    witness_commitment = uint256_from_str(hash3_256(ser_uint256(witness_root)+ser_uint256(witness_nonce)))  # Switched to sha3
     output_data = WITNESS_COMMITMENT_HEADER + ser_uint256(witness_commitment)
     return CScript([OP_RETURN, output_data])
 
@@ -89,15 +91,15 @@ def create_coinbase(height, pubkey = None):
     coinbase.vin.append(CTxIn(COutPoint(0, 0xffffffff), 
                 ser_string(serialize_script_num(height)), 0xffffffff))
     coinbaseoutput = CTxOut()
-    coinbaseoutput.nValue = 50 * COIN
-    halvings = int(height/150) # regtest
+    coinbaseoutput.nValue = int(block_reward(height) * COIN)
+    halvings = int(height / 150)  # regtest
     coinbaseoutput.nValue >>= halvings
     if (pubkey != None):
         coinbaseoutput.scriptPubKey = CScript([pubkey, OP_CHECKSIG])
     else:
         coinbaseoutput.scriptPubKey = CScript([OP_TRUE])
-    coinbase.vout = [ coinbaseoutput ]
-    coinbase.calc_sha256()
+    coinbase.vout = [coinbaseoutput]
+    coinbase.calc_sha3_256()  # Switched to sha3
     return coinbase
 
 # Create a transaction.
@@ -107,7 +109,7 @@ def create_transaction(prevtx, n, sig, value, scriptPubKey=CScript()):
     assert(n < len(prevtx.vout))
     tx.vin.append(CTxIn(COutPoint(prevtx.sha256, n), sig, 0xffffffff))
     tx.vout.append(CTxOut(value, scriptPubKey))
-    tx.calc_sha256()
+    tx.calc_sha3_256()   # Switched to sha3
     return tx
 
 def get_legacy_sigopcount_block(block, fAccurate=True):
@@ -131,12 +133,12 @@ def get_legacy_sigopcount_tx(tx, fAccurate=True):
 def witness_script(use_p2wsh, pubkey):
     if (use_p2wsh == False):
         # P2WPKH instead
-        pubkeyhash = hash160(hex_str_to_bytes(pubkey))
+        pubkeyhash = hash160_sha3_256(hex_str_to_bytes(pubkey))
         pkscript = CScript([OP_0, pubkeyhash])
     else:
         # 1-of-1 multisig
         witness_program = CScript([OP_1, hex_str_to_bytes(pubkey), OP_1, OP_CHECKMULTISIG])
-        scripthash = sha256(witness_program)
+        scripthash = sha3_256(witness_program)
         pkscript = CScript([OP_0, scripthash])
     return bytes_to_hex_str(pkscript)
 

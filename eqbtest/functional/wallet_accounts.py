@@ -13,8 +13,8 @@ RPCs tested are:
     - move (with account arguments)
 """
 
-from test_framework.test_framework import BitcoinTestFramework
-from test_framework.util import assert_equal
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.util import assert_equal, block_reward, acc_block_rewards
 
 class WalletAccountsTest(BitcoinTestFramework):
     def set_test_params(self):
@@ -31,7 +31,7 @@ class WalletAccountsTest(BitcoinTestFramework):
         # the same address, so we call twice to get two addresses w/50 each
         node.generate(1)
         node.generate(101)
-        assert_equal(node.getbalance(), 100)
+        assert_equal(node.getbalance(), block_reward(1) + block_reward(2))
 
         # there should be 2 address groups
         # each with 1 address with a balance of 50 Bitcoins
@@ -40,19 +40,21 @@ class WalletAccountsTest(BitcoinTestFramework):
         # the addresses aren't linked now, but will be after we send to the
         # common address
         linked_addresses = set()
-        for address_group in address_groups:
+        addr_balances = 0
+        for blkNum, address_group in enumerate(address_groups):
             assert_equal(len(address_group), 1)
             assert_equal(len(address_group[0]), 2)
-            assert_equal(address_group[0][1], 50)
+            addr_balances += address_group[0][1]
             linked_addresses.add(address_group[0][0])
+        assert_equal(addr_balances, block_reward(1) + block_reward(2))
 
         # send 50 from each address to a third address not in this wallet
         # There's some fee that will come back to us when the miner reward
         # matures.
-        common_address = "msf4WtN1YQKXvNtvdFYt9JBnUD2FB41kjr"
+        common_address = "TQsJyFbQh33itk7wYdhcChAacZTYXg9h3fFN"
         txid = node.sendmany(
             fromaccount="",
-            amounts={common_address: 100},
+            amounts={common_address: addr_balances},
             subtractfeefrom=[common_address],
             minconf=1,
         )
@@ -84,7 +86,7 @@ class WalletAccountsTest(BitcoinTestFramework):
         # Send a transaction to each account, and make sure this forces
         # getaccountaddress to generate a new receiving address.
         for account in accounts:
-            node.sendtoaddress(account.receive_address, amount_to_send)
+            t = node.sendtoaddress(account.receive_address, amount_to_send)
             account.add_receive_address(node.getaccountaddress(account.name))
             account.verify(node)
 
@@ -107,11 +109,13 @@ class WalletAccountsTest(BitcoinTestFramework):
             node.move(account.name, "", node.getbalance(account.name))
             account.verify(node)
         node.generate(101)
-        expected_account_balances = {"": 5200}
+        mining_earned = acc_block_rewards(1, 106)
+        spent_externally = acc_block_rewards(1, 2)
+        expected_account_balances = {"": mining_earned - spent_externally}
         for account in accounts:
             expected_account_balances[account.name] = 0
         assert_equal(node.listaccounts(), expected_account_balances)
-        assert_equal(node.getbalance(""), 5200)
+        assert_equal(node.getbalance(""), mining_earned - spent_externally)
         
         # Check that setaccount can assign an account to a new unused address.
         for account in accounts:

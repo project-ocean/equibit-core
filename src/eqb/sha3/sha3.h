@@ -54,19 +54,5 @@ public:
         return hash;
     }
 
-    template <typename T>
-    SHA3& operator<<(const T& obj)
-    {
-        ::Serialize(*this, obj);
-        return (*this);
-    }
-
-    template <typename T>
-    static uint256 SerializeHash(const T& obj, int type = SER_GETHASH, int version = PROTOCOL_VERSION)
-    {
-    	SHA3 sha3(type, version);
-        sha3 << obj;
-        return sha3.GetHash();
-    }
 };
 #endif // END_BUILD

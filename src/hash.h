@@ -20,7 +20,7 @@
 
 #include <eqb/sha3/sha3.h>
 
-/** A hasher class for Equibit's 256-bit hash (double SHA-3). */
+/** A hasher class for Equibit's 256-bit hash (single SHA-3). */
 class CSHA3Hash256 {
 private:
     SHA3 sha;
@@ -28,9 +28,7 @@ public:
     static const size_t OUTPUT_SIZE = SHA3::OUTPUT_SIZE;
 
     void Finalize(unsigned char hash[OUTPUT_SIZE]) {
-        unsigned char buf[SHA3::OUTPUT_SIZE];
-        sha.Finalize(buf);
-        sha.Reset().Write(buf, SHA3::OUTPUT_SIZE).Finalize(hash);
+        sha.Finalize(hash);
     }
 
     CSHA3Hash256& Write(const unsigned char *data, size_t len) {
@@ -149,6 +147,9 @@ public:
     }
 };
 
+// EQB_TODO alias for Qt
+typedef CSHA3HashWriter CHashWriter;
+
 /** Reads data from an underlying stream, while hashing the read data. */
 template<typename Source>
 class CSHA3HashVerifier : public CSHA3HashWriter
@@ -196,6 +197,9 @@ uint256 SHA3SerializeHash(const T& obj, int nType = SER_GETHASH, int nVersion = 
 #endif
 
 typedef uint256 ChainCode;
+
+// EQB_TODO #ifdef moved down below definition of Hash temporarily for Base58Check (#211)
+// #ifdef BUILD_BTC
 
 /** A hasher class for Bitcoin's 256-bit hash (double SHA-256). */
 class CHash256 {
@@ -267,6 +271,8 @@ inline uint256 Hash(const T1 p1begin, const T1 p1end,
               .Finalize((unsigned char*)&result);
     return result;
 }
+
+#ifdef BUILD_BTC
 
 /** Compute the 160-bit hash an object. */
 template<typename T1>
@@ -369,6 +375,8 @@ uint256 SerializeHash(const T& obj, int nType=SER_GETHASH, int nVersion=PROTOCOL
     ss << obj;
     return ss.GetHash();
 }
+
+#endif // BUILD_BTC
 
 unsigned int MurmurHash3(unsigned int nHashSeed, const std::vector<unsigned char>& vDataToHash);
 

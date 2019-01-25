@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -118,7 +119,12 @@ const char* GetOpName(opcodetype opcode)
     // crypto
     case OP_RIPEMD160              : return "OP_RIPEMD160";
     case OP_SHA1                   : return "OP_SHA1";
+#ifdef BUILD_BTC
     case OP_SHA256                 : return "OP_SHA256";
+#else  // BUILD_EQB
+    case OP_SHA2                   : return "OP_SHA2";
+    case OP_SHA3                   : return "OP_SHA3";
+#endif // END_BUILD
     case OP_HASH160                : return "OP_HASH160";
     case OP_HASH256                : return "OP_HASH256";
     case OP_CODESEPARATOR          : return "OP_CODESEPARATOR";

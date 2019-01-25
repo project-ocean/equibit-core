@@ -1,0 +1,18 @@
+[
+  [ "The following are deserialized transactions which are valid." ],
+  [ "They are in the form" ],
+  [ "[[[prevout hash, prevout index, prevout scriptPubKey, amount?], [input 2], ...]," ],
+  [ "serializedTransaction, verifyFlags]" ],
+  [ "Objects that are only a single string (like this one) are ignored" ],
+
+  [ "The following is dbe6dc76c93f39a6c578e9fd5f89b63ea0384d552de8e5c193c07b23fc97b2ec" ],
+  [ "It is a segwit enabled test using P2SH base58 address format" ],
+  [ "Transfering 1.1EQB, generated through mining, to P2PK address TQaSbVXixpYUvQgzjWdLyGFMUfJDqR1DP88n" ],
+  [
+    [ [ "f541a712f2d4d31e15ba07af9573b4e2cc84ebf1c1ff3bb1c015f7b5100c215a", 1, "0x00 0x14 0xc4aeb84a2a705f98a22d65218eee6d1f5a260159" ] ],
+    "020000000001015a210c10b5f715c0b13bffc1f1eb84cce2b47395af07ba151ed3d4f212a741f50100000017160014c4aeb84a2a705f98a22d65218eee6d1f5a260159feffffff028ee95a050000000017a9144b2e399eff5a3674ecd54006686171fb936cc8198780778e06000000001976a914901007ba13785cc7ba6abfb7b9cbcf7c14be3cc888ac02483045022100988d736c41d768a221da3802583fba8bcfb8a12af088e07994f0dbb847d052f5022076aa6103b1eef74c225fbb212ac3652df688c5858027da1edeb95104334982cc0121027b835d886ea4579737790eeb8586f37eef745ddf4b2578e6cb9ef574376958c56c0000000000",
+    "P2SH"
+  ],
+
+  [ "Make diffs cleaner by leaving a comment here without comma at the end" ]
+]

@@ -43,7 +43,7 @@ bip112txs_vary_OP_CSV_9 - 16 txs with nSequence = 9 evaluated against varying {r
 bip112tx_special - test negative argument to OP_CSV
 """
 
-from test_framework.test_framework import ComparisonTestFramework
+from test_framework.test_framework import ComparisonTestFramework, SkipTest
 from test_framework.util import *
 from test_framework.mininode import ToHex, CTransaction, network_thread_start
 from test_framework.blocktools import create_coinbase, create_block
@@ -98,14 +98,16 @@ class BIP68_112_113Test(ComparisonTestFramework):
         self.extra_args = [['-whitelist=127.0.0.1', '-blockversion=4', '-addresstype=legacy']]
 
     def run_test(self):
+        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         test = TestManager(self, self.options.tmpdir)
         test.add_all_connections(self.nodes)
         network_thread_start()
         test.run()
 
     def send_generic_input_tx(self, node, coinbases):
-        amount = Decimal("49.99")
-        return node.sendrawtransaction(ToHex(self.sign_transaction(node, self.create_transaction(node, node.getblock(coinbases.pop())['tx'][0], self.nodeaddress, amount))))
+        coinbase = node.getblock(coinbases.pop())['tx'][0]
+        amount = node.gettransaction(coinbase)['amount'] - Decimal("0.01")
+        return node.sendrawtransaction(ToHex(self.sign_transaction(node, self.create_transaction(node, coinbase, self.nodeaddress, amount))))
 
     def create_transaction(self, node, txid, to_address, amount):
         inputs = [{ "txid" : txid, "vout" : 0}]
@@ -153,7 +155,8 @@ class BIP68_112_113Test(ComparisonTestFramework):
                 for b22 in range(2):
                     b18txs = []
                     for b18 in range(2):
-                        tx =  self.create_transaction(self.nodes[0], bip68inputs[i], self.nodeaddress, Decimal("49.98"))
+                        amnt = abs(self.nodes[0].gettransaction(bip68inputs[i])['details'][0]['amount']) - Decimal("0.02")
+                        tx = self.create_transaction(self.nodes[0], bip68inputs[i], self.nodeaddress, amnt)
                         i += 1
                         tx.nVersion = txversion
                         tx.vin[0].nSequence = relative_locktimes[b31][b25][b22][b18] + locktime_delta
@@ -164,7 +167,8 @@ class BIP68_112_113Test(ComparisonTestFramework):
         return txs
 
     def create_bip112special(self, input, txversion):
-        tx = self.create_transaction(self.nodes[0], input, self.nodeaddress, Decimal("49.98"))
+        amnt = abs(self.nodes[0].gettransaction(input)['details'][0]['amount']) - Decimal("0.02")
+        tx = self.create_transaction(self.nodes[0], input, self.nodeaddress, amnt)
         tx.nVersion = txversion
         signtx = self.sign_transaction(self.nodes[0], tx)
         signtx.vin[0].scriptSig = CScript([-1, OP_CHECKSEQUENCEVERIFY, OP_DROP] + list(CScript(signtx.vin[0].scriptSig)))
@@ -181,7 +185,8 @@ class BIP68_112_113Test(ComparisonTestFramework):
                 for b22 in range(2):
                     b18txs = []
                     for b18 in range(2):
-                        tx =  self.create_transaction(self.nodes[0], bip112inputs[i], self.nodeaddress, Decimal("49.98"))
+                        amnt = abs(self.nodes[0].gettransaction(bip112inputs[i])['details'][0]['amount']) - Decimal("0.02")
+                        tx = self.create_transaction(self.nodes[0], bip112inputs[i], self.nodeaddress, amnt)
                         i += 1
                         if (varyOP_CSV): # if varying OP_CSV, nSequence is fixed
                             tx.vin[0].nSequence = base_relative_locktime + locktime_delta
@@ -281,10 +286,11 @@ class BIP68_112_113Test(ComparisonTestFramework):
 
         # Test both version 1 and version 2 transactions for all tests
         # BIP113 test transaction will be modified before each use to put in appropriate block time
-        bip113tx_v1 = self.create_transaction(self.nodes[0], bip113input, self.nodeaddress, Decimal("49.98"))
+        amnt = abs(self.nodes[0].gettransaction(bip113input)['details'][0]['amount']) - Decimal("0.02")
+        bip113tx_v1 = self.create_transaction(self.nodes[0], bip113input, self.nodeaddress, amnt)
         bip113tx_v1.vin[0].nSequence = 0xFFFFFFFE
         bip113tx_v1.nVersion = 1
-        bip113tx_v2 = self.create_transaction(self.nodes[0], bip113input, self.nodeaddress, Decimal("49.98"))
+        bip113tx_v2 = self.create_transaction(self.nodes[0], bip113input, self.nodeaddress, amnt)
         bip113tx_v2.vin[0].nSequence = 0xFFFFFFFE
         bip113tx_v2.nVersion = 2
 

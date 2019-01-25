@@ -1,4 +1,5 @@
 // Copyright (c) 2015-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -105,7 +106,6 @@ BOOST_AUTO_TEST_CASE(get_next_work_30_percent)
     uint32_t nBitsExpected = bnPowExpected.GetCompact();
 
     uint32_t nBitsNew = CalculateNextWorkRequired(bnPowInitial.GetCompact(), StandardPowLimit, FirstBlockTime, nLastBlockTime, nPowTargetTimespanDWG);
-    uint32_t nBitsDiff = abs(int(nBitsExpected - nBitsNew));
     double bitsDiff = fabs(log(1.0 * nBitsNew / nBitsExpected));
 
     BOOST_CHECK_LT(bitsDiff, DiffThreshold);
@@ -168,14 +168,14 @@ BOOST_AUTO_TEST_CASE(get_next_work_500_percent)
 }
 
 // Initialize simulated blockchain 
-static int InitializeBlocks(std::vector<CBlockIndex>& blocks, Consensus::Params& params)
+static int64_t InitializeBlocks(std::vector<CBlockIndex>& blocks, const Consensus::Params& params)
 {
-    const unsigned int nInterval = 2 * params.DifficultyAdjustmentInterval();
-    const unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
+    const int64_t nInterval = 2 * params.DifficultyAdjustmentInterval();
+    const uint32_t nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
-    assert(blocks.size() > nInterval);
+    assert(blocks.size() > static_cast<size_t>(nInterval));
 
-    for (int i = 0; i < nInterval; i++) {
+    for (auto i = 0; i < nInterval; i++) {
         blocks[i].pprev = i ? &blocks[i - 1] : nullptr;
         blocks[i].nHeight = i;
         blocks[i].nTime = i ? blocks[i - 1].nTime + params.nPowTargetSpacing : 1269211443; // Arbitrary start time copied from GetBlockProofEquivalentTime_test
@@ -190,16 +190,15 @@ static int InitializeBlocks(std::vector<CBlockIndex>& blocks, Consensus::Params&
 BOOST_AUTO_TEST_CASE(GetNextWorkRequired_steady_state)
 {
     const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
-    Consensus::Params params = chainParams->GetConsensus();
-    unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
+    const Consensus::Params& params = chainParams->GetConsensus();
 
     CBlockHeader header;
-    const int nBlocks = 1000;
+    const uint64_t nBlocks = 1000;
     std::vector<CBlockIndex> blocks(nBlocks);
 
-    int nBlocksInitialized = InitializeBlocks(blocks, params);
+    uint64_t nBlocksInitialized = InitializeBlocks(blocks, params);
 
-    for (int i = nBlocksInitialized; i < nBlocks; i++) {
+    for (uint64_t i = nBlocksInitialized; i < nBlocks; i++) {
         header.nVersion = 1;
         header.nTime = blocks[i - 1].nTime + params.nPowTargetSpacing;
 
@@ -209,7 +208,11 @@ BOOST_AUTO_TEST_CASE(GetNextWorkRequired_steady_state)
         blocks[i].nBits = GetNextWorkRequired(blocks[i].pprev, &header, params);
         blocks[i].nChainWork = blocks[i - 1].nChainWork + GetBlockProof(blocks[i - 1]);
 
-        BOOST_CHECK_EQUAL(blocks[i].nBits, blocks[i - 1].nBits);
+        //std::cout << i << " " << std::hex << blocks[i].nBits << " " << blocks[i - 1].nBits << std::endl;
+        double bitsDiff = fabs(log(1.0 * blocks[i].nBits / blocks[i - 1].nBits));
+
+        BOOST_CHECK_LT(bitsDiff, DiffThreshold);
+
     }
 }
 
@@ -217,17 +220,16 @@ BOOST_AUTO_TEST_CASE(GetNextWorkRequired_steady_state)
 BOOST_AUTO_TEST_CASE(GetNextWorkRequired_changing)
 {
     const auto chainParams = CreateChainParams(CBaseChainParams::MAIN);
-    Consensus::Params params = chainParams->GetConsensus();
-    const unsigned int nInterval = params.DifficultyAdjustmentInterval() + 1;
+    const Consensus::Params& params = chainParams->GetConsensus();
     const unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
     CBlockHeader header;
-    const int nBlocks = 1000;
+    const uint64_t nBlocks = 1000;
     std::vector<CBlockIndex> blocks(nBlocks);
 
-    int nBlocksInitialized = InitializeBlocks(blocks, params);
+    uint64_t nBlocksInitialized = InitializeBlocks(blocks, params);
 
-    for (int i = nBlocksInitialized; i < nBlocks; i++) {
+    for (uint64_t i = nBlocksInitialized; i < nBlocks; i++) {
         uint32_t blockTime = params.nPowTargetSpacing;
         
         // In the first phase we'll simulate short block times to increase difficulty
@@ -293,7 +295,11 @@ BOOST_AUTO_TEST_CASE(get_next_work_lower_limit_actual_btc)
     int64_t nFirstBlockTime = 1279008237; // Block #66528
     int64_t nLastBlockTime = 1279297671;  // Block #68543
 
-    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c05a3f4, StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanBTC), 0x1c0168fd);
+    //BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c05a3f4, StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanBTC), 0x1c0168fd);
+    //
+    // A fix in CalculateNextWorkRequired caused an off-by-one error in this unit test:
+
+    BOOST_CHECK_EQUAL(CalculateNextWorkRequired(0x1c05a3f4, StandardPowLimit, nFirstBlockTime, nLastBlockTime, nPowTargetTimespanBTC), 0x1c0168fc);
 }
 
 /* Test the constraint on the upper bound for actual time taken */

@@ -33,7 +33,11 @@ class CBaseMainParams : public CBaseChainParams
 public:
     CBaseMainParams()
     {
+#ifdef BUILD_BTC
         nRPCPort = 8332;
+#else // BUILD_EQB
+        nRPCPort = 8330;
+#endif // END_BUILD
     }
 };
 
@@ -45,7 +49,11 @@ class CBaseTestNetParams : public CBaseChainParams
 public:
     CBaseTestNetParams()
     {
+#ifdef BUILD_BTC
         nRPCPort = 18332;
+#else // BUILD_EQB
+        nRPCPort = 18330;
+#endif // END_BUILD
         strDataDir = "testnet3";
     }
 };
@@ -58,7 +66,11 @@ class CBaseRegTestParams : public CBaseChainParams
 public:
     CBaseRegTestParams()
     {
+#ifdef BUILD_BTC
         nRPCPort = 18443;
+#else // BUILD_EQB
+        nRPCPort = 18440;
+#endif // END_BUILD
         strDataDir = "regtest";
     }
 };

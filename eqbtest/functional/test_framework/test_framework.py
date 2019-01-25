@@ -81,7 +81,8 @@ class BitcoinTestFramework():
         parser.add_option("--cachedir", dest="cachedir", default=os.path.normpath(os.path.dirname(os.path.realpath(__file__)) + "/../../cache"),
                           help="Directory for caching pregenerated datadirs")
         parser.add_option("--tmpdir", dest="tmpdir", help="Root directory for datadirs")
-        parser.add_option("-l", "--loglevel", dest="loglevel", default="INFO",
+        # EQB_TODO: Replace default="DEBUG" back to "INFO"
+        parser.add_option("-l", "--loglevel", dest="loglevel", default="DEBUG",
                           help="log events at this level and higher to the console. Can be set to DEBUG, INFO, WARNING, ERROR or CRITICAL. Passing --loglevel DEBUG will output all logs to console. Note that logs at all levels are always written to the test_framework.log file in the temporary test directory.")
         parser.add_option("--tracerpc", dest="trace_rpc", default=False, action="store_true",
                           help="Print out all RPC calls as they are made")
@@ -329,9 +330,9 @@ class BitcoinTestFramework():
         mocktime then the mempools will not sync due to IBD.
 
         For backwared compatibility of the python scripts with previous
-        versions of the cache, this helper function sets mocktime to Jan 1,
-        2014 + (201 * 10 * 60)"""
-        self.mocktime = 1388534400 + (201 * 10 * 60)
+        versions of the cache, this helper function sets mocktime to
+        GMT: Sunday, 25 November 2018 г., 18:02:59 + (201 * 10 * 60)"""
+        self.mocktime = 1543168979 + (201 * 10 * 60)
 
     def disable_mocktime(self):
         self.mocktime = 0

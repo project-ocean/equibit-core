@@ -19,6 +19,7 @@ class ReceivedByTest(BitcoinTestFramework):
         self.num_nodes = 2
 
     def run_test(self):
+        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         # Generate block to get out of IBD
         self.nodes[0].generate(1)
         sync_blocks(self.nodes)

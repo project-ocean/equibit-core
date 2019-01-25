@@ -8,7 +8,7 @@
 - Test that it is not possible to mine to an invalid address.
 """
 
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.util import *
 
 class DisableWalletTest (BitcoinTestFramework):
@@ -22,12 +22,14 @@ class DisableWalletTest (BitcoinTestFramework):
         assert_raises_rpc_error(-32601, 'Method not found', self.nodes[0].getwalletinfo)
         x = self.nodes[0].validateaddress('3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy')
         assert(x['isvalid'] == False)
-        x = self.nodes[0].validateaddress('mneYUmWYsuk7kySiURxCi3AGxrAqZxLgPZ')
+        x = self.nodes[0].validateaddress('eqbregtest1q2e2cd70rh2xgwyvq8ypxf6x8ksl9tjyspxvvzx')
         assert(x['isvalid'] == True)
+        x = self.nodes[0].validateaddress('TQaZkHaCbX4e8BoVJBabg7PahUM9CDXwthyK')  # Testnet regular address
+        assert (x['isvalid'] == True)
 
         # Checking mining to an address without a wallet. Generating to a valid address should succeed
         # but generating to an invalid address will fail.
-        self.nodes[0].generatetoaddress(1, 'mneYUmWYsuk7kySiURxCi3AGxrAqZxLgPZ')
+        self.nodes[0].generatetoaddress(1, 'eqbregtest1q2e2cd70rh2xgwyvq8ypxf6x8ksl9tjyspxvvzx')
         assert_raises_rpc_error(-5, "Invalid address", self.nodes[0].generatetoaddress, 1, '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy')
 
 if __name__ == '__main__':

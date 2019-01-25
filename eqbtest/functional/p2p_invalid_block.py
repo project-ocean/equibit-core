@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2015-2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test node responses to invalid blocks.
@@ -11,7 +12,7 @@ In this test we connect to one node over p2p, and test block requests:
 re-requested.
 """
 
-from test_framework.test_framework import ComparisonTestFramework
+from test_framework.test_framework import ComparisonTestFramework, SkipTest
 from test_framework.util import *
 from test_framework.comptool import TestManager, TestInstance, RejectResult
 from test_framework.blocktools import *
@@ -29,6 +30,7 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         self.setup_clean_chain = True
 
     def run_test(self):
+        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         test = TestManager(self, self.options.tmpdir)
         test.add_all_connections(self.nodes)
         self.tip = None
@@ -78,8 +80,9 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         self.block_time += 1
 
         # b'0x51' is OP_TRUE
-        tx1 = create_transaction(self.block1.vtx[0], 0, b'\x51', 50 * COIN)
-        tx2 = create_transaction(tx1, 0, b'\x51', 50 * COIN)
+        amnt = block_reward(self.nodes[0].getblock(self.block1.hash)['height'])
+        tx1 = create_transaction(self.block1.vtx[0], 0, b'\x51', int(amnt * COIN))
+        tx2 = create_transaction(tx1, 0, b'\x51', int(amnt * COIN))
 
         block2.vtx.extend([tx1, tx2])
         block2.hashMerkleRoot = block2.calc_merkle_root()
@@ -95,7 +98,18 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         assert(block2_orig.vtx != block2.vtx)
 
         self.tip = block2.sha256
-        yield TestInstance([[block2, RejectResult(16, b'bad-txns-duplicate')], [block2_orig, True]])
+        yield TestInstance([[block2, RejectResult(16, b'bad-txns-duplicate')]])
+
+        # Check transactions for duplicate inputs
+        self.log.info("Test duplicate input block.")
+
+        block2_dup = copy.deepcopy(block2_orig)
+        block2_dup.vtx[2].vin.append(block2_dup.vtx[2].vin[0])
+        block2_dup.vtx[2].rehash()
+        block2_dup.hashMerkleRoot = block2_dup.calc_merkle_root()
+        block2_dup.rehash()
+        block2_dup.solve()
+        yield TestInstance([[block2_dup, RejectResult(16, b'bad-txns-inputs-duplicate')], [block2_orig, True]])
         height += 1
 
         '''
@@ -105,7 +119,8 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         self.block_time += 1
         block3.vtx[0].vout[0].nValue = 100 * COIN # Too high!
         block3.vtx[0].sha256=None
-        block3.vtx[0].calc_sha256()
+        # block3.vtx[0].calc_sha256()
+        block3.vtx[0].calc_sha3_256()  # Switched to sha3
         block3.hashMerkleRoot = block3.calc_merkle_root()
         block3.rehash()
         block3.solve()

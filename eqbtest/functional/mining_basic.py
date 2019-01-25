@@ -14,7 +14,7 @@ from decimal import Decimal
 
 from test_framework.blocktools import create_coinbase
 from test_framework.mininode import CBlock
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.util import assert_equal, assert_raises_rpc_error
 
 def b2x(b):
@@ -32,6 +32,7 @@ class MiningTest(BitcoinTestFramework):
         self.setup_clean_chain = False
 
     def run_test(self):
+        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         node = self.nodes[0]
 
         self.log.info('getmininginfo')
@@ -40,7 +41,7 @@ class MiningTest(BitcoinTestFramework):
         assert_equal(mining_info['chain'], 'regtest')
         assert_equal(mining_info['currentblocktx'], 0)
         assert_equal(mining_info['currentblockweight'], 0)
-        assert_equal(mining_info['difficulty'], Decimal('4.656542373906925E-10'))
+        assert_equal(mining_info['difficulty'], Decimal('0.00003051711610163642'))  # EQB_TODO: check difficulty 4.656542373906925E-10
         assert_equal(mining_info['networkhashps'], Decimal('0.003333333333333334'))
         assert_equal(mining_info['pooledtx'], 0)
 

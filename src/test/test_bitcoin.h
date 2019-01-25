@@ -118,7 +118,11 @@ struct TestMemPoolEntryHelper
     TestMemPoolEntryHelper &SigOpsCost(unsigned int _sigopsCost) { sigOpCost = _sigopsCost; return *this; }
 };
 
+#ifdef BUILD_BTC
 CBlock getBlock13b8a();
+#else  // BUILD_EQB
+CBlock getBlockEquibit();
+#endif // END_BUILD
 
 // define an implicit conversion here so that uint256 may be used directly in BOOST_CHECK_*
 std::ostream& operator<<(std::ostream& os, const uint256& num);

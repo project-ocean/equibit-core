@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -59,12 +60,20 @@ CMutableTransaction::CMutableTransaction(const CTransaction& tx) : vin(tx.vin), 
 
 uint256 CMutableTransaction::GetHash() const
 {
+#ifdef BUILD_BTC
     return SerializeHash(*this, SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
+#else  // BUILD_EQB
+    return SHA3SerializeHash(*this, SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
+#endif // END_BUILD
 }
 
 uint256 CTransaction::ComputeHash() const
 {
+#ifdef BUILD_BTC
     return SerializeHash(*this, SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
+#else  // BUILD_EQB
+    return SHA3SerializeHash(*this, SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
+#endif // END_BUILD
 }
 
 uint256 CTransaction::GetWitnessHash() const
@@ -72,7 +81,11 @@ uint256 CTransaction::GetWitnessHash() const
     if (!HasWitness()) {
         return GetHash();
     }
+#ifdef BUILD_BTC
     return SerializeHash(*this, SER_GETHASH, 0);
+#else  // BUILD_EQB
+    return SHA3SerializeHash(*this, SER_GETHASH, 0); 
+#endif // END_BUILD
 }
 
 /* For backward compatibility, the hash is initialized to 0. TODO: remove the need for this default constructor entirely. */

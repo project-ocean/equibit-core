@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2016-2017 The Bitcoin Core developers
+# Copyright (c) 2018 Equibit Group AG
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test compact blocks (BIP 152).
@@ -9,7 +10,7 @@ Version 2 compact blocks are post-segwit (wtxids)
 """
 
 from test_framework.mininode import *
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.util import *
 from test_framework.blocktools import create_block, create_coinbase, add_witness_commitment
 from test_framework.script import CScript, OP_TRUE, OP_DROP
@@ -31,7 +32,7 @@ class TestNode(P2PInterface):
 
     def on_cmpctblock(self, message):
         self.block_announced = True
-        self.last_message["cmpctblock"].header_and_shortids.header.calc_sha256()
+        self.last_message["cmpctblock"].header_and_shortids.header.calc_sha3_256()  # Switched to sha3
         self.announced_blockhashes.add(self.last_message["cmpctblock"].header_and_shortids.header.sha256)
 
     def on_headers(self, message):
@@ -289,7 +290,7 @@ class CompactBlocksTest(BitcoinTestFramework):
         # Store the raw block in our internal format.
         block = FromHex(CBlock(), node.getblock("%02x" % block_hash, False))
         for tx in block.vtx:
-            tx.calc_sha256()
+            tx.calc_sha3_256()  # Switched to sha3
         block.rehash()
 
         # Wait until the block was announced (via compact blocks)
@@ -330,14 +331,14 @@ class CompactBlocksTest(BitcoinTestFramework):
 
         # Check that all prefilled_txn entries match what's in the block.
         for entry in header_and_shortids.prefilled_txn:
-            entry.tx.calc_sha256()
+            entry.tx.calc_sha3_256()  # Switched to sha3
             # This checks the non-witness parts of the tx agree
             assert_equal(entry.tx.sha256, block.vtx[entry.index].sha256)
 
             # And this checks the witness
-            wtxid = entry.tx.calc_sha256(True)
+            wtxid = entry.tx.calc_sha3_256(True)  # Switched to sha3
             if version == 2:
-                assert_equal(wtxid, block.vtx[entry.index].calc_sha256(True))
+                assert_equal(wtxid, block.vtx[entry.index].calc_sha3_256(True))  # Switched to sha3
             else:
                 # Shouldn't have received a witness
                 assert(entry.tx.wit.is_null())
@@ -358,7 +359,7 @@ class CompactBlocksTest(BitcoinTestFramework):
             else:
                 tx_hash = block.vtx[index].sha256
                 if version == 2:
-                    tx_hash = block.vtx[index].calc_sha256(True)
+                    tx_hash = block.vtx[index].calc_sha3_256(True)  # Switched to sha3
                 shortid = calculate_shortid(k0, k1, tx_hash)
                 assert_equal(shortid, header_and_shortids.shortids[0])
                 header_and_shortids.shortids.pop(0)
@@ -592,20 +593,20 @@ class CompactBlocksTest(BitcoinTestFramework):
             test_node.send_message(msg)
             wait_until(lambda: "blocktxn" in test_node.last_message, timeout=10, lock=mininode_lock)
 
-            [tx.calc_sha256() for tx in block.vtx]
+            [tx.calc_sha3_256() for tx in block.vtx]  # Switched to sha3
             with mininode_lock:
                 assert_equal(test_node.last_message["blocktxn"].block_transactions.blockhash, int(block_hash, 16))
                 all_indices = msg.block_txn_request.to_absolute()
                 for index in all_indices:
                     tx = test_node.last_message["blocktxn"].block_transactions.transactions.pop(0)
-                    tx.calc_sha256()
+                    tx.calc_sha3_256()  # Switched to sha3
                     assert_equal(tx.sha256, block.vtx[index].sha256)
                     if version == 1:
                         # Witnesses should have been stripped
                         assert(tx.wit.is_null())
                     else:
                         # Check that the witness matches
-                        assert_equal(tx.calc_sha256(True), block.vtx[index].calc_sha256(True))
+                        assert_equal(tx.calc_sha3_256(True), block.vtx[index].calc_sha3_256(True))  # Switched to sha3
                 test_node.last_message.pop("blocktxn", None)
             current_height -= 1
 
@@ -618,7 +619,7 @@ class CompactBlocksTest(BitcoinTestFramework):
             test_node.last_message.pop("blocktxn", None)
         test_node.send_and_ping(msg)
         with mininode_lock:
-            test_node.last_message["block"].block.calc_sha256()
+            test_node.last_message["block"].block.calc_sha3_256()  # Switched to sha3
             assert_equal(test_node.last_message["block"].block.sha256, int(block_hash, 16))
             assert "blocktxn" not in test_node.last_message
 
@@ -644,7 +645,7 @@ class CompactBlocksTest(BitcoinTestFramework):
         test_node.send_message(msg_getdata([CInv(4, int(new_blocks[0], 16))]))
         wait_until(lambda: "block" in test_node.last_message, timeout=30, lock=mininode_lock)
         with mininode_lock:
-            test_node.last_message["block"].block.calc_sha256()
+            test_node.last_message["block"].block.calc_sha3_256()  # Switched to sha3
             assert_equal(test_node.last_message["block"].block.sha256, int(new_blocks[0], 16))
 
         # Generate an old compactblock, and verify that it's not accepted.
@@ -788,6 +789,7 @@ class CompactBlocksTest(BitcoinTestFramework):
         assert_equal(int(node.getbestblockhash(), 16), block.sha256)
 
     def run_test(self):
+        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         # Setup the p2p connections and start up the network thread.
         self.test_node = self.nodes[0].add_p2p_connection(TestNode())
         self.segwit_node = self.nodes[1].add_p2p_connection(TestNode(), services=NODE_NETWORK|NODE_WITNESS)

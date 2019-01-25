@@ -11,7 +11,7 @@ We use the testing framework in which we expect a particular answer from
 each test.
 """
 
-from test_framework.test_framework import ComparisonTestFramework
+from test_framework.test_framework import ComparisonTestFramework, SkipTest
 from test_framework.util import *
 from test_framework.comptool import TestManager, TestInstance, RejectResult
 from test_framework.blocktools import *
@@ -70,6 +70,7 @@ class FullBlockTest(ComparisonTestFramework):
         parser.add_option("--runbarelyexpensive", dest="runbarelyexpensive", default=True)
 
     def run_test(self):
+        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         self.test = TestManager(self, self.options.tmpdir)
         self.test.add_all_connections(self.nodes)
         network_thread_start()
@@ -509,7 +510,7 @@ class FullBlockTest(ComparisonTestFramework):
 
         # Build the redeem script, hash it, use hash to create the p2sh script
         redeem_script = CScript([self.coinbase_pubkey] + [OP_2DUP, OP_CHECKSIGVERIFY]*5 + [OP_CHECKSIG])
-        redeem_script_hash = hash160(redeem_script)
+        redeem_script_hash = hash160_sha3_256(redeem_script)
         p2sh_script = CScript([OP_HASH160, redeem_script_hash, OP_EQUAL])
 
         # Create a transaction that spends one satoshi to the p2sh_script, the rest to OP_TRUE
@@ -840,7 +841,8 @@ class FullBlockTest(ComparisonTestFramework):
         #
         tip(60)
         b61 = block(61, spend=out[18])
-        b61.vtx[0].vin[0].scriptSig = b60.vtx[0].vin[0].scriptSig  #equalize the coinbases
+        b61.vtx[0].vin[0].scriptSig = b60.vtx[0].vin[0].scriptSig  # equalize the coinbases
+        b61.vtx[0].vout[0].nValue = b60.vtx[0].vout[0].nValue      # coinbase rewards are different for neighbour blocks, equalize
         b61.vtx[0].rehash()
         b61 = update_block(61, [])
         assert_equal(b60.vtx[0].serialize(), b61.vtx[0].serialize())
@@ -1136,18 +1138,18 @@ class FullBlockTest(ComparisonTestFramework):
         #
         tip(76)
         block(77)
-        tx77 = create_and_sign_tx(out[24].tx, out[24].n, 10*COIN)
+        tx77 = create_and_sign_tx(out[24].tx, out[24].n, 2*COIN)
         update_block(77, [tx77])
         yield accepted()
         save_spendable_output()
 
         block(78)
-        tx78 = create_tx(tx77, 0, 9*COIN)
+        tx78 = create_tx(tx77, 0, 1*COIN)
         update_block(78, [tx78])
         yield accepted()
 
         block(79)
-        tx79 = create_tx(tx78, 0, 8*COIN)
+        tx79 = create_tx(tx78, 0, int(0.5*COIN))
         update_block(79, [tx79])
         yield accepted()
 

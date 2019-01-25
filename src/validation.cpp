@@ -1149,6 +1149,7 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
+#ifdef BUILD_BTC
     int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
     // Force block reward to zero when right shift is undefined.
     if (halvings >= 64)
@@ -1157,6 +1158,26 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     CAmount nSubsidy = 50 * COIN;
     // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
     nSubsidy >>= halvings;
+#else  // BUILD_EQB
+
+    CAmount nSubsidy = GENESIS_BLOCK_REWARD;
+    if (nHeight > 0)
+    {
+        nHeight *= consensusParams.nSubsidyAccelerationFactor; // EQB_TODO: Is it assumed nHeight is a 32-bit int? why isn't it unsigned?
+
+        if (nHeight == 1)
+        {
+            nSubsidy = FIRST_BLOCK_REWARD;
+        }
+        else
+        {
+            long double aux = 1.0 + expm1(4.2 - nHeight / 100000.0);
+            nSubsidy = 210 * aux / powl((1 + aux), 2) * COIN;
+        }
+    }
+
+#endif // END_BUILD
+
     return nSubsidy;
 }
 
@@ -1391,7 +1412,11 @@ bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsVi
             // We only use the first 19 bytes of nonce to avoid a second SHA
             // round - giving us 19 + 32 + 4 = 55 bytes (+ 8 + 1 = 64)
             static_assert(55 - sizeof(flags) - 32 >= 128/8, "Want at least 128 bits of nonce for script execution cache");
+#ifdef BUILD_BTC
             CSHA256().Write(scriptExecutionCacheNonce.begin(), 55 - sizeof(flags) - 32).Write(tx.GetWitnessHash().begin(), 32).Write((unsigned char*)&flags, sizeof(flags)).Finalize(hashCacheEntry.begin());
+#else  // BUILD_EQB
+            SHA3().Write(scriptExecutionCacheNonce.begin(), 55 - sizeof(flags) - 32).Write(tx.GetWitnessHash().begin(), 32).Write((unsigned char*)&flags, sizeof(flags)).Finalize(hashCacheEntry.begin());
+#endif // END_BUILD
             AssertLockHeld(cs_main); //TODO: Remove this requirement by making CuckooCache not require external locks
             if (scriptExecutionCache.contains(hashCacheEntry, !cacheFullScriptStore)) {
                 return true;
@@ -1469,7 +1494,11 @@ bool UndoWriteToDisk(const CBlockUndo& blockundo, CDiskBlockPos& pos, const uint
     fileout << blockundo;
 
     // calculate & write checksum
+#ifdef BUILD_BTC
     CHashWriter hasher(SER_GETHASH, PROTOCOL_VERSION);
+#else  // BUILD_EQB
+    CSHA3HashWriter hasher(SER_GETHASH, PROTOCOL_VERSION);
+#endif // END_BUILD
     hasher << hashBlock;
     hasher << blockundo;
     fileout << hasher.GetHash();
@@ -1491,7 +1520,11 @@ static bool UndoReadFromDisk(CBlockUndo& blockundo, const CBlockIndex *pindex)
 
     // Read block
     uint256 hashChecksum;
+#ifdef BUILD_BTC
     CHashVerifier<CAutoFile> verifier(&filein); // We need a CHashVerifier as reserializing may lose data
+#else  // BUILD_EQB
+    CSHA3HashVerifier<CAutoFile> verifier(&filein); // We need a CHashVerifier as reserializing may lose data
+#endif // END_BUILD
     try {
         verifier << pindex->pprev->GetBlockHash();
         verifier >> blockundo;
@@ -3037,7 +3070,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
 
     // Check transactions
     for (const auto& tx : block.vtx)
-        if (!CheckTransaction(*tx, state, false))
+        if (!CheckTransaction(*tx, state, true))
             return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(),
                                  strprintf("Transaction check failed (tx hash %s) %s", tx->GetHash().ToString(), state.GetDebugMessage()));
 
@@ -3096,7 +3129,11 @@ std::vector<unsigned char> GenerateCoinbaseCommitment(CBlock& block, const CBloc
     if (consensusParams.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout != 0) {
         if (commitpos == -1) {
             uint256 witnessroot = BlockWitnessMerkleRoot(block, nullptr);
+#ifdef BUILD_BTC
             CHash256().Write(witnessroot.begin(), 32).Write(ret.data(), 32).Finalize(witnessroot.begin());
+#else  // BUILD_EQB
+            CSHA3Hash256().Write(witnessroot.begin(), 32).Write(ret.data(), 32).Finalize(witnessroot.begin());
+#endif // END_BUILD
             CTxOut out;
             out.nValue = 0;
             out.scriptPubKey.resize(38);
@@ -3222,7 +3259,11 @@ static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, c
             if (block.vtx[0]->vin[0].scriptWitness.stack.size() != 1 || block.vtx[0]->vin[0].scriptWitness.stack[0].size() != 32) {
                 return state.DoS(100, false, REJECT_INVALID, "bad-witness-nonce-size", true, strprintf("%s : invalid witness nonce size", __func__));
             }
+#ifdef BUILD_BTC
             CHash256().Write(hashWitness.begin(), 32).Write(&block.vtx[0]->vin[0].scriptWitness.stack[0][0], 32).Finalize(hashWitness.begin());
+#else  // BUILD_EQB
+            CSHA3Hash256().Write(hashWitness.begin(), 32).Write(&block.vtx[0]->vin[0].scriptWitness.stack[0][0], 32).Finalize(hashWitness.begin());
+#endif // END_BUILD
             if (memcmp(hashWitness.begin(), &block.vtx[0]->vout[commitpos].scriptPubKey[6], 32)) {
                 return state.DoS(100, false, REJECT_INVALID, "bad-witness-merkle-match", true, strprintf("%s : witness merkle commitment mismatch", __func__));
             }

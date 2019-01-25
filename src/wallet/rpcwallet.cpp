@@ -639,7 +639,11 @@ UniValue signmessage(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key not available");
     }
 
+#ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
+#else  // BUILD_EQB
+    CSHA3HashWriter ss(SER_GETHASH, 0);
+#endif // END_BUILD
     ss << strMessageMagic;
     ss << strMessage;
 

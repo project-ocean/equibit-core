@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
+// Copyright (c) 2018 Equibit Group AG
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -325,7 +326,11 @@ bool CWallet::AddCScript(const CScript& redeemScript)
 {
     if (!CCryptoKeyStore::AddCScript(redeemScript))
         return false;
+#ifdef BUILD_BTC
     return CWalletDB(*dbw).WriteCScript(Hash160(redeemScript), redeemScript);
+#else // BUILD_EQB
+    return CWalletDB(*dbw).WriteCScript(SHA3Hash160(redeemScript), redeemScript);
+#endif // END_BUILD
 }
 
 bool CWallet::LoadCScript(const CScript& redeemScript)
@@ -4248,7 +4253,11 @@ CTxDestination CWallet::AddAndGetDestinationForScript(const CScript& script, Out
     case OUTPUT_TYPE_P2SH_SEGWIT:
     case OUTPUT_TYPE_BECH32: {
         WitnessV0ScriptHash hash;
+#ifdef BUILD_BTC
         CSHA256().Write(script.data(), script.size()).Finalize(hash.begin());
+#else  // BUILD_EQB
+        SHA3().Write(script.data(), script.size()).Finalize(hash.begin());
+#endif // END_BUILD
         CTxDestination witdest = hash;
         CScript witprog = GetScriptForDestination(witdest);
         // Check if the resulting program is solvable (i.e. doesn't use an uncompressed key)

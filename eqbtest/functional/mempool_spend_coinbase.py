@@ -29,9 +29,10 @@ class MempoolSpendCoinbaseTest(BitcoinTestFramework):
         # Coinbase at height chain_height-100+1 ok in mempool, should
         # get mined. Coinbase at height chain_height-100+2 is
         # is too immature to spend.
-        b = [ self.nodes[0].getblockhash(n) for n in range(101, 103) ]
-        coinbase_txids = [ self.nodes[0].getblock(h)['tx'][0] for h in b ]
-        spends_raw = [ create_tx(self.nodes[0], txid, node0_address, 49.99) for txid in coinbase_txids ]
+        b = [self.nodes[0].getblockhash(n) for n in range(101, 103)]
+        coinbase_txids = [self.nodes[0].getblock(h)['tx'][0] for h in b]
+        coinbase_amnts = [self.nodes[0].gettransaction(t)['details'][0]['amount'] for t in coinbase_txids]
+        spends_raw = [create_tx(self.nodes[0], txid, node0_address, amount - Decimal('0.01')) for txid, amount in zip(coinbase_txids, coinbase_amnts)]
 
         spend_101_id = self.nodes[0].sendrawtransaction(spends_raw[0])
 
@@ -39,7 +40,7 @@ class MempoolSpendCoinbaseTest(BitcoinTestFramework):
         assert_raises_rpc_error(-26,"bad-txns-premature-spend-of-coinbase", self.nodes[0].sendrawtransaction, spends_raw[1])
 
         # mempool should have just spend_101:
-        assert_equal(self.nodes[0].getrawmempool(), [ spend_101_id ])
+        assert_equal(self.nodes[0].getrawmempool(), [spend_101_id])
 
         # mine a block, spend_101 should get confirmed
         self.nodes[0].generate(1)
@@ -47,7 +48,7 @@ class MempoolSpendCoinbaseTest(BitcoinTestFramework):
 
         # ... and now height 102 can be spent:
         spend_102_id = self.nodes[0].sendrawtransaction(spends_raw[1])
-        assert_equal(self.nodes[0].getrawmempool(), [ spend_102_id ])
+        assert_equal(self.nodes[0].getrawmempool(), [spend_102_id])
 
 if __name__ == '__main__':
     MempoolSpendCoinbaseTest().main()
