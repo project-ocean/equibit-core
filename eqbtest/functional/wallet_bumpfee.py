@@ -37,7 +37,6 @@ class BumpFeeTest(BitcoinTestFramework):
                            for i in range(self.num_nodes)]
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         # Encrypt wallet for test_locked_wallet_fails test
         self.nodes[1].node_encrypt_wallet(WALLET_PASSPHRASE)
         self.start_node(1)

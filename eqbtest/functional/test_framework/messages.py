@@ -468,7 +468,7 @@ class CTransaction():
     # Recalculate the txid (transaction hash without witness)
     def rehash(self):
         self.sha256 = None
-        self.calc_sha3_256()  # Switched to sha3
+        self.calc_sha3_256()
 
     # We will only cache the serialization without witness in
     # self.sha256 and self.hash -- those are expected to be the txid.
@@ -490,7 +490,7 @@ class CTransaction():
         self.hash = encode(hash3_256(self.serialize_without_witness())[::-1], 'hex_codec').decode('ascii')
 
     def is_valid(self):
-        self.calc_sha3_256()  # Switched to sha3
+        self.calc_sha3_256()
         for tout in self.vout:
             if tout.nValue < 0 or tout.nValue > 21000000 * COIN:
                 return False
@@ -514,7 +514,7 @@ class CBlockHeader():
             self.nNonce = header.nNonce
             self.sha256 = header.sha256
             self.hash = header.hash
-            self.calc_sha3_256()  # Switched to sha3
+            self.calc_sha3_256()
 
     def set_null(self):
         self.nVersion = 1
@@ -572,7 +572,7 @@ class CBlockHeader():
 
     def rehash(self):
         self.sha256 = None
-        self.calc_sha3_256()  # Switched to sha3
+        self.calc_sha3_256()
         return self.sha256
 
     def __repr__(self):
@@ -606,8 +606,6 @@ class CBlock(CBlockHeader):
             newhashes = []
             for i in range(0, len(hashes), 2):
                 i2 = min(i+1, len(hashes)-1)
-                # Switch to SHA3_256
-                # newhashes.append(hash256(hashes[i] + hashes[i2]))
                 newhashes.append(hash3_256(hashes[i] + hashes[i2]))
             hashes = newhashes
         return uint256_from_str(hashes[0])
@@ -615,7 +613,7 @@ class CBlock(CBlockHeader):
     def calc_merkle_root(self):
         hashes = []
         for tx in self.vtx:
-            tx.calc_sha3_256()  # Switched to sha3
+            tx.calc_sha3_256()
             hashes.append(ser_uint256(tx.sha256))
         return self.get_merkle_root(hashes)
 
@@ -626,7 +624,7 @@ class CBlock(CBlockHeader):
 
         for tx in self.vtx[1:]:
             # Calculate the hashes with witness data
-            hashes.append(ser_uint256(tx.calc_sha3_256(True)))  # Switched to sha3
+            hashes.append(ser_uint256(tx.calc_sha3_256(True)))
 
         return self.get_merkle_root(hashes)
 
@@ -773,7 +771,7 @@ class HeaderAndShortIDs():
     def get_siphash_keys(self):
         header_nonce = self.header.serialize()
         header_nonce += struct.pack("<Q", self.nonce)
-        hash_header_nonce_as_str = sha3_256(header_nonce)  # Switched to sha3
+        hash_header_nonce_as_str = sha3_256(header_nonce)
         key0 = struct.unpack("<Q", hash_header_nonce_as_str[0:8])[0]
         key1 = struct.unpack("<Q", hash_header_nonce_as_str[8:16])[0]
         return [ key0, key1 ]
@@ -790,7 +788,7 @@ class HeaderAndShortIDs():
             if i not in prefill_list:
                 tx_hash = block.vtx[i].sha256
                 if use_witness:
-                    tx_hash = block.vtx[i].calc_sha3_256(with_witness=True)  # Switched to sha3
+                    tx_hash = block.vtx[i].calc_sha3_256(with_witness=True)
                 self.shortids.append(calculate_shortid(k0, k1, tx_hash))
 
     def __repr__(self):

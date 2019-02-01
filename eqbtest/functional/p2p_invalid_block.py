@@ -30,7 +30,6 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         self.setup_clean_chain = True
 
     def run_test(self):
-        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         test = TestManager(self, self.options.tmpdir)
         test.add_all_connections(self.nodes)
         self.tip = None
@@ -120,7 +119,7 @@ class InvalidBlockRequestTest(ComparisonTestFramework):
         block3.vtx[0].vout[0].nValue = 100 * COIN # Too high!
         block3.vtx[0].sha256=None
         # block3.vtx[0].calc_sha256()
-        block3.vtx[0].calc_sha3_256()  # Switched to sha3
+        block3.vtx[0].calc_sha3_256()
         block3.hashMerkleRoot = block3.calc_merkle_root()
         block3.rehash()
         block3.solve()

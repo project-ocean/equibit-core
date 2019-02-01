@@ -172,7 +172,6 @@ class DecodeScriptTest(BitcoinTestFramework):
         assert_equal('OP_RETURN 3011020701010101010101020601010101010101', rpc_result['vin'][0]['scriptSig']['asm'])
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#208-single-hash pass")  # EQB_TODO: disabled test
         self.decodescript_script_sig()
         self.decodescript_script_pub_key()
         self.decoderawtransaction_asm_sighashtype()

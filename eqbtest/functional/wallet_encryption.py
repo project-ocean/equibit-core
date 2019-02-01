@@ -20,7 +20,6 @@ class WalletEncryptionTest(BitcoinTestFramework):
         self.num_nodes = 1
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         passphrase = "WalletPassphrase"
         passphrase2 = "SecondWalletPassphrase"
 
