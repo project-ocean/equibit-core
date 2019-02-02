@@ -37,7 +37,7 @@ def create_block(hashprev, coinbase, nTime=None):
     block.nBits = 0x207fffff # Will break after a difficulty adjustment...
     block.vtx.append(coinbase)
     block.hashMerkleRoot = block.calc_merkle_root()
-    block.calc_sha3_256()  # Switched to sha3
+    block.calc_sha3_256()
     return block
 
 # From BIP141
@@ -45,7 +45,7 @@ WITNESS_COMMITMENT_HEADER = b"\xaa\x21\xa9\xed"
 
 
 def get_witness_script(witness_root, witness_nonce):
-    witness_commitment = uint256_from_str(hash3_256(ser_uint256(witness_root)+ser_uint256(witness_nonce)))  # Switched to sha3
+    witness_commitment = uint256_from_str(hash3_256(ser_uint256(witness_root)+ser_uint256(witness_nonce)))
     output_data = WITNESS_COMMITMENT_HEADER + ser_uint256(witness_commitment)
     return CScript([OP_RETURN, output_data])
 
@@ -99,7 +99,7 @@ def create_coinbase(height, pubkey = None):
     else:
         coinbaseoutput.scriptPubKey = CScript([OP_TRUE])
     coinbase.vout = [coinbaseoutput]
-    coinbase.calc_sha3_256()  # Switched to sha3
+    coinbase.calc_sha3_256()
     return coinbase
 
 # Create a transaction.
@@ -109,7 +109,7 @@ def create_transaction(prevtx, n, sig, value, scriptPubKey=CScript()):
     assert(n < len(prevtx.vout))
     tx.vin.append(CTxIn(COutPoint(prevtx.sha256, n), sig, 0xffffffff))
     tx.vout.append(CTxOut(value, scriptPubKey))
-    tx.calc_sha3_256()   # Switched to sha3
+    tx.calc_sha3_256()
     return tx
 
 def get_legacy_sigopcount_block(block, fAccurate=True):

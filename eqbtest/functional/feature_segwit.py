@@ -135,11 +135,9 @@ class SegWitTest(BitcoinTestFramework):
         sync_blocks(self.nodes)
 
         # Make sure all nodes recognize the transactions as theirs
-        assert_equal(self.nodes[0].getbalance(), balance_presetup - sum(map(block_reward, amount_spent[0]['blkIdxs'] + amount_spent[1]['blkIdxs'] + amount_spent[2]['blkIdxs'])) + amount_spent[0]['amt'] + block_reward(153))  # EQB_TODO: was "60*50 + 20*Decimal("49.999") + 50" for maturity = 100
-        ## balance_presetup - Decimal('590.09220726') + (amount_spent[0]) + block_reward(153)
-        # balance_presetup - (sum(map(block_reward, amount_spent[0]['blkIdxs'])) + sum(map(block_reward, amount_spent[1]['blkIdxs'])) + sum(map(block_reward, amount_spent[2]['blkIdxs']))) + amount_spent[0]['amt'] + block_reward(153)
-        assert_equal(self.nodes[1].getbalance(), amount_spent[1]['amt'])  # was 20*Decimal("49.999")
-        assert_equal(self.nodes[2].getbalance(), amount_spent[2]['amt'])  # was 20*Decimal("49.999")
+        assert_equal(self.nodes[0].getbalance(), balance_presetup - sum(map(block_reward, amount_spent[0]['blkIdxs'] + amount_spent[1]['blkIdxs'] + amount_spent[2]['blkIdxs'])) + amount_spent[0]['amt'] + block_reward(63))
+        assert_equal(self.nodes[1].getbalance(), amount_spent[1]['amt'])
+        assert_equal(self.nodes[2].getbalance(), amount_spent[2]['amt'])
 
         self.nodes[0].generate(260) #block 423
         sync_blocks(self.nodes)
@@ -237,7 +235,7 @@ class SegWitTest(BitcoinTestFramework):
         tx = CTransaction()
         tx.vin.append(CTxIn(COutPoint(int(txid1, 16), 0), b''))
         amnt = abs(self.nodes[0].gettransaction(txid1)['details'][0]['amount'])
-        tx.vout.append(CTxOut(int((amnt - Decimal('0.01')) * COIN), CScript([OP_TRUE, OP_DROP] * 15 + [OP_TRUE])))  # 49.99
+        tx.vout.append(CTxOut(int((amnt - Decimal('0.01')) * COIN), CScript([OP_TRUE, OP_DROP] * 15 + [OP_TRUE])))
         tx2_hex = self.nodes[0].signrawtransaction(ToHex(tx))['hex']
         txid2 = self.nodes[0].sendrawtransaction(tx2_hex)
         tx = FromHex(CTransaction(), tx2_hex)
@@ -269,7 +267,7 @@ class SegWitTest(BitcoinTestFramework):
         assert(txid3 in template_txids)
 
         # Check that wtxid is properly reported in mempool entry
-        assert_equal(int(self.nodes[0].getmempoolentry(txid3)["wtxid"], 16), tx.calc_sha3_256(True))  # Switched to sha3
+        assert_equal(int(self.nodes[0].getmempoolentry(txid3)["wtxid"], 16), tx.calc_sha3_256(True))
 
         # Mine a block to clear the gbt cache again.
         self.nodes[0].generate(1)
@@ -278,13 +276,13 @@ class SegWitTest(BitcoinTestFramework):
 
         # Some public keys to be used later
         pubkeys = [
-            "0241c91c940ab9339210d4c3f3dcaf5d1650ef96c56f97985b077cc3ab898d1ed7", # cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMNEYxJY9aycB
-            "022fdf04a39c22ee9c523c1c6e5f1e33b8657a5b1a48a501b24fa70d2cf3341309", # cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMNEYxoUxXgD2
-            "040fc48d178b7b370c101a620193df364a6d200e2c0df7ae933b86469d26068ffbca31ec7c4c1b75cb5b16fbc9153bf1b016bd91a1f4df04524796a7e831d3e93c",  # 91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacd9c32TGBS
-            "02372facdaf7dc061c9509d6b137cbefc5499f11750aabc1b7f250d2ff8162fa8b", # cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMNEYyoF92ueb
-            "020a4ad724183201849b1890ce3ee13249a0304831146174194de0c9fe57086641", # cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMNEYzJ4Dcsb9
-            "0248f12483601de4281ef9b708edb45319f023724857b6cbf95f1dc353c444ebed", # cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMNEYznwNKCvh
-            "04a9c9ac0e661f58e60e8162c0af6978feccd79b2670f1973b27eb53d5f371c12e368b9d0db34d27f4ee44db8a281f2d6c35b4c0bd2ef73af22349d10ec672fca1",  # 91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacd9cW6SMK4
+            "0241c91c940ab9339210d4c3f3dcaf5d1650ef96c56f97985b077cc3ab898d1ed7",
+            "022fdf04a39c22ee9c523c1c6e5f1e33b8657a5b1a48a501b24fa70d2cf3341309",
+            "040fc48d178b7b370c101a620193df364a6d200e2c0df7ae933b86469d26068ffbca31ec7c4c1b75cb5b16fbc9153bf1b016bd91a1f4df04524796a7e831d3e93c",
+            "02372facdaf7dc061c9509d6b137cbefc5499f11750aabc1b7f250d2ff8162fa8b",
+            "020a4ad724183201849b1890ce3ee13249a0304831146174194de0c9fe57086641",
+            "0248f12483601de4281ef9b708edb45319f023724857b6cbf95f1dc353c444ebed",
+            "04a9c9ac0e661f58e60e8162c0af6978feccd79b2670f1973b27eb53d5f371c12e368b9d0db34d27f4ee44db8a281f2d6c35b4c0bd2ef73af22349d10ec672fca1",
         ]
 
         # Import a compressed key and an uncompressed key, generate some multisig addresses

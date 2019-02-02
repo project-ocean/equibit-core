@@ -47,9 +47,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         connect_nodes_bi(self.nodes,0,2)
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
-
-        #prepare some coins for multiple *rawtransaction commands
+        # prepare some coins for multiple *rawtransaction commands
         self.nodes[2].generate(1)
         self.sync_all()
         self.nodes[0].generate(101)
