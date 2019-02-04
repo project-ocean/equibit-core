@@ -88,7 +88,6 @@ class WalletDumpTest(BitcoinTestFramework):
         self.start_nodes()
 
     def run_test (self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         tmpdir = self.options.tmpdir
 
         # generate 20 addresses to compare against the dump

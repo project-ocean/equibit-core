@@ -24,7 +24,6 @@ class TxnMallTest(BitcoinTestFramework):
         disconnect_nodes(self.nodes[2], 1)
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         if self.options.segwit:
             output_type="p2sh-segwit"
         else:
@@ -93,7 +92,7 @@ class TxnMallTest(BitcoinTestFramework):
         # Node0's balance should be starting balance, plus 50BTC for another
         # matured block, minus tx1 and tx2 amounts, and minus transaction fees:
         expected = starting_balance[0] + fund_foo_tx["fee"] + fund_bar_tx["fee"]
-        if self.options.mine_block: expected += 50
+        if self.options.mine_block: expected += block_reward(101)
         expected += tx1["amount"] + tx1["fee"]
         expected += tx2["amount"] + tx2["fee"]
         assert_equal(self.nodes[0].getbalance(), expected)
@@ -142,7 +141,7 @@ class TxnMallTest(BitcoinTestFramework):
         # less possible orphaned matured subsidy
         expected += block_reward(101) + block_reward(102)
         if (self.options.mine_block): 
-            expected -= 50
+            expected -= block_reward(101)
         assert_equal(self.nodes[0].getbalance(), expected)
         assert_equal(self.nodes[0].getbalance("*", 0), expected)
 

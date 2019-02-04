@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test fee estimation code."""
 
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework, SkipTest
 from test_framework.util import *
 from test_framework.script import CScript, OP_1, OP_DROP, OP_2, OP_HASH160, OP_EQUAL, hash160, OP_TRUE
 from test_framework.mininode import CTransaction, CTxIn, CTxOut, COutPoint, ToHex, COIN
@@ -188,6 +188,7 @@ class EstimateFeeTest(BitcoinTestFramework):
             self.memutxo = newmem
 
     def run_test(self):
+        raise SkipTest("Disabled")  # EQB_TODO: disabled test
         self.log.info("This test is time consuming, please be patient")
         self.log.info("Splitting inputs so we can generate tx's")
 

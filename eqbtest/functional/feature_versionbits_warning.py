@@ -62,7 +62,6 @@ class VersionBitsWarningTest(BitcoinTestFramework):
         return VB_PATTERN.search(alert_text) is not None
 
     def run_test(self):
-        #raise SkipTest("Disabled")  # EQB_TODO: disabled test
         # Handy alias
         node = self.nodes[0]
         node.add_p2p_connection(P2PInterface())

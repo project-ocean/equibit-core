@@ -486,7 +486,7 @@ public:
 
         base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0xd1 }; // "EQa" prefix on address. 
         base58Prefixes[SCRIPT_ADDRESS] = { 0x01, 0xb5, 0xfc }; // "EQs" prefix on address.
-        base58Prefixes[SECRET_KEY] = { 0x01, 0x72, 0xd4 }; // TODO: "EQc" WIF wallet format - compressed
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128); // "K" or "L" Same as Bitcoin
         base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x88, 0xB2, 0x1E }; // "xpub" Same as Bitcoin
         base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x88, 0xAD, 0xE4 }; // "xprv" Same as Bitcoin
 
@@ -591,7 +591,7 @@ public:
 
         base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x5d }; // "TQa" prefix on address
         base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x87 }; // "TQs" prefix on address
-        base58Prefixes[SECRET_KEY] = { 0x02, 0x13, 0x76 }; // TODO: "TQc" WIF wallet format - compressed
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 239); // "c" Same as Bitcoin
         base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };  // Same as Bitcoin
         base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };  // Same as Bitcoin
 
@@ -692,7 +692,7 @@ public:
 
         base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x5d }; // "TQa" prefix on address
         base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x87 }; // "TQs" prefix on address
-        base58Prefixes[SECRET_KEY] = { 0x02, 0x13, 0x76 }; // TODO: "TQc" WIF wallet format - compressed
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 239); // "c" Same as Bitcoin
         base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };  // 'tpub' Same as Bitcoin
         base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };  // 'tprv' Same as Bitcoin
 

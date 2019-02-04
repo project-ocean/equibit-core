@@ -15,13 +15,12 @@ class SignMessagesTest(BitcoinTestFramework):
         self.extra_args = [["-addresstype=legacy"]]
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         message = 'This is just a test message'
 
         self.log.info('test signing with priv_key')
-        priv_key = '6z1LbXTmqx5Kt8tjCafTU7p3SXixQvCGa9waUV2X8fnRkYukaAu2qV'
-        address = 'TQaMGUr5ipCkARzZojpWU6wRwXS6eCQdjDVt'
-        expected_signature = 'IFHs3BQQ/X1t31bEEfUuYSq4+Id4T59wrNyiTjpfOhziNY/DEAeP1Htwg2XDJtJUAAUtXLe7g3R4i6c1zKcnCIk='
+        priv_key = 'cVLEg38TieMRttF8f4y6sb331NVb1zsh5pwP7eystuVaR9wiGgGu'
+        address = 'TQaSs5UxpPQCxeZTm2badeabBKGFfkTqBBDs'
+        expected_signature = 'HzqO1f+ltLzdmJgDdZJz9UzqnCkAcr555CDEjm9n9swBbK7Q2vRDkDR2ICHrpyP9DxLP6UvN2OSQ9LLVxQUx2uQ='
         signature = self.nodes[0].signmessagewithprivkey(priv_key, message)
         assert_equal(expected_signature, signature)
         assert(self.nodes[0].verifymessage(address, signature, message))

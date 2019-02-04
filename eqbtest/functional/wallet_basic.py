@@ -3,9 +3,8 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the wallet."""
-from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
-from math import exp, expm1, pow
 
 class WalletTest(BitcoinTestFramework):
     def set_test_params(self):
@@ -32,7 +31,6 @@ class WalletTest(BitcoinTestFramework):
         return self.nodes[0].decoderawtransaction(txn)['vsize']
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         # Check that there's no UTXO on none of the nodes
         assert_equal(len(self.nodes[0].listunspent()), 0)
         assert_equal(len(self.nodes[1].listunspent()), 0)
@@ -47,7 +45,7 @@ class WalletTest(BitcoinTestFramework):
         assert_equal(walletinfo['balance'], 0)
 
         self.sync_all([self.nodes[0:3]])
-        self.nodes[1].generate(101)  # EQB_TODO: maturity (101)
+        self.nodes[1].generate(101)
         self.sync_all([self.nodes[0:3]])
 
         assert_equal(self.nodes[0].getbalance(), block_reward(1))
@@ -68,9 +66,8 @@ class WalletTest(BitcoinTestFramework):
         assert_equal(txout['value'], block_reward(1))
         txout = self.nodes[0].gettxout(txid=confirmed_txid, n=confirmed_index, include_mempool=True)
         assert_equal(txout['value'], block_reward(1))
-        
-        # EQB_TODO: modify amounts
-        # Send 3 EQB (was 21 BTC) from 0 to 2 using sendtoaddress call.
+
+        # Send 3 EQB from 0 to 2 using sendtoaddress call.
         # Locked memory should use at least 32 bytes to sign each transaction
         self.log.info("test getmemoryinfo")
         memory_before = self.nodes[0].getmemoryinfo()
@@ -121,7 +118,7 @@ class WalletTest(BitcoinTestFramework):
                               [{"txid": unspent_0["txid"], "vout": 999}])
 
         # Have node1 generate 100 blocks (so node0 can recover the fee)
-        self.nodes[1].generate(100)  # EQB_TODO: maturity (100)
+        self.nodes[1].generate(100)
         self.sync_all([self.nodes[0:3]])
 
         # node0 should end up with 3.09851350 + 11.77678396 eqb in block rewards (blocks #1 & #103) plus fees, but
@@ -155,7 +152,7 @@ class WalletTest(BitcoinTestFramework):
 
         assert_equal(self.nodes[0].getbalance(), 0)
         assert_equal(self.nodes[2].getbalance(), Decimal('14.81529746'))
-        assert_equal(self.nodes[2].getbalance("from1"), Decimal('14.81529746') - Decimal('3.00000000'))  # Decimal('14.81529746') - Decimal('3.00000000') 11.81529746 was 94-21
+        assert_equal(self.nodes[2].getbalance("from1"), Decimal('14.81529746') - Decimal('3.00000000'))
 
         # Verify that a spent output cannot be locked anymore
         spent_0 = {"txid": node0utxos[0]["txid"], "vout": node0utxos[0]["vout"]}

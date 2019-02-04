@@ -20,7 +20,6 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
     alert_filename = None  # Set by setup_network
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#20-tx-structure pass")  # EQB_TODO: disabled test
         # Start with a 200 block chain
         assert_equal(self.nodes[0].getblockcount(), 200)
 

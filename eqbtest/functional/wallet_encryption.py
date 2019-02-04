@@ -20,15 +20,14 @@ class WalletEncryptionTest(BitcoinTestFramework):
         self.num_nodes = 1
 
     def run_test(self):
-        #raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         passphrase = "WalletPassphrase"
         passphrase2 = "SecondWalletPassphrase"
 
         # Make sure the wallet isn't encrypted first
         address = self.nodes[0].getnewaddress()
         privkey = self.nodes[0].dumpprivkey(address)
-        assert_equal(privkey[:1], "6")
-        assert_equal(len(privkey), 54)
+        assert_equal(privkey[:1], "c")
+        assert_equal(len(privkey), 52)
 
         # Encrypt the wallet
         self.nodes[0].node_encrypt_wallet(passphrase)
