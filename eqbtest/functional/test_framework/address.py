@@ -15,8 +15,8 @@ def byte_to_base58(b, version):
     result = ''
     str = bytes_to_hex_str(b)
     #str = bytes_to_hex_str(chr(version).encode('latin-1')) + str
-    str = "035e87" + str  # TQs prefix
-    checksum = bytes_to_hex_str(hash256(hex_str_to_bytes(str)))  # hash3_256()
+    str = version + str  # TQ{a|s} prefix
+    checksum = bytes_to_hex_str(hash256(hex_str_to_bytes(str)))
     str += checksum[:8]
     value = int('0x'+str,0)
     while value > 0:
@@ -31,12 +31,12 @@ def byte_to_base58(b, version):
 
 def keyhash_to_p2pkh(hash, main = False):
     assert (len(hash) == 20)
-    version = 0 if main else 111
+    version = 0 if main else "035e5d"  # 111 TQa prefix
     return byte_to_base58(hash, version)
 
 def scripthash_to_p2sh(hash, main = False):
     assert (len(hash) == 20)
-    version = 5 if main else 196
+    version = 5 if main else "035e87"  # 196  TQs prefix
     return byte_to_base58(hash, version)
 
 def key_to_p2pkh(key, main = False):

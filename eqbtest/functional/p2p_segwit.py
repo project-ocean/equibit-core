@@ -6,7 +6,7 @@
 """Test segwit transactions and blocks on P2P network."""
 
 from test_framework.mininode import *
-from test_framework.test_framework import BitcoinTestFramework, SkipTest
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
 from test_framework.script import *
 from test_framework.blocktools import create_block, create_coinbase, add_witness_commitment, get_witness_script, WITNESS_COMMITMENT_HEADER
@@ -1633,9 +1633,10 @@ class SegWitTest(BitcoinTestFramework):
             # If we're not indicating segwit support, we will still be
             # signalling for segwit activation.
             assert_equal((block_version & (1 << VB_WITNESS_BIT) != 0), node == self.nodes[0])
-            # If we don't specify the segwit rule, then we won't get a default
-            # commitment.
-            assert('default_witness_commitment' not in gbt_results)
+            # EQB_TODO: This check is disabled, segwit is hard-coded by default (issue #341)
+            # # If we don't specify the segwit rule, then we won't get a default
+            # # commitment.
+            # assert('default_witness_commitment' not in gbt_results)
 
         # Workaround:
         # Can either change the tip, or change the mempool and wait 5 seconds
@@ -1877,7 +1878,6 @@ class SegWitTest(BitcoinTestFramework):
 
 
     def run_test(self):
-        raise SkipTest("Disabled")  # EQB_TODO: disabled test
         # Setup the p2p connections and start up the network thread.
         # self.test_node sets NODE_WITNESS|NODE_NETWORK
         self.test_node = self.nodes[0].add_p2p_connection(TestNode(), services=NODE_NETWORK|NODE_WITNESS)
