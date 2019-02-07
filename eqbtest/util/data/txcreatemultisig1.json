@@ -1,6 +1,6 @@
 {
-    "txid": "37f27cff88e47671bff2fc2f335429c0fe349b92be0c490361b1941a732e8247",
-    "hash": "37f27cff88e47671bff2fc2f335429c0fe349b92be0c490361b1941a732e8247",
+    "txid": "72f5b6d476f49737555e8ec5998580fedaa1891b024c7f390f9ed46158c1b208",
+    "hash": "72f5b6d476f49737555e8ec5998580fedaa1891b024c7f390f9ed46158c1b208",
     "version": 1,
     "size": 124,
     "vsize": 124,
@@ -17,9 +17,9 @@
                 "reqSigs": 2,
                 "type": "multisig",
                 "addresses": [
-                    "EQBGSCychyTbtB8jhWqbHmjgvmax9S9xHBw4",
-                    "EQBBuQ5mb4rgioFt4u5qNTextrQQHydPoTzZ",
-                    "EQBCvVLq7vmc12buCLSsjwF5YHeTqFV4QmHb"
+                    "EQaChb6ohPvtJ7kSeTEWGwNqScThqCfQwGvy",
+                    "EQa8AnCxaVKy8jsb1qUkMdJ7QhH9ykFBJ5HX",
+                    "EQa9BsU27MEtQyDc9Gqnj6tE48XDX22fyL98"
                 ]
             }
         }

@@ -177,8 +177,8 @@ def parse_output(a, fmt):
     else:
         raise NotImplementedError("Don't know how to compare %s" % fmt)
 
+
 if __name__ == '__main__':
-    # EQB_TODO: all tests are disabled
     main()
-    #print("ALL TX-BUILDER UTILITY TESTS ARE DISABLED!!!")
+
 
