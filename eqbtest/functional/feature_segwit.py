@@ -76,7 +76,7 @@ class SegWitTest(BitcoinTestFramework):
         sync_blocks(self.nodes)
 
     def run_test(self):
-        raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
+        # raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
         self.nodes[0].generate(161) #block 161
 
         self.log.info("Verify sigops are counted in GBT with pre-BIP141 rules before the fork")
@@ -256,7 +256,7 @@ class SegWitTest(BitcoinTestFramework):
 
         # Check that tx1 is the only transaction of the 3 in the template.
         template_txids = [ t['txid'] for t in template['transactions'] ]
-        assert(txid2 not in template_txids and txid3 not in template_txids)
+        # assert(txid2 not in template_txids and txid3 not in template_txids)  # EQB_TODO: issue #341, check removed due to hard-coded segwit support
         assert(txid1 in template_txids)
 
         # Check that running with segwit support results in all 3 being included.
@@ -276,20 +276,20 @@ class SegWitTest(BitcoinTestFramework):
 
         # Some public keys to be used later
         pubkeys = [
-            "0241c91c940ab9339210d4c3f3dcaf5d1650ef96c56f97985b077cc3ab898d1ed7",
-            "022fdf04a39c22ee9c523c1c6e5f1e33b8657a5b1a48a501b24fa70d2cf3341309",
-            "040fc48d178b7b370c101a620193df364a6d200e2c0df7ae933b86469d26068ffbca31ec7c4c1b75cb5b16fbc9153bf1b016bd91a1f4df04524796a7e831d3e93c",
-            "02372facdaf7dc061c9509d6b137cbefc5499f11750aabc1b7f250d2ff8162fa8b",
-            "020a4ad724183201849b1890ce3ee13249a0304831146174194de0c9fe57086641",
-            "0248f12483601de4281ef9b708edb45319f023724857b6cbf95f1dc353c444ebed",
-            "04a9c9ac0e661f58e60e8162c0af6978feccd79b2670f1973b27eb53d5f371c12e368b9d0db34d27f4ee44db8a281f2d6c35b4c0bd2ef73af22349d10ec672fca1",
+            "03defdea4cdb677750a420fee807eacf21eb9898ae79b9768766e4faa04a2d4a34",  # cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87SakDsxMd
+            "025601570cb47f238d2b0286db4a990fa0f3ba28d1a319f5e7cf55c2a2444da7cc",  # cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87T5coytR6
+            "042b4ea0a797a443d293ef5cff444f4979f06acfebd7e86d277475656138385b6c85e89bc037945d93b343083b5a1c86131a01f60c50269763b570c854e5c09b7a",  # 91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgyojxwiG
+            "024ce119c96e2fa357200b559b2f7dd5a5f02d5290aff74b03f3e471b273211c97",  # cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87U5QCW9Uf
+            "02352bbf4a4cdd12564f93fa332ce333301d9ad40271f8107181340aef25be59d5",  # cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87UaEpLrnP
+            "03421f5fc9a21065445c96fdb91c0c1e2f2431741c72713b4b99ddcb316f31e9fc",  # cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87V58Yd4AW
+            "042fa2104d6b38d11b0230010559879124e42ab8dfeff5ff29dc9cdadd4ecacc3f02de1068295dd865b64569335bd5dd80181d70ecfc882648423ba76b532b7d67",  # 91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgzEKcWtG
         ]
 
         # Import a compressed key and an uncompressed key, generate some multisig addresses
-        self.nodes[0].importprivkey("91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgwy7JWn1")
-        uncompressed_spendable_address = ["mmkhjbgaYqkW44QrfxyHxjQgxVnEaPZYba"]
-        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87jWfhQX1n")
-        compressed_spendable_address = ["mzhiemrimVkuuco4Uuwm9MVe7Wx5Fj3yq8"]
+        self.nodes[0].importprivkey("91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgwmaKkrx")
+        uncompressed_spendable_address = ["TQaQVMUWfARhjwWAkNSfR7B7BfRzScBSWgPg"]
+        self.nodes[0].importprivkey("cSK2HYAM9WXRc2gKVDKVoQDAD2AqZAcViikJ5oxH9qaMyYbaR7mH")
+        compressed_spendable_address = ["TQaYbABWGPwuB5xxaQVuZsT1rQTiQ5RmcnBy"]
         assert ((self.nodes[0].validateaddress(uncompressed_spendable_address[0])['iscompressed'] == False))
         assert ((self.nodes[0].validateaddress(compressed_spendable_address[0])['iscompressed'] == True))
 
@@ -313,7 +313,8 @@ class SegWitTest(BitcoinTestFramework):
         uncompressed_solvable_address.append(self.nodes[0].addmultisigaddress(2, [compressed_spendable_address[0], uncompressed_solvable_address[0]])['address'])
         compressed_solvable_address.append(self.nodes[0].addmultisigaddress(2, [compressed_spendable_address[0], compressed_solvable_address[0]])['address'])
         compressed_solvable_address.append(self.nodes[0].addmultisigaddress(2, [compressed_solvable_address[0], compressed_solvable_address[1]])['address'])
-        unknown_address = ["mi8kjTJaPLnRhntGBbDVZxCumS2DZJBn7c", "mmqMKWSRPKnY7dW8Q1T3utP2wAuJBb4CMj"]
+        # unknown_address = ["mi8kjTJaPLnRhntGBbDVZxCumS2DZJBn7c", "mmqMKWSRPKnY7dW8Q1T3utP2wAuJBb4CMj"]
+        unknown_address = ["TQaSrLCdNpHuykNyyPHhNQdM1w7Aw2pkMDhH", "TQaHts9BQgJgUppjg7gh2ZwPaaCimsczQ87Q"]
 
         # Test multisig_without_privkey
         # We have 2 public keys without private keys, use addmultisigaddress to add to wallet.
@@ -390,8 +391,8 @@ class SegWitTest(BitcoinTestFramework):
         op1 = CScript([OP_1])
         op0 = CScript([OP_0])
         # 2N7MGY19ti4KDMSzRfPAssP6Pxyuxoi6jLe is the P2SH(P2PKH) version of mjoE3sSrb8ByYEvgnC3Aox86u1CHnfJA4V
-        unsolvable_address = ["mrN16VfzMo52zqpUJiZuU9yoiDyT2WEszz", "2N7oDs4jSUUxEWpzmQkQnLU6yTFhrkXxB34", script_to_p2sh(op1), script_to_p2sh(op0)]
-        unsolvable_address_key = hex_str_to_bytes("02341AEC7587A51CDE5279E0630A531AEA2615A9F80B17E8D9376327BAEAA59E3D")
+        unsolvable_address = ["TQaWjVVVyZmmfacYTv1PkS5phttHZjxjACgD", "TQsQvpr4VfbM8NxkKZ31jpT68wKUPMnsN94g", script_to_p2sh(op1), script_to_p2sh(op0)]
+        unsolvable_address_key = hex_str_to_bytes("0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798")
         unsolvablep2pkh = CScript([OP_DUP, OP_HASH160, hash160_sha3_256(unsolvable_address_key), OP_EQUALVERIFY, OP_CHECKSIG])
         unsolvablep2wshp2pkh = CScript([OP_0, sha3_256(unsolvablep2pkh)])
         p2shop0 = CScript([OP_HASH160, hash160_sha3_256(op0), OP_EQUAL])
@@ -464,10 +465,10 @@ class SegWitTest(BitcoinTestFramework):
 
         # Repeat some tests. This time we don't add witness scripts with importaddress
         # Import a compressed key and an uncompressed key, generate some multisig addresses
-        self.nodes[0].importprivkey("927pw6RW8ZekycnXqBQ2JS5nPyo1yRfGNN8oq74HeddWSoEsTdS")
-        uncompressed_spendable_address = ["mhsDpt5o4MQRKFxkeeHC5edUPhCYwdFEoQ"]
-        self.nodes[0].importprivkey("cMcrXaaUC48ZKpcyydfFo8PxHAjpsYLhdsp6nmtB3E2ER9SR7vy1")
-        compressed_spendable_address = ["mx4yfkq8814yqi8JaGpk7Vuz4sGp7B619F"]
+        self.nodes[0].importprivkey("91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgx3cTMqe")
+        uncompressed_spendable_address = ["TQaKhWTrBnRWtkqy1s8Eewat4BhfjP7KyVrc"]
+        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87K7XCyj5v")
+        compressed_spendable_address = ["TQaQHYoqum2BW4TYTcXBBvzZi2iBnRuLs7AR"]
 
         self.nodes[0].importpubkey(pubkeys[5])
         compressed_solvable_address = [key_to_p2pkh(pubkeys[5])]
@@ -556,12 +557,12 @@ class SegWitTest(BitcoinTestFramework):
         self.create_and_mine_tx_from_txids(spendable_txid)
 
         # import all the private keys so solvable addresses become spendable
-        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMNEYxJY9aycB")
-        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMNEYxoUxXgD2")
-        self.nodes[0].importprivkey("91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacd9c32TGBS")
-        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMNEYyoF92ueb")
-        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMNEYzJ4Dcsb9")
-        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMNEYznwNKCvh")
+        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87SakDsxMd")
+        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87T5coytR6")
+        self.nodes[0].importprivkey("91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQFacbgyojxwiG")
+        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87U5QCW9Uf")
+        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87UaEpLrnP")
+        self.nodes[0].importprivkey("cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87V58Yd4AW")
         self.create_and_mine_tx_from_txids(solvable_txid)
 
         # Test that importing native P2WPKH/P2WSH scripts works
@@ -590,7 +591,7 @@ class SegWitTest(BitcoinTestFramework):
     def mine_and_test_listunspent(self, script_list, ismine):
         utxo = find_unspent(self.nodes[0], 50)
         tx = CTransaction()
-        tx.vin.append(CTxIn(COutPoint(int('0x'+utxo['txid'],0), utxo['vout'])))
+        tx.vin.append(CTxIn(COutPoint(int('0x'+utxo[0]['txid'],0), utxo[0]['vout'])))
         for i in script_list:
             tx.vout.append(CTxOut(10000000, i))
         tx.rehash()
