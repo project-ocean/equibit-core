@@ -84,11 +84,6 @@ BOOST_AUTO_TEST_CASE(base58_DecodeBase58)
 // Goal: check that parsed keys match test payload
 BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
-    BOOST_ERROR("TEST DISABLED!");
-#endif
-    return;
 #ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));
 #else // BUILD_EQB
@@ -114,40 +109,37 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
         if (isPrivkey) {
             bool isCompressed = find_value(metadata, "isCompressed").get_bool();
             // Must be valid private key
-            //! EQB_TODO: Fix Test -> BOOST_CHECK_MESSAGE(secret.SetString(exp_base58string), "!SetString:"+ strTest);
-            //! EQB_TODO: Fix Test -> BOOST_CHECK_MESSAGE(secret.IsValid(), "!IsValid:" + strTest);
-#ifdef BUILD_BTC
+            BOOST_CHECK_MESSAGE(secret.SetString(exp_base58string), "!SetString:" + strTest);
+            BOOST_CHECK_MESSAGE(secret.IsValid(), "!IsValid:" + strTest);
             CKey privkey = secret.GetKey();
-#else // BUILD_EQB 
-            //! EQB_TODO: Fix above test prepartion statements 
-#endif // END_BUILD
-            //! EQB_TODO: Fix Test -> BOOST_CHECK_MESSAGE(privkey.IsCompressed() == isCompressed, "compressed mismatch:" + strTest);
-            //! EQB_TODO: Fix Test -> BOOST_CHECK_MESSAGE(privkey.size() == exp_payload.size() && std::equal(privkey.begin(), privkey.end(), exp_payload.begin()), "key mismatch:" + strTest);
+            BOOST_CHECK_MESSAGE(privkey.IsCompressed() == isCompressed, "compressed mismatch:" + strTest);
+            BOOST_CHECK_MESSAGE(privkey.size() == exp_payload.size() && std::equal(privkey.begin(), privkey.end(), exp_payload.begin()), "key mismatch:" + strTest);
 
             // Private key must be invalid public key
             destination = DecodeDestination(exp_base58string);
-            //! EQB_TODO: Fix Test -> BOOST_CHECK_MESSAGE(!IsValidDestination(destination), "IsValid privkey as pubkey:" + strTest);
-        } else {
+            BOOST_CHECK_MESSAGE(!IsValidDestination(destination), "IsValid privkey as pubkey:" + strTest);
+        }
+        else {
             // Must be valid public key
             destination = DecodeDestination(exp_base58string);
             CScript script = GetScriptForDestination(destination);
-
-            //! EQB_TODO: Fix Test -> BOOST_CHECK_MESSAGE(IsValidDestination(destination), "!IsValid:" + strTest);
-            //! EQB_TODO: Fix Test -> BOOST_CHECK_EQUAL(HexStr(script), HexStr(exp_payload));
+            BOOST_CHECK_MESSAGE(IsValidDestination(destination), "!IsValid:" + strTest);
+            BOOST_CHECK_EQUAL(HexStr(script), HexStr(exp_payload));
 
             // Try flipped case version
             for (char& c : exp_base58string) {
                 if (c >= 'a' && c <= 'z') {
                     c = (c - 'a') + 'A';
-                } else if (c >= 'A' && c <= 'Z') {
+                }
+                else if (c >= 'A' && c <= 'Z') {
                     c = (c - 'A') + 'a';
                 }
             }
             destination = DecodeDestination(exp_base58string);
-            //! EQB_TODO: Fix Test -> BOOST_CHECK_MESSAGE(IsValidDestination(destination) == try_case_flip, "!IsValid case flipped:" + strTest);
+            BOOST_CHECK_MESSAGE(IsValidDestination(destination) == try_case_flip, "!IsValid case flipped:" + strTest);
             if (IsValidDestination(destination)) {
                 script = GetScriptForDestination(destination);
-                //! EQB_TODO: Fix Test -> BOOST_CHECK_EQUAL(HexStr(script), HexStr(exp_payload));
+                BOOST_CHECK_EQUAL(HexStr(script), HexStr(exp_payload));
             }
 
             // Public key must be invalid private key
@@ -211,11 +203,6 @@ BOOST_AUTO_TEST_CASE(base58_key_test_gen)
 // Goal: check that generated keys match test vectors
 BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
-    BOOST_ERROR("TEST DISABLED!");
-#endif
-    return;
 #ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));
 #else // BUILD_EQB
@@ -245,7 +232,7 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
             //std::cout << "prv secret       " << secret.ToString() << std::endl;
             //std::cout << "exp_base58string " << exp_base58string << std::endl;
 
-             //! EQB_TODO: Fix Test -> BOOST_CHECK_MESSAGE(secret.ToString() == exp_base58string, "result mismatch: " + strTest);
+            BOOST_CHECK_MESSAGE(secret.ToString() == exp_base58string, "result mismatch: " + strTest);
         } else {
             CTxDestination dest;
             CScript exp_script(exp_payload.begin(), exp_payload.end());
@@ -255,7 +242,7 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
             //std::cout << "pub address      " << address << std::endl;
             //std::cout << "exp_base58string " << exp_base58string << std::endl;
 
-             //! EQB_TODO: Fix Test -> BOOST_CHECK_EQUAL(address, exp_base58string);
+            BOOST_CHECK_EQUAL(address, exp_base58string);
         }
     }
 
