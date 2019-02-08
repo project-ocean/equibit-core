@@ -1,6 +1,6 @@
 {
-    "txid": "d540ec0f41f7c4bed7bb2f50ccde5db9fcd924fbbf9d5203704446d11996c58b",
-    "hash": "d540ec0f41f7c4bed7bb2f50ccde5db9fcd924fbbf9d5203704446d11996c58b",
+    "txid": "48d109d75a360ab8c9acb21d633c6794a5091eb59e67d6b06bd73b6f6cdeccd6",
+    "hash": "48d109d75a360ab8c9acb21d633c6794a5091eb59e67d6b06bd73b6f6cdeccd6",
     "version": 1,
     "size": 42,
     "vsize": 42,
@@ -17,7 +17,7 @@
                 "reqSigs": 1,
                 "type": "scripthash",
                 "addresses": [
-                    "3NGZyddskm3FkFHrpsVJSLE65wdAf8JBDJ"
+                    "EQshusoM2m2NzUfvSbupDFE6JdKVJ7uoVrvF"
                 ]
             }
         }

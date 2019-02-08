@@ -64,7 +64,7 @@ def bctester(testDir, input_basename, buildenv):
             failed_testcases.append(testObj["description"])
 
     if failed_testcases:
-        error_message = "FAILED_TESTCASES:\n"
+        error_message = "FAILED_TESTCASES ({}):\n".format(len(failed_testcases))
         error_message += pprint.pformat(failed_testcases, width=400)
         logging.error(error_message)
         sys.exit(1)
@@ -177,8 +177,8 @@ def parse_output(a, fmt):
     else:
         raise NotImplementedError("Don't know how to compare %s" % fmt)
 
+
 if __name__ == '__main__':
-    # EQB_TODO: all tests are disabled
-    # main()
-    print("ALL TX-BUILDER UTILITY TESTS ARE DISABLED!!!")
+    main()
+
 
