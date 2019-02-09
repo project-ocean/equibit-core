@@ -1,6 +1,8 @@
 Equibit Core 
 =============
 
+[![Build Status](https://travis-ci.com/Equibit/equibit-core.svg?branch=dev)](https://travis-ci.com/Equibit/equibit-core)
+
 https://equibit.org
 
 What is Equibit?
