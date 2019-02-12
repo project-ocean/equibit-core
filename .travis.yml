@@ -89,14 +89,16 @@ script:
     - if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then extended="--extended --exclude feature_pruning,feature_dbcrash"; fi
     - if [ "$RUN_TESTS" = "true" ]; then eqbtest/functional/test_runner.py --combinedlogslen=40 --coverage --quiet ${extended}; fi
     # deploying win exe files to https://github.com/Equibit/CoreBinaries
-    - ls -laR /home/travis/build/Equibit/equibit-core/build/equibit-x86_64-w64-mingw32
-    - pwd
-    - echo "--------------------- Publishing Core Binaries ---------------------"
-    - git clone https://$GH_USR:$GH_TKN@github.com/Equibit/CoreBinaries.git
+    #- ls -laR /home/travis/build/Equibit/equibit-core/build/equibit-x86_64-w64-mingw32
+    #- pwd
+    - echo "--------------------- Publishing Core Binaries 0 ---------------------"
+    #- git clone https://$GH_USR:$GH_TKN@github.com/Equibit/CoreBinaries.git
     #                           3f9250722dd3e9c64233d57acf1db7b112da5b7c
-    - cd CoreBinaries && ls -la
+    #- cd CoreBinaries && ls -la
     # - cp -a /home/travis/build/Equibit/equibit-core/build/equibit-x86_64-w64-mingw32/src/*.exe .
-    - ls -la
+    #- ls -la
+    - ls -laR /home
+    - ./publish.sh
 after_script:
     - echo $TRAVIS_COMMIT_RANGE
     - echo $TRAVIS_COMMIT_LOG
