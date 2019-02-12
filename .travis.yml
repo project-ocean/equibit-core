@@ -92,9 +92,10 @@ script:
     - ls -laR /home/travis/build/Equibit/equibit-core/build/equibit-x86_64-w64-mingw32
     - pwd
     - echo "--------------------- Publishing Core Binaries ---------------------"
-    - git clone https://ealefad:3f9250722dd3e9c64233d57acf1db7b112da5b7c@github.com/Equibit/CoreBinaries.git
+    - git clone https://$GH_USR:$GH_TKN@github.com/Equibit/CoreBinaries.git
+    #                           3f9250722dd3e9c64233d57acf1db7b112da5b7c
     - cd CoreBinaries && ls -la
-    # - cp -a /home/travis/build/Equibit/equibit-core/out/false/2053.1-x86_64-w64-mingw32/bin/*.exe .
+    # - cp -a /home/travis/build/Equibit/equibit-core/build/equibit-x86_64-w64-mingw32/src/*.exe .
     - ls -la
 after_script:
     - echo $TRAVIS_COMMIT_RANGE
