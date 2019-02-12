@@ -97,8 +97,9 @@ script:
     #- cd CoreBinaries && ls -la
     # - cp -a /home/travis/build/Equibit/equibit-core/build/equibit-x86_64-w64-mingw32/src/*.exe .
     #- ls -la
-    - ls -laR /home
-    - ./publish.sh
+    #- ls -laR /home
+    # /home/travis/build/Equibit/equibit-core
+    - /home/travis/build/Equibit/equibit-core/publish.sh
 after_script:
     - echo $TRAVIS_COMMIT_RANGE
     - echo $TRAVIS_COMMIT_LOG
