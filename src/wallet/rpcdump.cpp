@@ -314,7 +314,11 @@ UniValue importaddress(const JSONRPCRequest& request)
             std::vector<unsigned char> data(ParseHex(request.params[0].get_str()));
             ImportScript(pwallet, CScript(data.begin(), data.end()), strLabel, fP2SH);
         } else {
+#ifdef BUILD_BTC
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address or script");
+#else // BUILD_EQB
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit address or script");
+#endif // END_BUILD 
         }
     }
     if (fRescan)
@@ -649,7 +653,11 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
     std::string strAddress = request.params[0].get_str();
     CTxDestination dest = DecodeDestination(strAddress);
     if (!IsValidDestination(dest)) {
+#ifdef BUILD_BTC
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
+#else // BUILD_EQB
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit address");
+#endif // END_BUILD 
     }
     auto keyid = GetKeyForDestination(*pwallet, dest);
     if (keyid.IsNull()) {
@@ -727,7 +735,11 @@ UniValue dumpwallet(const JSONRPCRequest& request)
     std::sort(vKeyBirth.begin(), vKeyBirth.end());
 
     // produce output
+#ifdef BUILD_BTC
     file << strprintf("# Wallet dump created by Bitcoin %s\n", CLIENT_BUILD);
+#else // BUILD_EQB
+    file << strprintf("# Wallet dump created by Equibit %s\n", CLIENT_BUILD);
+#endif // END_BUILD 
     file << strprintf("# * Created on %s\n", EncodeDumpTime(GetTime()));
     file << strprintf("# * Best block at time of backup was %i (%s),\n", chainActive.Height(), chainActive.Tip()->GetBlockHash().ToString());
     file << strprintf("#   mined on %s\n", EncodeDumpTime(chainActive.Tip()->GetBlockTime()));
