@@ -85,20 +85,9 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_serialize_with_tweak)
 
 BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
-    BOOST_ERROR("TEST DISABLED!");
-#endif
-    return;
-
-#ifdef BUILD_BTC
     std::string strSecret = std::string("5Kg1gnAjaLfKiwhhPpGS3QfRg2m6awQvaj98JCZBZQ5SuS2F15C");
-#else  // BUILD_EQB
-    std::string strSecret = std::string("5K6egrfPCCHH2xg1Dqf5i2vsaUhbUqwZsWCVpffKLVMW8PP9Q5j");
-#endif // END_BUILD
     CBitcoinSecret vchSecret;
-    //! EQB_TODO: Fix Test -> BOOST_CHECK(vchSecret.SetString(strSecret));
-#ifdef BUILD_BTC
+    BOOST_CHECK(vchSecret.SetString(strSecret));
     CKey key = vchSecret.GetKey();
     CPubKey pubkey = key.GetPubKey();
     std::vector<unsigned char> vchPubKey(pubkey.begin(), pubkey.end());
@@ -110,21 +99,17 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
 
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << filter;
-#else  // BUILD_EQB
-    //! EQB_TODO fix above text preparation 
-#endif // END_BUILD
 #ifdef BUILD_BTC
     std::vector<unsigned char> vch = ParseHex("038fc16b080000000000000001");
 #else  // BUILD_EQB
-    // EQB_TODO Derive the expected value independently
-    std::vector<unsigned char> vch = ParseHex("03333e14080000000000000001");
+    std::vector<unsigned char> vch = ParseHex("03b3c1eb080000000000000001");
 #endif // END_BUILD
     std::vector<char> expected(vch.size());
 
     for (unsigned int i = 0; i < vch.size(); i++)
         expected[i] = (char)vch[i];
 
-    //! EQB_TODO: Fix Test -> BOOST_CHECK_EQUAL_COLLECTIONS(stream.begin(), stream.end(), expected.begin(), expected.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(stream.begin(), stream.end(), expected.begin(), expected.end());
 }
 
 BOOST_AUTO_TEST_CASE(bloom_match)
