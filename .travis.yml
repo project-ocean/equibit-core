@@ -27,6 +27,7 @@ env:
     - WINEDEBUG=fixme-all
     - BOOST_TEST_LOG_LEVEL=test_suite
     - BOOST_TEST_BUILD_INFO=yes
+    - OS_WIN=true
   matrix:
 # ARM
 #    - HOST=arm-linux-gnueabihf PACKAGES="g++-arm-linux-gnueabihf python3-pip" DEP_OPTS="NO_QT=1" CHECK_DOC=1 GOAL="install" BITCOIN_CONFIG="--enable-glibc-back-compat --enable-reduce-exports"
@@ -90,8 +91,8 @@ script:
     - if [ "$RUN_TESTS" = "true" ]; then eqbtest/functional/test_runner.py --combinedlogslen=40 --coverage --quiet ${extended}; fi
     # upload Windows binary files to https://github.com/Equibit/CoreBinaries
     - echo "---------------------------------------------------------------------------------------"
-    - echo $TRAVIS_OS_NAME
-    - /home/travis/build/Equibit/equibit-core/publish.sh
+    - if [ "$OS_WIN" = "true" ]; then echo $TRAVIS_OS_NAME; fi
+    #- /home/travis/build/Equibit/equibit-core/publish.sh
 after_script:
     - echo $TRAVIS_COMMIT_RANGE
     - echo $TRAVIS_COMMIT_LOG
