@@ -4256,7 +4256,7 @@ CTxDestination CWallet::AddAndGetDestinationForScript(const CScript& script, Out
 #ifdef BUILD_BTC
         CSHA256().Write(script.data(), script.size()).Finalize(hash.begin());
 #else  // BUILD_EQB
-        SHA3().Write(script.data(), script.size()).Finalize(hash.begin());
+        CSHA3().Write(script.data(), script.size()).Finalize(hash.begin());
 #endif // END_BUILD
         CTxDestination witdest = hash;
         CScript witprog = GetScriptForDestination(witdest);

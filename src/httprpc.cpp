@@ -14,7 +14,11 @@
 #include <util.h>
 #include <utilstrencodings.h>
 #include <ui_interface.h>
+#ifdef BUILD_BTC
 #include <crypto/hmac_sha256.h>
+#else  // BUILD_EQB
+#include <crypto/hmac_sha3.h>
+#endif // END_BUILD
 #include <stdio.h>
 
 #include <memory>
@@ -113,7 +117,11 @@ static bool multiUserAuthorized(std::string strUserPass)
         static const unsigned int KEY_SIZE = 32;
         unsigned char out[KEY_SIZE];
 
+#ifdef BUILD_BTC
         CHMAC_SHA256(reinterpret_cast<const unsigned char*>(strSalt.c_str()), strSalt.size()).Write(reinterpret_cast<const unsigned char*>(strPass.c_str()), strPass.size()).Finalize(out);
+#else  // BUILD_EQB
+        CHMAC_SHA3(reinterpret_cast<const unsigned char*>(strSalt.c_str()), strSalt.size()).Write(reinterpret_cast<const unsigned char*>(strPass.c_str()), strPass.size()).Finalize(out);
+#endif // END_BUILD
         std::vector<unsigned char> hexvec(out, out+KEY_SIZE);
         std::string strHashFromPass = HexStr(hexvec);
 

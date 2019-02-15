@@ -1418,7 +1418,7 @@ static bool VerifyWitnessProgram(const CScriptWitness& witness, int witversion, 
 #ifdef BUILD_BTC
             CSHA256().Write(&scriptPubKey[0], scriptPubKey.size()).Finalize(hashScriptPubKey.begin());
 #else // BUILD_EQB
-            SHA3().Write(&scriptPubKey[0], scriptPubKey.size()).Finalize(hashScriptPubKey.begin());
+            CSHA3().Write(&scriptPubKey[0], scriptPubKey.size()).Finalize(hashScriptPubKey.begin());
 #endif // END_BUILD
             if (memcmp(hashScriptPubKey.begin(), program.data(), 32)) {
                 return set_error(serror, SCRIPT_ERR_WITNESS_PROGRAM_MISMATCH);

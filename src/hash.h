@@ -23,9 +23,9 @@
 /** A hasher class for Equibit's 256-bit hash (single SHA-3). */
 class CSHA3Hash256 {
 private:
-    SHA3 sha;
+    CSHA3 sha;
 public:
-    static const size_t OUTPUT_SIZE = SHA3::OUTPUT_SIZE;
+    static const size_t OUTPUT_SIZE = CSHA3::OUTPUT_SIZE;
 
     void Finalize(unsigned char hash[OUTPUT_SIZE]) {
         sha.Finalize(hash);
@@ -45,14 +45,14 @@ public:
 /** A hasher class for Equibit's 160-bit hash (SHA-3 + RIPEMD-160). */
 class CSHA3Hash160 {
 private:
-    SHA3 sha;
+    CSHA3 sha;
 public:
     static const size_t OUTPUT_SIZE = CRIPEMD160::OUTPUT_SIZE;
 
     void Finalize(unsigned char hash[OUTPUT_SIZE]) {
-        unsigned char buf[SHA3::OUTPUT_SIZE];
+        unsigned char buf[CSHA3::OUTPUT_SIZE];
         sha.Finalize(buf);
-        CRIPEMD160().Write(buf, SHA3::OUTPUT_SIZE).Finalize(hash);
+        CRIPEMD160().Write(buf, CSHA3::OUTPUT_SIZE).Finalize(hash);
     }
 
     CSHA3Hash160& Write(const unsigned char *data, size_t len) {

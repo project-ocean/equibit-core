@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-class SHA3
+class CSHA3
 {
 private:
     std::vector<char> m_serialization;
@@ -22,12 +22,12 @@ private:
 public:
     static const size_t OUTPUT_SIZE = 32;
 
-    SHA3() 
+    CSHA3() 
     {
         m_serialization.reserve(OUTPUT_SIZE);
     }
 
-    SHA3& Write(const unsigned char* pch, size_t size)
+    CSHA3& Write(const unsigned char* pch, size_t size)
     {
         while (size--)
             m_serialization.push_back(*pch++);
@@ -41,7 +41,7 @@ public:
         memcpy(hash, (unsigned char*) &hashresult, OUTPUT_SIZE);
     }
 
-    SHA3& Reset()
+    CSHA3& Reset()
     {
         m_serialization.clear();
         return *this;

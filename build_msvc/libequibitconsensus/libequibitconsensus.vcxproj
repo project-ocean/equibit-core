@@ -25,6 +25,7 @@
     <ClCompile Include="..\..\src\crypto\aes.cpp" />
     <ClCompile Include="..\..\src\crypto\chacha20.cpp" />
     <ClCompile Include="..\..\src\crypto\hmac_sha256.cpp" />
+    <ClCompile Include="..\..\src\crypto\hmac_sha3.cpp" />
     <ClCompile Include="..\..\src\crypto\hmac_sha512.cpp" />
     <ClCompile Include="..\..\src\crypto\ripemd160.cpp" />
     <ClCompile Include="..\..\src\crypto\sha1.cpp" />
@@ -44,6 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\crypto\hmac_sha3.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

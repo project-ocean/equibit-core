@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(script_standard_Solver_success)
     CSHA256().Write(&redeemScript[0], redeemScript.size())
         .Finalize(scriptHash.begin());
 #else // BUILD_EQB
-    SHA3().Write(&redeemScript[0], redeemScript.size())
+    CSHA3().Write(&redeemScript[0], redeemScript.size())
         .Finalize(scriptHash.begin());
 #endif // END_BUILD
 
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(script_standard_ExtractDestination)
 #ifdef BUILD_BTC
     CSHA256().Write(redeemScript.data(), redeemScript.size()).Finalize(scripthash.begin());
 #else // BUILD_EQB
-    SHA3().Write(redeemScript.data(), redeemScript.size()).Finalize(scripthash.begin());
+    CSHA3().Write(redeemScript.data(), redeemScript.size()).Finalize(scripthash.begin());
 #endif // END_BUILD
     s << OP_0 << ToByteVector(scripthash);
     BOOST_CHECK(ExtractDestination(s, address));
@@ -391,7 +391,7 @@ BOOST_AUTO_TEST_CASE(script_standard_GetScriptFor_)
     CSHA256().Write(&witnessScript[0], witnessScript.size())
         .Finalize(scriptHash.begin());
 #else // BUILD_EQB
-    SHA3().Write(&witnessScript[0], witnessScript.size())
+    CSHA3().Write(&witnessScript[0], witnessScript.size())
         .Finalize(scriptHash.begin());
 #endif // END_BUILD
 
@@ -627,7 +627,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
         CSHA256().Write(&witnessScript[0], witnessScript.size())
             .Finalize(scriptHash.begin());
 #else // BUILD_EQB
-        SHA3().Write(&witnessScript[0], witnessScript.size())
+        CSHA3().Write(&witnessScript[0], witnessScript.size())
             .Finalize(scriptHash.begin());
 #endif // END_BUILD
 
@@ -669,7 +669,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
         CSHA256().Write(&witnessScript[0], witnessScript.size())
             .Finalize(scriptHash.begin());
 #else // BUILD_EQB
-        SHA3().Write(&witnessScript[0], witnessScript.size())
+        CSHA3().Write(&witnessScript[0], witnessScript.size())
             .Finalize(scriptHash.begin());
 #endif // END_BUILD
 
@@ -709,7 +709,7 @@ BOOST_AUTO_TEST_CASE(script_standard_IsMine)
         CSHA256().Write(&witnessScript[0], witnessScript.size())
             .Finalize(scriptHash.begin());
 #else // BUILD_EQB
-        SHA3().Write(&witnessScript[0], witnessScript.size())
+        CSHA3().Write(&witnessScript[0], witnessScript.size())
             .Finalize(scriptHash.begin());
 #endif // END_BUILD
 

@@ -334,7 +334,7 @@ public:
 #ifdef BUILD_BTC
             CSHA256().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
 #else // BUILD_EQB
-            SHA3().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
+            CSHA3().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
 #endif // END_BUILD
             scriptPubKey = CScript() << witnessversion << ToByteVector(hash);
         }
@@ -821,7 +821,7 @@ BOOST_AUTO_TEST_CASE(script_build)
 #ifdef BUILD_BTC
         CSHA256().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
 #else  // BUILD_EQB
-        SHA3().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
+        CSHA3().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
 #endif // END_BUILD
         std::vector<unsigned char> hashBytes = ToByteVector(hash);
         hashBytes.pop_back();
