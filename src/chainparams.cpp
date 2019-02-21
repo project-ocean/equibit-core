@@ -380,14 +380,13 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 }
 
 // EQB_TODO: Temporary method to mine a genesis block
-static CBlock MineGenesisBlock(Consensus::Params& consensus)
+static CBlock MineGenesisBlock(uint32_t time, Consensus::Params& consensus)
 {
     CBlock genesis;
     unsigned int nPoWTarget = UintToArith256(consensus.powLimit).GetCompact();
     bool filter = true;
     for (uint32_t nonce = 0; ; nonce++) {
-        // GMT: Sunday, November 25, 2018 5:02:59 PM
-        genesis = CreateGenesisBlock(1543165379, nonce, nPoWTarget, 1, GENESIS_BLOCK_REWARD);
+        genesis = CreateGenesisBlock(time, nonce, nPoWTarget, 1, GENESIS_BLOCK_REWARD);
         consensus.hashGenesisBlock = genesis.GetHash();
         if(nonce % 1000 == 0)
             std::cout << ".";
@@ -422,18 +421,18 @@ public:
     CMainParams() {
         strNetworkID = "main";
         consensus.nSubsidyAccelerationFactor = 1;
-        consensus.BIP16Height = 173805; // 00000000000000ce80a7e057163a4db1d5ad7b20fb6f598c9597b9665c8fb0d4 - April 1, 2012
-        consensus.BIP34Height = 227931;
-        consensus.BIP34Hash = uint256S("0x000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8");
-        consensus.BIP65Height = 388381; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
-        consensus.BIP66Height = 363725; // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
-       // EQB_TODO temporary to mine genesis block below
+        consensus.BIP16Height = 0;
+        consensus.BIP34Height = 0;
+        consensus.BIP34Hash = uint256S("0x0000000023b3a96d3484e5abb3755c413e7d41500f8e2a5c3f0dd01299cd8ef8");
+        consensus.BIP65Height = 0;
+        consensus.BIP66Height = 0;
+        // EQB_TODO temporary to mine genesis block below
         consensus.powLimit = uint256S("0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 24 * 60 * 60; // 1 day
+        consensus.nPowTargetTimespan = 2 * 60 * 60; // 2 hour moving average window
         consensus.nPowTargetSpacing = 10 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
+        consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
@@ -441,13 +440,13 @@ public:
 
         // Deployment of BIP68, BIP112, and BIP113.
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1462060800; // May 1st, 2016
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1493596800; // May 1st, 2017
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
         // Deployment of SegWit (BIP141, BIP143, and BIP147)
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1479168000; // November 15th, 2016.
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1510704000; // November 15th, 2017.
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         
         // The best chain should have at least this much work.
         //! EQB_TODO: Update in future iterations 
@@ -469,20 +468,21 @@ public:
         nDefaultPort = 8331;
         nPruneAfterHeight = 100000;
 
-        // genesis hash: 000042550b9e7a0bf450cd7c44c74d636f84af1d0e646d3c7099a318ea65b5e2
-        genesis = CreateGenesisBlock(1543165379, 7335, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
-        // EQB_TODO MineGenesisBlock is temporary
-        // genesis = MineGenesisBlock(consensus);
+        // Thu Feb 21 16:40:13 2019 GMT
+        genesis = CreateGenesisBlock(1550767213, 19525, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
+        //genesis = MineGenesisBlock(1550767213, consensus);
         consensus.hashGenesisBlock = genesis.GetHash();
-        // assert(consensus.hashGenesisBlock == uint256S("0x0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379"));
-        // assert(genesis.hashMerkleRoot == uint256S("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
+        assert(consensus.hashGenesisBlock == uint256S("0000ab3a641e901eaea9cd5973308f810421a7acdae5defd8768083322f30e28"));
+        assert(genesis.hashMerkleRoot == uint256S("09177885eb8169b2af83a810da68b16f7910608c5ed0b025c5224f354015d357"));
 
         // Note that of those which support the service bits prefix, most only support a subset of
         // possible options.
         // This is fine at runtime as we'll fall back to using them as a oneshot if they dont support the
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
-       // EQB_TODO Add EQB mainnet seeds
+        // EQB_TODO Add EQB mainnet seeds
+        vFixedSeeds.clear();
+        vSeeds.clear();
 
         base58Prefixes[PUBKEY_ADDRESS] = { 0x01, 0xb5, 0xd1 }; // "EQa" prefix on address. 
         base58Prefixes[SCRIPT_ADDRESS] = { 0x01, 0xb5, 0xfc }; // "EQs" prefix on address.
@@ -492,7 +492,8 @@ public:
 
         bech32_hrp = "eqb";
 
-        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
+        // EQB_TODO populate fixed seeds for Equibit network
+        // vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
@@ -501,29 +502,14 @@ public:
         checkpointData = {
             {
                 // EQB_TODO: Update the checkpoint data once enough blocks are mined 
-                { 11111, uint256S("0x0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d")},
-                { 33333, uint256S("0x000000002dd5588a74784eaa7ab0507a18ad16a236e7b1ce69f00d7ddfb5d0a6")},
-                { 74000, uint256S("0x0000000000573993a3c9e41ce34471c079dcf5f52a0e824a81e7f953b8661a20")},
-                {105000, uint256S("0x00000000000291ce28027faea320c8d2b054b2e0fe44a773f3eefb151d6bdc97")},
-                {134444, uint256S("0x00000000000005b12ffd4cd315cd34ffd4a594f430ac814c91184a0d42d2b0fe")},
-                {168000, uint256S("0x000000000000099e61ea72015e79632f216fe6cb33d7899acb35b75c8303b763")},
-                {193000, uint256S("0x000000000000059f452a5f7340de6682a977387c17010ff6e6c3bd83ca8b1317")},
-                {210000, uint256S("0x000000000000048b95347e83192f69cf0366076336c639f9b7228e9ba171342e")},
-                {216116, uint256S("0x00000000000001b4f4b433e81ee46494af945cf96014816a4e2370f11b23df4e")},
-                {225430, uint256S("0x00000000000001c108384350f74090433e7fcf79a606b8e797f065b130575932")},
-                {250000, uint256S("0x000000000000003887df1f29024b06fc2200b55f8af8f35453d7be294df2d214")},
-                {279000, uint256S("0x0000000000000001ae8c72a0b0c301f67e3afca10e819efa9041e458e9bd7e40")},
-                {295000, uint256S("0x00000000000000004d9b4ef50f0f9d686fd69db2e03af35a100370c64632a983")},
+                {0, uint256S("0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379")},
             }
         };
 
-        // EQB_TODO: Update chainTxData 
         chainTxData = ChainTxData{
-            // Data as of block 0000000000000000002d6cca6761c99b3c2e936f9a0e304b7c7651a993f461de (height 506081).
-            1516903077, // * UNIX timestamp of last known number of transactions
-            295363220,  // * total number of transactions between genesis and that timestamp
-                        //   (the tx=... number in the SetBestChain debug.log lines)
-            3.5         // * estimated number of transactions per second after that timestamp
+            0,
+            0,
+            0
         };
     }
 };
@@ -550,8 +536,8 @@ public:
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
-        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
-        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
 
         // Deployment of BIP68, BIP112, and BIP113.
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
@@ -578,11 +564,12 @@ public:
         nDefaultPort = 18331;
         nPruneAfterHeight = 1000;
 
+        // GMT: Sunday, November 25, 2018 5:02:59 PM
         genesis = CreateGenesisBlock(1543165379, 7335, 0x1f00ffff, 1, GENESIS_BLOCK_REWARD);
-        //genesis = MineGenesisBlock(consensus); // Use MineGenesisBlock if any parameters change
+        //genesis = MineGenesisBlock(1543165379, consensus); // Use MineGenesisBlock if any parameters change
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256S("0x0000e9b3a79f70fb0be95b38604636441323450731e9ee1b5ef410791dac7184"));
-        //assert(genesis.hashMerkleRoot == uint256S("0xea914133c255e8b47fb99d26b8627f90e12f5a9c3bc86269652d474d9814aaca"));
+        assert(consensus.hashGenesisBlock == uint256S("0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379"));
+        assert(genesis.hashMerkleRoot == uint256S("09177885eb8169b2af83a810da68b16f7910608c5ed0b025c5224f354015d357"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -597,7 +584,8 @@ public:
 
         bech32_hrp = "eqbtestnet";
 
-        vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
+        // EQB_TODO
+        // vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;
