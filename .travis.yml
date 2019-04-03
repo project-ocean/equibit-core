@@ -90,8 +90,8 @@ script:
     - if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then extended="--extended --exclude feature_pruning,feature_dbcrash"; fi
     - if [ "$RUN_TESTS" = "true" ]; then eqbtest/functional/test_runner.py --combinedlogslen=40 --coverage --quiet ${extended}; fi
 after_success:
-    # upload Windows binary files to https://github.com/Equibit/CoreBinaries
-    - if [ "$OS_WIN" = "true" ]; then /home/travis/build/Equibit/equibit-core/publish.sh; fi
+    # upload Windows binary files to https://github.com/project-ocean/windows-binaries
+    - if [ "$OS_WIN" = "true" ]; then /home/travis/build/project-ocean/equibit-core/publish.sh; fi
 after_script:
     - echo $TRAVIS_COMMIT_RANGE
     - echo $TRAVIS_COMMIT_LOG
