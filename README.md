@@ -1,7 +1,7 @@
 Equibit Core 
 =============
 
-[![Build Status](https://travis-ci.com/Equibit/equibit-core.svg?branch=dev)](https://travis-ci.com/Equibit/equibit-core)
+[![Build Status](https://travis-ci.org/project-ocean/equibit-core.svg?branch=dev)](https://travis-ci.org/project-ocean/equibit-core)
 
 https://equibit.org
 
