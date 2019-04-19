@@ -95,8 +95,8 @@ BOOST_FIXTURE_TEST_SUITE(transaction_tests, BasicTestingSetup)
 
 BOOST_AUTO_TEST_CASE(tx_valid)
 {
-    // EQB_TODO fix test
-#ifdef EQB_BREAK_TEST
+    // OCN_TODO fix test
+#ifdef OCN_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
     return;
@@ -274,8 +274,8 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
 #ifdef BUILD_BTC
             BOOST_CHECK_MESSAGE(!fValid, strTest);
             BOOST_CHECK_MESSAGE(err != SCRIPT_ERR_OK, ScriptErrorString(err));
-#else  // BUILD_EQB
-            // EQB_TODO Generate new test data
+#else  // BUILD_OCN
+            // OCN_TODO Generate new test data
 #endif
         }
     }

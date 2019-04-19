@@ -215,7 +215,7 @@ bool CKey::VerifyPubKey(const CPubKey& pubkey) const {
     uint256 hash;
 #ifdef BUILD_BTC
     CHash256().Write((unsigned char*)str.data(), str.size()).Write(rnd, sizeof(rnd)).Finalize(hash.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     CSHA3Hash256().Write((unsigned char*)str.data(), str.size()).Write(rnd, sizeof(rnd)).Finalize(hash.begin());
 #endif // END_BUILD
     std::vector<unsigned char> vchSig;
@@ -281,7 +281,7 @@ bool CExtKey::Derive(CExtKey &out, unsigned int _nChild) const {
 void CExtKey::SetMaster(const unsigned char *seed, unsigned int nSeedLen) {
 #ifdef BUILD_BTC
     static const unsigned char hashkey[] = {'B','i','t','c','o','i','n',' ','s','e','e','d'};
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     static const unsigned char hashkey[] = {'E','q','u','i','b','i','t',' ','s','e','e','d'};
 #endif // END_BUILD
     std::vector<unsigned char, secure_allocator<unsigned char>> vout(64);

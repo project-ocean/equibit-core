@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 '''
-for Equibit TestNet/MainNet, compressed/uncompressed. 
+for OCEAN TestNet/MainNet, compressed/uncompressed. 
 Input: 64-symbol string representing Hex integer, or it will generate a random number.
 
 Examples:
 
-λ python make_privateKey_from_number_EQB.py 0000000000000000000000000000000000000000000000000000000000000001
+λ python make_privateKey_from_number_OCN.py 0000000000000000000000000000000000000000000000000000000000000001
 Private Key Compressed   TestNet:     b'ef000000000000000000000000000000000000000000000000000000000000000101fcab5f16'
 Private Key Compressed   TestNet B58: b'cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87Jceaw6xD'
 Private Key Compressed   MainNet:     b'8000000000000000000000000000000000000000000000000000000000000000010156d8a6ad'
@@ -16,7 +16,7 @@ Private Key Uncompressed TestNet B58: b'91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjJoQF
 Private Key Uncompressed MainNet:     b'8000000000000000000000000000000000000000000000000000000000000000011dfb883d'
 Private Key Uncompressed MainNet B58: b'5HpHagT65TZzG1PH3CSu63k8DbpvD8s5ip4nEB3kEsreAj5Zf8G'
 
-λ python make_privateKey_from_number_EQB.py
+λ python make_privateKey_from_number_OCN.py
 Private Key Compressed   TestNet:     b'ef229435dcdf98abea2a3684c6c7b9a7fc045caf2e8a980e3eb75870acd9af2b27010a67b29b'
 Private Key Compressed   TestNet B58: b'cNjvEQUr3E6CfeMH6DuMadeoBgVJUfUWtqHtVfpuRtDYJEpfGALr'
 Private Key Compressed   MainNet:     b'80229435dcdf98abea2a3684c6c7b9a7fc045caf2e8a980e3eb75870acd9af2b27016445ae95'

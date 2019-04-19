@@ -236,18 +236,18 @@ UniValue stop(const JSONRPCRequest& jsonRequest)
         throw std::runtime_error(
             "stop\n"
             "\nStop Bitcoin server.");
-#else // BUILD_EQB
+#else // BUILD_OCN
         throw std::runtime_error(
             "stop\n"
-            "\nStop Equibit server.");
+            "\nStop OCEAN server.");
 #endif // END_BUILD
     // Event loop will exit after current HTTP requests have been handled, so
     // this reply will get back to the client.
     StartShutdown();
 #ifdef BUILD_BTC
     return "Bitcoin server stopping";
-#else // BUILD_EQB
-    return "Equibit server stopping";
+#else // BUILD_OCN
+    return "OCEAN server stopping";
 #endif // END_BUILD			 
 }
 
@@ -526,8 +526,8 @@ std::string HelpExampleCli(const std::string& methodname, const std::string& arg
 {
 #ifdef BUILD_BTC
     return "> bitcoin-cli " + methodname + " " + args + "\n";
-#else // BUILD_EQB
-    return "> equibit-cli " + methodname + " " + args + "\n";
+#else // BUILD_OCN
+    return "> ocean-cli " + methodname + " " + args + "\n";
 #endif // END_BUILD
 }
 

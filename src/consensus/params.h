@@ -51,7 +51,7 @@ struct Params {
     uint256 hashGenesisBlock;
 #ifdef BUILD_BTC
     int nSubsidyHalvingInterval;
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     int nSubsidyAccelerationFactor;
 #endif // END_BUILD
     /** Block height at which BIP16 becomes active */

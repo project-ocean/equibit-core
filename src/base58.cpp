@@ -127,7 +127,7 @@ std::string EncodeBase58Check(const std::vector<unsigned char>& vchIn)
     std::vector<unsigned char> vch(vchIn);
 #ifdef BUILD_BTC
     uint256 hash = Hash(vch.begin(), vch.end());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     //uint256 hash = SHA3Hash(vch.begin(), vch.end());
     uint256 hash = Hash(vch.begin(), vch.end());
 #endif // END_BUILD
@@ -145,7 +145,7 @@ bool DecodeBase58Check(const char* psz, std::vector<unsigned char>& vchRet)
     // re-calculate the checksum, ensure it matches the included 4-byte checksum
 #ifdef BUILD_BTC
     uint256 hash = Hash(vchRet.begin(), vchRet.end() - 4);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     //uint256 hash = SHA3Hash(vchRet.begin(), vchRet.end() - 4);
     uint256 hash = Hash(vchRet.begin(), vchRet.end() - 4);
 #endif // END_BUILD

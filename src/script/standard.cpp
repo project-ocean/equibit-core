@@ -19,7 +19,7 @@ unsigned nMaxDatacarrierBytes = MAX_OP_RETURN_RELAY;
 
 #ifdef BUILD_BTC
 CScriptID::CScriptID(const CScript& in) : uint160(Hash160(in.begin(), in.end())) {}
-#else // BUILD_EQB
+#else // BUILD_OCN
 CScriptID::CScriptID(const CScript& in) : uint160(SHA3Hash160(in.begin(), in.end())) {}
 #endif // END_BUILD
 
@@ -355,7 +355,7 @@ CScript GetScriptForWitness(const CScript& redeemscript)
         if (typ == TX_PUBKEY) {
 #ifdef BUILD_BTC
             return GetScriptForDestination(WitnessV0KeyHash(Hash160(vSolutions[0].begin(), vSolutions[0].end())));
-#else // BUILD_EQB
+#else // BUILD_OCN
             return GetScriptForDestination(WitnessV0KeyHash(SHA3Hash160(vSolutions[0].begin(), vSolutions[0].end())));
 #endif // END_BUILD
         } else if (typ == TX_PUBKEYHASH) {
@@ -365,7 +365,7 @@ CScript GetScriptForWitness(const CScript& redeemscript)
     uint256 hash;
 #ifdef BUILD_BTC
     CSHA256().Write(&redeemscript[0], redeemscript.size()).Finalize(hash.begin());
-#else // BUILD_EQB
+#else // BUILD_OCN
     CSHA3().Write(&redeemscript[0], redeemscript.size()).Finalize(hash.begin());
 #endif // END_BUILD
     return GetScriptForDestination(WitnessV0ScriptHash(hash));

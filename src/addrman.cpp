@@ -14,7 +14,7 @@ int CAddrInfo::GetTriedBucket(const uint256& nKey) const
 #ifdef BUILD_BTC
     uint64_t hash1 = (CHashWriter(SER_GETHASH, 0) << nKey << GetKey()).GetHash().GetCheapHash();
     uint64_t hash2 = (CHashWriter(SER_GETHASH, 0) << nKey << GetGroup() << (hash1 % ADDRMAN_TRIED_BUCKETS_PER_GROUP)).GetHash().GetCheapHash();
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     uint64_t hash1 = (CSHA3HashWriter(SER_GETHASH, 0) << nKey << GetKey()).GetHash().GetCheapHash();
     uint64_t hash2 = (CSHA3HashWriter(SER_GETHASH, 0) << nKey << GetGroup() << (hash1 % ADDRMAN_TRIED_BUCKETS_PER_GROUP)).GetHash().GetCheapHash();
 #endif // END_BUILD
@@ -27,7 +27,7 @@ int CAddrInfo::GetNewBucket(const uint256& nKey, const CNetAddr& src) const
 #ifdef BUILD_BTC
     uint64_t hash1 = (CHashWriter(SER_GETHASH, 0) << nKey << GetGroup() << vchSourceGroupKey).GetHash().GetCheapHash();
     uint64_t hash2 = (CHashWriter(SER_GETHASH, 0) << nKey << vchSourceGroupKey << (hash1 % ADDRMAN_NEW_BUCKETS_PER_SOURCE_GROUP)).GetHash().GetCheapHash();
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     uint64_t hash1 = (CSHA3HashWriter(SER_GETHASH, 0) << nKey << GetGroup() << vchSourceGroupKey).GetHash().GetCheapHash();
     uint64_t hash2 = (CSHA3HashWriter(SER_GETHASH, 0) << nKey << vchSourceGroupKey << (hash1 % ADDRMAN_NEW_BUCKETS_PER_SOURCE_GROUP)).GetHash().GetCheapHash();
 #endif // END_BUILD
@@ -38,7 +38,7 @@ int CAddrInfo::GetBucketPosition(const uint256 &nKey, bool fNew, int nBucket) co
 {
 #ifdef BUILD_BTC
     uint64_t hash1 = (CHashWriter(SER_GETHASH, 0) << nKey << (fNew ? 'N' : 'K') << nBucket << GetKey()).GetHash().GetCheapHash();
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     uint64_t hash1 = (CSHA3HashWriter(SER_GETHASH, 0) << nKey << (fNew ? 'N' : 'K') << nBucket << GetKey()).GetHash().GetCheapHash();
 #endif // END_BUILD
     return hash1 % ADDRMAN_BUCKET_SIZE;

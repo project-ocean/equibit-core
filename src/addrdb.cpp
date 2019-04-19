@@ -24,7 +24,7 @@ bool SerializeDB(Stream& stream, const Data& data)
     try {
 #ifdef BUILD_BTC
         CHashWriter hasher(SER_DISK, CLIENT_VERSION);
-#else // BUILD_EQB
+#else // BUILD_OCN
         CSHA3HashWriter hasher(SER_DISK, CLIENT_VERSION);
 #endif // END_BUILD
         stream << FLATDATA(Params().MessageStart()) << data;
@@ -70,7 +70,7 @@ bool DeserializeDB(Stream& stream, Data& data, bool fCheckSum = true)
     try {
 #ifdef BUILD_BTC
         CHashVerifier<Stream> verifier(&stream);
-#else // BUILD_EQB
+#else // BUILD_OCN
         CSHA3HashVerifier<Stream> verifier(&stream);
 #endif // END_BUILD
         // de-serialize file header (network specific magic number) and ..

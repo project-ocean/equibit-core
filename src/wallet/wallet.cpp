@@ -328,7 +328,7 @@ bool CWallet::AddCScript(const CScript& redeemScript)
         return false;
 #ifdef BUILD_BTC
     return CWalletDB(*dbw).WriteCScript(Hash160(redeemScript), redeemScript);
-#else // BUILD_EQB
+#else // BUILD_OCN
     return CWalletDB(*dbw).WriteCScript(SHA3Hash160(redeemScript), redeemScript);
 #endif // END_BUILD
 }
@@ -4255,7 +4255,7 @@ CTxDestination CWallet::AddAndGetDestinationForScript(const CScript& script, Out
         WitnessV0ScriptHash hash;
 #ifdef BUILD_BTC
         CSHA256().Write(script.data(), script.size()).Finalize(hash.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         CSHA3().Write(script.data(), script.size()).Finalize(hash.begin());
 #endif // END_BUILD
         CTxDestination witdest = hash;

@@ -65,11 +65,11 @@ TESTS =
 BENCHMARKS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += equibitd
+  bin_PROGRAMS += oceand
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += equibit-cli equibit-tx
+  bin_PROGRAMS += ocean-cli ocean-tx
 endif
 
 .PHONY: FORCE check-symbols check-security
@@ -398,16 +398,16 @@ nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
 # bitcoind binary #
-equibitd_SOURCES = bitcoind.cpp
-equibitd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-equibitd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-equibitd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+oceand_SOURCES = bitcoind.cpp
+oceand_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+oceand_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+oceand_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-equibitd_SOURCES += bitcoind-res.rc
+oceand_SOURCES += bitcoind-res.rc
 endif
 
-equibitd_LDADD = \
+oceand_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_COMMON) \
   $(LIBUNIVALUE) \
@@ -421,38 +421,38 @@ equibitd_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-equibitd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
+oceand_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
 
 # bitcoin-cli binary #
-equibit_cli_SOURCES = bitcoin-cli.cpp
-equibit_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-equibit_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-equibit_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+ocean_cli_SOURCES = bitcoin-cli.cpp
+ocean_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+ocean_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+ocean_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-equibit_cli_SOURCES += bitcoin-cli-res.rc
+ocean_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
-equibit_cli_LDADD = \
+ocean_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
 
-equibit_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
+ocean_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
 
 # bitcoin-tx binary #
-equibit_tx_SOURCES = bitcoin-tx.cpp
-equibit_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-equibit_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-equibit_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+ocean_tx_SOURCES = bitcoin-tx.cpp
+ocean_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+ocean_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+ocean_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-equibit_tx_SOURCES += bitcoin-tx-res.rc
+ocean_tx_SOURCES += bitcoin-tx-res.rc
 endif
 
-equibit_tx_LDADD = \
+ocean_tx_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_SERVER) \
@@ -461,7 +461,7 @@ equibit_tx_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-equibit_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+ocean_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 #
 
 # bitcoinconsensus library #

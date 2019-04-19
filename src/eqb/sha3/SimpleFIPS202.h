@@ -20,7 +20,7 @@ http://creativecommons.org/publicdomain/zero/1.0/
 #include "KeccakSpongeWidth1600.h"
 #include <string.h>
 
-#ifdef EQB_ALL_SHA3_VERSIONS
+#ifdef OCN_ALL_SHA3_VERSIONS
 /** Implementation of the SHAKE128 extendable output function (XOF) [FIPS 202].
   * @param  output          Pointer to the output buffer.
   * @param  outputByteLen   The desired number of output bytes.

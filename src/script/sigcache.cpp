@@ -42,7 +42,7 @@ public:
     {
 #ifdef BUILD_BTC
         CSHA256().Write(nonce.begin(), 32).Write(hash.begin(), 32).Write(&pubkey[0], pubkey.size()).Write(&vchSig[0], vchSig.size()).Finalize(entry.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         CSHA3().Write(nonce.begin(), 32).Write(hash.begin(), 32).Write(&pubkey[0], pubkey.size()).Write(&vchSig[0], vchSig.size()).Finalize(entry.begin());
 #endif // END_BUILD
     }

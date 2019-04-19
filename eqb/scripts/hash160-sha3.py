@@ -2,7 +2,7 @@ import hashlib
 import sha3
 
 
-# This is a handy script to generate a Equibit HASH160 which is RIPEMD160(SHA3(input)))
+# This is a handy script to generate a OCEAN HASH160 which is RIPEMD160(SHA3(input)))
 
 #step 1: sha256
 input = ""

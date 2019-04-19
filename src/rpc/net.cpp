@@ -298,8 +298,8 @@ UniValue getaddednodeinfo(const JSONRPCRequest& request)
             "       {\n"
 #ifdef BUILD_BTC
             "         \"address\" : \"192.168.0.201:8333\",  (string) The bitcoin server IP and port we're connected to\n"
-#else // BUILD_EQB
-            "         \"address\" : \"192.168.0.201:8333\",  (string) The equibit server IP and port we're connected to\n"
+#else // BUILD_OCN
+            "         \"address\" : \"192.168.0.201:8333\",  (string) The ocean server IP and port we're connected to\n"
 #endif // END_BUILD
             "         \"connected\" : \"outbound\"           (string) connection, inbound or outbound\n"
             "       }\n"

@@ -76,7 +76,7 @@ class SegWitTest(BitcoinTestFramework):
         sync_blocks(self.nodes)
 
     def run_test(self):
-        # raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # EQB_TODO: disabled test
+        # raise SkipTest("Disabled to make issues/#157-base58check-prefix pass")  # OCN_TODO: disabled test
         self.nodes[0].generate(161) #block 161
 
         self.log.info("Verify sigops are counted in GBT with pre-BIP141 rules before the fork")
@@ -256,7 +256,7 @@ class SegWitTest(BitcoinTestFramework):
 
         # Check that tx1 is the only transaction of the 3 in the template.
         template_txids = [ t['txid'] for t in template['transactions'] ]
-        # assert(txid2 not in template_txids and txid3 not in template_txids)  # EQB_TODO: issue #341, check removed due to hard-coded segwit support
+        # assert(txid2 not in template_txids and txid3 not in template_txids)  # OCN_TODO: issue #341, check removed due to hard-coded segwit support
         assert(txid1 in template_txids)
 
         # Check that running with segwit support results in all 3 being included.

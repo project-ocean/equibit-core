@@ -62,11 +62,11 @@ static int AppInitRawTx(int argc, char* argv[])
               "  bitcoin-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded bitcoin transaction") + "\n" +
               "  bitcoin-tx [options] -create [commands]   " + _("Create hex-encoded bitcoin transaction") + "\n" +
               "\n";
-#else // BUILD_EQB
-        std::string strUsage = strprintf( _( "%s equibit-tx utility version" ), _( PACKAGE_NAME ) ) + " " + FormatFullVersion() + "\n\n" +
+#else // BUILD_OCN
+        std::string strUsage = strprintf( _( "%s ocean-tx utility version" ), _( PACKAGE_NAME ) ) + " " + FormatFullVersion() + "\n\n" +
             _( "Usage:" ) + "\n" +
-            "  equibit-tx [options] <hex-tx> [commands]  " + _( "Update hex-encoded equibit transaction" ) + "\n" +
-            "  equibit-tx [options] -create [commands]   " + _( "Create hex-encoded equibit transaction" ) + "\n" +
+            "  ocean-tx [options] <hex-tx> [commands]  " + _( "Update hex-encoded ocean transaction" ) + "\n" +
+            "  ocean-tx [options] -create [commands]   " + _( "Create hex-encoded ocean transaction" ) + "\n" +
             "\n";
 #endif // END_BUILD
 

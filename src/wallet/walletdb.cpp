@@ -70,7 +70,7 @@ bool CWalletDB::WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, c
 
 #ifdef BUILD_BTC
     return WriteIC(std::make_pair(std::string("key"), vchPubKey), std::make_pair(vchPrivKey, Hash(vchKey.begin(), vchKey.end())), false);
-#else // BUILD_EQB
+#else // BUILD_OCN
     return WriteIC(std::make_pair(std::string("key"), vchPubKey), std::make_pair(vchPrivKey, SHA3Hash(vchKey.begin(), vchKey.end())), false);
 #endif // END_BUILD
 }
@@ -374,7 +374,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
 
 #ifdef BUILD_BTC
                 if (Hash(vchKey.begin(), vchKey.end()) != hash)
-#else // BUILD_EQB
+#else // BUILD_OCN
                 if (SHA3Hash(vchKey.begin(), vchKey.end()) != hash)
 #endif // END_BUILD
                 {

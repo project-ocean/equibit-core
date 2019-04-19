@@ -7,12 +7,12 @@
 #include <test/data/base58_encode_decode.json.h>
 #ifdef BUILD_BTC
 #include <test/data/base58_keys_invalid.json.h>
-#else // BUILD_EQB
+#else // BUILD_OCN
 #include <test/data/eqb_base58_keys_invalid.json.h>
 #endif // END_BUILD
 #ifdef BUILD_BTC
 #include <test/data/base58_keys_valid.json.h>
-#else // BUILD_EQB
+#else // BUILD_OCN
 #include <test/data/eqb_base58_keys_valid.json.h>
 #endif // END_BUILD
 
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_parse)
 {
 #ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));
-#else // BUILD_EQB
+#else // BUILD_OCN
     UniValue tests = read_json(std::string(json_tests::eqb_base58_keys_valid, json_tests::eqb_base58_keys_valid + sizeof(json_tests::eqb_base58_keys_valid)));
 #endif // END_BUILD
     CBitcoinSecret secret;
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE(base58_keys_valid_gen)
 {
 #ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_valid, json_tests::base58_keys_valid + sizeof(json_tests::base58_keys_valid)));
-#else // BUILD_EQB
+#else // BUILD_OCN
     UniValue tests = read_json(std::string(json_tests::eqb_base58_keys_valid, json_tests::eqb_base58_keys_valid + sizeof(json_tests::eqb_base58_keys_valid)));
 #endif // END_BUILD
     for (unsigned int idx = 0; idx < tests.size(); idx++) {
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE(base58_keys_invalid)
 {
 #ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::base58_keys_invalid, json_tests::base58_keys_invalid + sizeof(json_tests::base58_keys_invalid))); // Negative testcases
-#else // BUILD_EQB
+#else // BUILD_OCN
     UniValue tests = read_json(std::string(json_tests::eqb_base58_keys_invalid, json_tests::eqb_base58_keys_invalid + sizeof(json_tests::eqb_base58_keys_invalid))); // Negative testcases
 #endif // END_BUILD
     CBitcoinSecret secret;

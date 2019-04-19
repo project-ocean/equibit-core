@@ -316,8 +316,8 @@ UniValue importaddress(const JSONRPCRequest& request)
         } else {
 #ifdef BUILD_BTC
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address or script");
-#else // BUILD_EQB
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit address or script");
+#else // BUILD_OCN
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid OCEAN address or script");
 #endif // END_BUILD 
         }
     }
@@ -655,8 +655,8 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
     if (!IsValidDestination(dest)) {
 #ifdef BUILD_BTC
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
-#else // BUILD_EQB
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit address");
+#else // BUILD_OCN
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid OCEAN address");
 #endif // END_BUILD 
     }
     auto keyid = GetKeyForDestination(*pwallet, dest);
@@ -737,8 +737,8 @@ UniValue dumpwallet(const JSONRPCRequest& request)
     // produce output
 #ifdef BUILD_BTC
     file << strprintf("# Wallet dump created by Bitcoin %s\n", CLIENT_BUILD);
-#else // BUILD_EQB
-    file << strprintf("# Wallet dump created by Equibit %s\n", CLIENT_BUILD);
+#else // BUILD_OCN
+    file << strprintf("# Wallet dump created by OCEAN %s\n", CLIENT_BUILD);
 #endif // END_BUILD 
     file << strprintf("# * Created on %s\n", EncodeDumpTime(GetTime()));
     file << strprintf("# * Best block at time of backup was %i (%s),\n", chainActive.Height(), chainActive.Tip()->GetBlockHash().ToString());
