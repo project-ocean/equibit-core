@@ -9,10 +9,10 @@ src/test/test_bitcoin
 src/test/test_bitcoin_fuzzy
 src/qt/test/test_bitcoin-qt
 
-src/equibit
-src/equibitd
-src/equibit-cli
-src/equibit-tx
+src/ocean
+src/oceand
+src/ocean-cli
+src/ocean-tx
 src/test/test_equibit
 src/test/test_equibit_fuzzy
 src/qt/test/test_equibit-qt
