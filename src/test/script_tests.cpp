@@ -4,7 +4,7 @@
 
 #ifdef BUILD_BTC
 #include <test/data/script_tests.json.h>
-#else // BUILD_EQB 
+#else // BUILD_OCN 
 #include <test/data/eqb_script_tests.json.h>
 #endif // END_BUILD
 
@@ -323,7 +323,7 @@ public:
             uint160 hash;
 #ifdef BUILD_BTC
             CHash160().Write(&script[1], script.size() - 1).Finalize(hash.begin());
-#else // BUILD_EQB
+#else // BUILD_OCN
             CSHA3Hash160().Write(&script[1], script.size() - 1).Finalize(hash.begin());
 #endif // END_BUILD
             script = CScript() << OP_DUP << OP_HASH160 << ToByteVector(hash) << OP_EQUALVERIFY << OP_CHECKSIG;
@@ -333,7 +333,7 @@ public:
             uint256 hash;
 #ifdef BUILD_BTC
             CSHA256().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
-#else // BUILD_EQB
+#else // BUILD_OCN
             CSHA3().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
 #endif // END_BUILD
             scriptPubKey = CScript() << witnessversion << ToByteVector(hash);
@@ -820,7 +820,7 @@ BOOST_AUTO_TEST_CASE(script_build)
         uint256 hash;
 #ifdef BUILD_BTC
         CSHA256().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         CSHA3().Write(&witscript[0], witscript.size()).Finalize(hash.begin());
 #endif // END_BUILD
         std::vector<unsigned char> hashBytes = ToByteVector(hash);
@@ -949,7 +949,7 @@ BOOST_AUTO_TEST_CASE(script_build)
     {
 #ifdef BUILD_BTC
         UniValue json_tests = read_json(std::string(json_tests::script_tests, json_tests::script_tests + sizeof(json_tests::script_tests)));
-#else // BUILD_EQB 
+#else // BUILD_OCN 
         UniValue json_tests = read_json(std::string(json_tests::eqb_script_tests, json_tests::eqb_script_tests + sizeof(json_tests::eqb_script_tests)));
 #endif // END_BUILD
 
@@ -990,7 +990,7 @@ BOOST_AUTO_TEST_CASE(script_json_test)
     // amount (nValue) to use in the crediting tx
 #ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::script_tests, json_tests::script_tests + sizeof(json_tests::script_tests)));
-#else // BUILD_EQB 
+#else // BUILD_OCN 
     UniValue tests = read_json(std::string(json_tests::eqb_script_tests, json_tests::eqb_script_tests + sizeof(json_tests::eqb_script_tests)));
 #endif // END_BUILD
 
@@ -1491,7 +1491,7 @@ BOOST_AUTO_TEST_CASE(script_HasValidOps)
     BOOST_CHECK(!script.HasValidOps());
 #ifdef BUILD_BTC
     script = ScriptFromHex("88acc0"); // Script with undefined opcode
-#else // BUILD_EQB
+#else // BUILD_OCN
     script = ScriptFromHex("88acc9"); // Script with undefined opcode
 #endif // END_BUILD
     BOOST_CHECK(!script.HasValidOps());

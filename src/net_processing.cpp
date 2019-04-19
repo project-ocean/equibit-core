@@ -64,7 +64,7 @@ static std::vector<std::pair<uint256, CTransactionRef>> vExtraTxnForCompact GUAR
 
 #ifdef BUILD_BTC
 static const uint64_t RANDOMIZER_ID_ADDRESS_RELAY = 0x3cac0035b5866b90ULL; // SHA256("main address relay")[0:8]
-#else // BUILD_EQB
+#else // BUILD_OCN
 static const uint64_t RANDOMIZER_ID_ADDRESS_RELAY = 0xd300e44b7816d28bULL; // SHA-3("main address relay")[0:8]
 #endif // END_BUILD
 

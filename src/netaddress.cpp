@@ -50,7 +50,7 @@ bool CNetAddr::SetInternal(const std::string &name)
     unsigned char hash[32] = {};
 #ifdef BUILD_BTC
     CSHA256().Write((const unsigned char*)name.data(), name.size()).Finalize(hash);
-#else // BUILD_EQB
+#else // BUILD_OCN
     CSHA3().Write((const unsigned char*)name.data(), name.size()).Finalize(hash);
 #endif // END_BUILD
     memcpy(ip, g_internal_prefix, sizeof(g_internal_prefix));
@@ -398,7 +398,7 @@ uint64_t CNetAddr::GetHash() const
 {
  #ifdef BUILD_BTC
     uint256 hash = Hash(&ip[0], &ip[16]);
-#else // BUILD_EQB
+#else // BUILD_OCN
     uint256 hash = SHA3Hash(&ip[0], &ip[16]);
 #endif // END_BUILD
     uint64_t nRet;

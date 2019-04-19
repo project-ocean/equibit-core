@@ -35,7 +35,7 @@
 /* Copyright year */
 #define COPYRIGHT_YEAR 2018
 
-#else // BUILD_EQB
+#else // BUILD_OCN
 
 /* Version Build */
 #define CLIENT_VERSION_BUILD 0
@@ -56,10 +56,10 @@
 #define COPYRIGHT_HOLDERS "The %s developers"
 
 /* Copyright holder(s) */
-#define COPYRIGHT_HOLDERS_FINAL "The Equibit Core developers"
+#define COPYRIGHT_HOLDERS_FINAL "The OCEAN Core developers"
 
 /* Replacement for %s in copyright holders string */
-#define COPYRIGHT_HOLDERS_SUBSTITUTION "Equibit Core"
+#define COPYRIGHT_HOLDERS_SUBSTITUTION "OCEAN Core"
 
 /* Copyright year */
 #define COPYRIGHT_YEAR 2019
@@ -380,15 +380,15 @@
 /* Define to the full name of this package. */
 #ifdef BUILD_BTC
 #define PACKAGE_NAME "Bitcoin Core"
-#else // BUILD_EQB
-#define PACKAGE_NAME "Equibit Core"
+#else // BUILD_OCN
+#define PACKAGE_NAME "OCEAN Core"
 #endif // END_BUILD
 
 /* Define to the full name and version of this package. */
 #ifdef BUILD_BTC
 #define PACKAGE_STRING "Bitcoin Core 0.16.2"
-#else // BUILD_EQB
-#define PACKAGE_STRING "Equibit Core 0.16.2"
+#else // BUILD_OCN
+#define PACKAGE_STRING "OCEAN Core 0.16.2"
 #endif // END_BUILD
 
 /* Define to the one symbol short name of this package. */

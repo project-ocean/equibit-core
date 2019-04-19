@@ -7,17 +7,17 @@ define(_CLIENT_VERSION_BUILD, 0)
 define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2019)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
-define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Equibit Core]])
-AC_INIT([Equibit Core],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[https://github.com/Equibit/equibit-core/issues],[equibit],[https://www.equibit.com/])
+define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[OCEAN Core]])
+AC_INIT([OCEAN Core],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[https://github.com/OCEAN/ocean-core/issues],[ocean],[https://www.ocean.com/])
 AC_CONFIG_SRCDIR([src/validation.cpp])
 AC_CONFIG_HEADERS([src/config/bitcoin-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
 
-BITCOIN_DAEMON_NAME=equibitd
+BITCOIN_DAEMON_NAME=oceand
 BITCOIN_GUI_NAME=bitcoind-qt
-BITCOIN_CLI_NAME=equibit-cli
-BITCOIN_TX_NAME=equibit-tx
+BITCOIN_CLI_NAME=ocean-cli
+BITCOIN_TX_NAME=ocean-tx
 
 dnl Unless the user specified ARFLAGS, force it to be cr
 AC_ARG_VAR(ARFLAGS, [Flags for the archiver, defaults to <cr> if not set])

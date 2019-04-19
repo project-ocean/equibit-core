@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(floats)
     }
 #ifdef BUILD_BTC
     BOOST_CHECK(Hash(ss.begin(), ss.end()) == uint256S("8e8b4cf3e4df8b332057e3e23af42ebc663b61e0495d5e7e32d85099d7f3fe0c"));
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     BOOST_CHECK(SHA3Hash(ss.begin(), ss.end()) == uint256S("c87ff5e4af673eb0af528118f005def702d1486f55b531d8d882711ac623c674"));
 #endif // END_BUILD
 
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(doubles)
     }
 #ifdef BUILD_BTC
     BOOST_CHECK(Hash(ss.begin(), ss.end()) == uint256S("43d0c82591953c4eafe114590d392676a01585d25b25d433557f0d7878b23f96"));
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     BOOST_CHECK(SHA3Hash(ss.begin(), ss.end()) == uint256S("4efc1137da44ace0c2b6a470fdfa9c4d072394a4ac54b9824b58b27cadd8ac9d"));
 #endif // END_BUILD
 

@@ -67,10 +67,10 @@ double GetDifficulty(const CChain& chain, const CBlockIndex* blockindex)
     double dDiff =
         (double)0x0000ffff / (double)(blockindex->nBits & 0x00ffffff);
 
-    //! EQB_TODO: Change 31 to 29
+    //! OCN_TODO: Change 31 to 29
 #ifdef BUILD_BTC
     while (nShift < 29)
-#else // BUILD_EQB
+#else // BUILD_OCN
     while (nShift < 31)
 #endif // END_BUILD
     {
@@ -79,7 +79,7 @@ double GetDifficulty(const CChain& chain, const CBlockIndex* blockindex)
     }
 #ifdef BUILD_BTC
     while (nShift > 29)
-#else // BUILD_EQB
+#else // BUILD_OCN
     while (nShift > 31)
 #endif // END_BUILD
     {
@@ -835,7 +835,7 @@ struct CCoinsStats
 
 #ifdef BUILD_BTC
 static void ApplyStats(CCoinsStats &stats, CHashWriter& ss, const uint256& hash, const std::map<uint32_t, Coin>& outputs)
-#else  // BUILD_EQB
+#else  // BUILD_OCN
 static void ApplyStats(CCoinsStats &stats, CSHA3HashWriter& ss, const uint256& hash, const std::map<uint32_t, Coin>& outputs)
 #endif // END_BUILD
 {
@@ -863,7 +863,7 @@ static bool GetUTXOStats(CCoinsView *view, CCoinsStats &stats)
 
 #ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     CSHA3HashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
 #endif // END_BUILD
     stats.hashBlock = pcursor->GetBestBlock();
@@ -1013,9 +1013,9 @@ UniValue gettxout(const JSONRPCRequest& request)
 #ifdef BUILD_BTC
             "     \"addresses\" : [          (array of string) array of bitcoin addresses\n"
             "        \"address\"     (string) bitcoin address\n"
-#else  // BUILD_EQB
-            "     \"addresses\" : [          (array of string) array of equibit addresses\n"
-            "        \"address\"     (string) equibit address\n"
+#else  // BUILD_OCN
+            "     \"addresses\" : [          (array of string) array of ocean addresses\n"
+            "        \"address\"     (string) ocean address\n"
 #endif // END_BUILD
             "        ,...\n"
             "     ]\n"

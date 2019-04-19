@@ -58,7 +58,7 @@ class TestNode():
         binary_ext = ".exe" if sys.platform == "win32" else ""
 
         if binary is None:
-            self.binary = os.getenv("BITCOIND", "equibitd" + binary_ext)
+            self.binary = os.getenv("BITCOIND", "oceand" + binary_ext)
         else:
             self.binary = binary
         self.stderr = stderr
@@ -110,14 +110,14 @@ class TestNode():
         delete_cookie_file(self.datadir)
         self.process = subprocess.Popen(self.args + extra_args, stderr=stderr, *args, **kwargs)
         self.running = True
-        self.log.debug("equibitd started, waiting for RPC to come up")
+        self.log.debug("oceand started, waiting for RPC to come up")
 
     def wait_for_rpc_connection(self):
         """Sets up an RPC connection to the bitcoind process. Returns False if unable to connect."""
         # Poll at a rate of four times per second
         poll_per_s = 4
         for _ in range(poll_per_s * self.rpc_timeout):
-            assert self.process.poll() is None, "equibitd exited with status %i during initialization" % self.process.returncode
+            assert self.process.poll() is None, "oceand exited with status %i during initialization" % self.process.returncode
             try:
                 self.rpc = get_rpc_proxy(rpc_url(self.datadir, self.index, self.rpchost), self.index, timeout=self.rpc_timeout, coveragedir=self.coverage_dir)
                 self.rpc.getblockcount()
@@ -136,7 +136,7 @@ class TestNode():
                 if "No RPC credentials" not in str(e):
                     raise
             time.sleep(1.0 / poll_per_s)
-        raise AssertionError("Unable to connect to equibitd")
+        raise AssertionError("Unable to connect to oceand")
 
     def get_wallet_rpc(self, wallet_name):
         if self.use_cli:

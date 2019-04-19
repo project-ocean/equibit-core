@@ -62,7 +62,7 @@ uint256 CMutableTransaction::GetHash() const
 {
 #ifdef BUILD_BTC
     return SerializeHash(*this, SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     return SHA3SerializeHash(*this, SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
 #endif // END_BUILD
 }
@@ -71,7 +71,7 @@ uint256 CTransaction::ComputeHash() const
 {
 #ifdef BUILD_BTC
     return SerializeHash(*this, SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     return SHA3SerializeHash(*this, SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
 #endif // END_BUILD
 }
@@ -83,7 +83,7 @@ uint256 CTransaction::GetWitnessHash() const
     }
 #ifdef BUILD_BTC
     return SerializeHash(*this, SER_GETHASH, 0);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     return SHA3SerializeHash(*this, SER_GETHASH, 0); 
 #endif // END_BUILD
 }

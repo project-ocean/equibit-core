@@ -397,7 +397,7 @@ BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
         BOOST_CHECK_EQUAL(nullBlock, wallet.ScanForWalletTransactions(oldTip, nullptr, reserver));
 #ifdef BUILD_BTC
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 100 * COIN);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), BLOCK_140000_REWARD + BLOCK_141400_REWARD);
 #endif // END_BUILD
     }
@@ -416,7 +416,7 @@ BOOST_FIXTURE_TEST_CASE(rescan, TestChain100Setup)
         BOOST_CHECK_EQUAL(oldTip, wallet.ScanForWalletTransactions(oldTip, nullptr, reserver));
 #ifdef BUILD_BTC
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), 50 * COIN);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         BOOST_CHECK_EQUAL(wallet.GetImmatureBalance(), BLOCK_141400_REWARD);
 #endif // END_BUILD
     }
@@ -549,7 +549,7 @@ BOOST_FIXTURE_TEST_CASE(coin_mark_dirty_immature_credit, TestChain100Setup)
     wallet.AddKeyPubKey(coinbaseKey, coinbaseKey.GetPubKey());
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), 50*COIN);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), BLOCK_140000_REWARD);
 #endif // END_BUILD
 }
@@ -689,7 +689,7 @@ BOOST_FIXTURE_TEST_CASE(ListCoins, ListCoinsTestingSetup)
     // Check initial balance from one mature coinbase transaction.
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(50 * COIN, wallet->GetAvailableBalance());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     BOOST_CHECK_EQUAL(wallet->GetAvailableBalance(), BLOCK_1400_REWARD);
 #endif // END_BUILD
 

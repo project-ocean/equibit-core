@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Copyright (c) 2015-2017 The Bitcoin Core developers
-# Copyright (c) 2019 The Equibit Core developers
+# Copyright (c) 2019 The OCEAN Core developers
 # Distributed under the MIT software license, see the accompanying 
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -34,6 +34,6 @@ if sys.version_info.major >= 3:
 m = hmac.new(bytearray(salt, 'utf-8'), bytearray(password, 'utf-8'), 'sha3_256')
 result = m.hexdigest()
 
-print("String to be appended to equibit.conf:")
+print("String to be appended to ocean.conf:")
 print("rpcauth="+username+":"+salt+"$"+result)
 print("Your password:\n"+password)

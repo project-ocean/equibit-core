@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(get_next_work_upper_limit_actual)
 }
 
 
-#else // BUILD_EQB
+#else // BUILD_OCN
 
 
 static int64_t FirstBlockTime = 1000000000; // arbitrary start time

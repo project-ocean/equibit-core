@@ -241,8 +241,8 @@ CScript COINBASE_FLAGS;
 
 #ifdef BUILD_BTC
 const std::string strMessageMagic = "Bitcoin Signed Message:\n";
-#else // BUILD_EQB
-const std::string strMessageMagic = "Equibit Signed Message:\n";
+#else // BUILD_OCN
+const std::string strMessageMagic = "OCEAN Signed Message:\n";
 #endif // END_BUILD
 
 // Internal stuff
@@ -1158,12 +1158,12 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     CAmount nSubsidy = 50 * COIN;
     // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
     nSubsidy >>= halvings;
-#else  // BUILD_EQB
+#else  // BUILD_OCN
 
     CAmount nSubsidy = GENESIS_BLOCK_REWARD;
     if (nHeight > 0)
     {
-        nHeight *= consensusParams.nSubsidyAccelerationFactor; // EQB_TODO: Is it assumed nHeight is a 32-bit int? why isn't it unsigned?
+        nHeight *= consensusParams.nSubsidyAccelerationFactor; // OCN_TODO: Is it assumed nHeight is a 32-bit int? why isn't it unsigned?
 
         if (nHeight == 1)
         {
@@ -1414,7 +1414,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsVi
             static_assert(55 - sizeof(flags) - 32 >= 128/8, "Want at least 128 bits of nonce for script execution cache");
 #ifdef BUILD_BTC
             CSHA256().Write(scriptExecutionCacheNonce.begin(), 55 - sizeof(flags) - 32).Write(tx.GetWitnessHash().begin(), 32).Write((unsigned char*)&flags, sizeof(flags)).Finalize(hashCacheEntry.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
             CSHA3().Write(scriptExecutionCacheNonce.begin(), 55 - sizeof(flags) - 32).Write(tx.GetWitnessHash().begin(), 32).Write((unsigned char*)&flags, sizeof(flags)).Finalize(hashCacheEntry.begin());
 #endif // END_BUILD
             AssertLockHeld(cs_main); //TODO: Remove this requirement by making CuckooCache not require external locks
@@ -1496,7 +1496,7 @@ bool UndoWriteToDisk(const CBlockUndo& blockundo, CDiskBlockPos& pos, const uint
     // calculate & write checksum
 #ifdef BUILD_BTC
     CHashWriter hasher(SER_GETHASH, PROTOCOL_VERSION);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     CSHA3HashWriter hasher(SER_GETHASH, PROTOCOL_VERSION);
 #endif // END_BUILD
     hasher << hashBlock;
@@ -1522,7 +1522,7 @@ static bool UndoReadFromDisk(CBlockUndo& blockundo, const CBlockIndex *pindex)
     uint256 hashChecksum;
 #ifdef BUILD_BTC
     CHashVerifier<CAutoFile> verifier(&filein); // We need a CHashVerifier as reserializing may lose data
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     CSHA3HashVerifier<CAutoFile> verifier(&filein); // We need a CHashVerifier as reserializing may lose data
 #endif // END_BUILD
     try {
@@ -3131,7 +3131,7 @@ std::vector<unsigned char> GenerateCoinbaseCommitment(CBlock& block, const CBloc
             uint256 witnessroot = BlockWitnessMerkleRoot(block, nullptr);
 #ifdef BUILD_BTC
             CHash256().Write(witnessroot.begin(), 32).Write(ret.data(), 32).Finalize(witnessroot.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
             CSHA3Hash256().Write(witnessroot.begin(), 32).Write(ret.data(), 32).Finalize(witnessroot.begin());
 #endif // END_BUILD
             CTxOut out;
@@ -3261,7 +3261,7 @@ static bool ContextualCheckBlock(const CBlock& block, CValidationState& state, c
             }
 #ifdef BUILD_BTC
             CHash256().Write(hashWitness.begin(), 32).Write(&block.vtx[0]->vin[0].scriptWitness.stack[0][0], 32).Finalize(hashWitness.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
             CSHA3Hash256().Write(hashWitness.begin(), 32).Write(&block.vtx[0]->vin[0].scriptWitness.stack[0][0], 32).Finalize(hashWitness.begin());
 #endif // END_BUILD
             if (memcmp(hashWitness.begin(), &block.vtx[0]->vout[commitpos].scriptPubKey[6], 32)) {

@@ -1633,7 +1633,7 @@ class SegWitTest(BitcoinTestFramework):
             # If we're not indicating segwit support, we will still be
             # signalling for segwit activation.
             assert_equal((block_version & (1 << VB_WITNESS_BIT) != 0), node == self.nodes[0])
-            # EQB_TODO: This check is disabled, segwit is hard-coded by default (issue #341)
+            # OCN_TODO: This check is disabled, segwit is hard-coded by default (issue #341)
             # # If we don't specify the segwit rule, then we won't get a default
             # # commitment.
             # assert('default_witness_commitment' not in gbt_results)

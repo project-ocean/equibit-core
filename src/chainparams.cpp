@@ -111,7 +111,7 @@ public:
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000000000000005214481d2d96f898e3d5416e43359c145944a909d242e0"); //506067
-        // EQB_TODO: replace above two values with updated values.
+        // OCN_TODO: replace above two values with updated values.
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -158,7 +158,7 @@ public:
 
         checkpointData = {
             {
-                // EQB_TODO: Update the checkpoint data once enough blocks are mined 
+                // OCN_TODO: Update the checkpoint data once enough blocks are mined 
                 { 11111, uint256S("0x0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d")},
                 { 33333, uint256S("0x000000002dd5588a74784eaa7ab0507a18ad16a236e7b1ce69f00d7ddfb5d0a6")},
                 { 74000, uint256S("0x0000000000573993a3c9e41ce34471c079dcf5f52a0e824a81e7f953b8661a20")},
@@ -175,7 +175,7 @@ public:
             }
         };
 
-        // EQB_TODO: Update chainTxData 
+        // OCN_TODO: Update chainTxData 
         chainTxData = ChainTxData{
             // Data as of block 0000000000000000002d6cca6761c99b3c2e936f9a0e304b7c7651a993f461de (height 506081).
             1516903077, // * UNIX timestamp of last known number of transactions
@@ -225,7 +225,7 @@ public:
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000002e9e7b00e1f6dc5123a04aad68dd0f0968d8c7aa45f6640795c37b1"); //1135275
-        // EQB_TODO: replace above two values with updated values.
+        // OCN_TODO: replace above two values with updated values.
 
         pchMessageStart[0] = 0x0b;
         pchMessageStart[1] = 0x11;
@@ -263,12 +263,12 @@ public:
 
         checkpointData = {
             {
-                // EQB_TODO: Update the checkpoint data once enough blocks are mined
+                // OCN_TODO: Update the checkpoint data once enough blocks are mined
                 {546, uint256S("000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70")},
             }
         };
 
-        // EQB_TODO: Update chainTxData 
+        // OCN_TODO: Update chainTxData 
         chainTxData = ChainTxData{
             // Data as of block 000000000000033cfa3c975eb83ecf2bb4aaedf68e6d279f6ed2b427c64caff9 (height 1260526)
             1516903490,
@@ -335,7 +335,7 @@ public:
         fMineBlocksOnDemand = true;
         checkpointData = {
             {
-                // EQB_TODO: Update the checkpoint data once enough blocks are mined 
+                // OCN_TODO: Update the checkpoint data once enough blocks are mined 
                 {0, uint256S("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206")},
             }
         };
@@ -356,10 +356,10 @@ public:
     }
 };
 
-#else // BUILD_EQB
+#else // BUILD_OCN
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// EQB_TODO Temporary to mine the genesis block below
+// OCN_TODO Temporary to mine the genesis block below
 
 #include <pow.h>
 #include <arith_uint256.h>
@@ -374,12 +374,12 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 {
     const char* pszTimestamp = "WSJ - 03/Jan/2018 - Billionaire Wagers Millions On Bitcoin";
     // the below script is a pay-to-pubkey (P2PK) script to address. 
-    // genesis block produces 0 equibits 
+    // genesis block produces 0 oceans 
     const CScript genesisOutputScript = CScript() << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f") << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
-// EQB_TODO: Temporary method to mine a genesis block
+// OCN_TODO: Temporary method to mine a genesis block
 static CBlock MineGenesisBlock(uint32_t time, Consensus::Params& consensus)
 {
     CBlock genesis;
@@ -426,7 +426,7 @@ public:
         consensus.BIP34Hash = uint256S("0x0000000023b3a96d3484e5abb3755c413e7d41500f8e2a5c3f0dd01299cd8ef8");
         consensus.BIP65Height = 0;
         consensus.BIP66Height = 0;
-        // EQB_TODO temporary to mine genesis block below
+        // OCN_TODO temporary to mine genesis block below
         consensus.powLimit = uint256S("0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2 * 60 * 60; // 2 hour moving average window
         consensus.nPowTargetSpacing = 10 * 60;
@@ -449,12 +449,12 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         
         // The best chain should have at least this much work.
-        //! EQB_TODO: Update in future iterations 
+        //! OCN_TODO: Update in future iterations 
         consensus.nMinimumChainWork = uint256S("0x00");
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000000000000005214481d2d96f898e3d5416e43359c145944a909d242e0"); //506067
-        // EQB_TODO: replace above two values with updated values.
+        // OCN_TODO: replace above two values with updated values.
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -480,7 +480,7 @@ public:
         // This is fine at runtime as we'll fall back to using them as a oneshot if they dont support the
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
-        // EQB_TODO Add EQB mainnet seeds
+        // OCN_TODO Add OCN mainnet seeds
         vFixedSeeds.clear();
         vSeeds.clear();
 
@@ -490,9 +490,9 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x88, 0xB2, 0x1E }; // "xpub" Same as Bitcoin
         base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x88, 0xAD, 0xE4 }; // "xprv" Same as Bitcoin
 
-        bech32_hrp = "eqb";
+        bech32_hrp = "ocn";
 
-        // EQB_TODO populate fixed seeds for Equibit network
+        // OCN_TODO populate fixed seeds for OCEAN network
         // vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
         fDefaultConsistencyChecks = false;
@@ -501,7 +501,7 @@ public:
 
         checkpointData = {
             {
-                // EQB_TODO: Update the checkpoint data once enough blocks are mined 
+                // OCN_TODO: Update the checkpoint data once enough blocks are mined 
                 {0, uint256S("0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379")},
             }
         };
@@ -527,7 +527,7 @@ public:
         consensus.BIP34Hash = uint256S("0x0000000023b3a96d3484e5abb3755c413e7d41500f8e2a5c3f0dd01299cd8ef8");
         consensus.BIP65Height = 0;
         consensus.BIP66Height = 0;
-        // EQB_TODO temporary to mine genesis block below
+        // OCN_TODO temporary to mine genesis block below
         consensus.powLimit = uint256S("0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2 * 60 * 60; // 2 hour moving average window
         consensus.nPowTargetSpacing = 10 * 60;
@@ -550,12 +550,12 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
         // The best chain should have at least this much work.
-        //! EQB_TODO: Update in future iterations 
+        //! OCN_TODO: Update in future iterations 
         consensus.nMinimumChainWork = uint256S("0x00");
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x0000000002e9e7b00e1f6dc5123a04aad68dd0f0968d8c7aa45f6640795c37b1"); //1135275
-        // EQB_TODO: replace above two values with updated values.
+        // OCN_TODO: replace above two values with updated values.
 
         pchMessageStart[0] = 0x0b;
         pchMessageStart[1] = 0x11;
@@ -574,7 +574,7 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
-        // EQB_TODO Add EQB testnet seeds
+        // OCN_TODO Add OCN testnet seeds
 
         base58Prefixes[PUBKEY_ADDRESS] = { 0x03, 0x5e, 0x5d }; // "TQa" prefix on address
         base58Prefixes[SCRIPT_ADDRESS] = { 0x03, 0x5e, 0x87 }; // "TQs" prefix on address
@@ -582,9 +582,9 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };  // Same as Bitcoin
         base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };  // Same as Bitcoin
 
-        bech32_hrp = "eqbtestnet";
+        bech32_hrp = "ocntestnet";
 
-        // EQB_TODO
+        // OCN_TODO
         // vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_test, pnSeed6_test + ARRAYLEN(pnSeed6_test));
 
         fDefaultConsistencyChecks = false;
@@ -593,12 +593,12 @@ public:
 
         checkpointData = {
             {
-                // EQB_TODO: Update the checkpoint data once enough blocks are mined
+                // OCN_TODO: Update the checkpoint data once enough blocks are mined
                 {0, uint256S("0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379")},
             }
         };
 
-        // EQB_TODO: Update chainTxData 
+        // OCN_TODO: Update chainTxData 
         chainTxData = ChainTxData{
             // Data as of block 000000000000033cfa3c975eb83ecf2bb4aaedf68e6d279f6ed2b427c64caff9 (height 1260526)
             1516903490,
@@ -667,7 +667,7 @@ public:
         fMineBlocksOnDemand = true;
         checkpointData = {
             {
-                // EQB_TODO: Update the checkpoint data once enough blocks are mined 
+                // OCN_TODO: Update the checkpoint data once enough blocks are mined 
                 {0, uint256S("0000635252c23e52aed38fc7d6f2c8ec0c9a3c2ad677d3e53ad1f79584220379")},
             }
         };
@@ -684,7 +684,7 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x35, 0x87, 0xCF };  // 'tpub' Same as Bitcoin
         base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x35, 0x83, 0x94 };  // 'tprv' Same as Bitcoin
 
-        bech32_hrp = "eqbregtest";
+        bech32_hrp = "ocnregtest";
     }
 };
 

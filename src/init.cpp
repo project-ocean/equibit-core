@@ -1235,11 +1235,11 @@ bool AppInitMain()
                   "from a different location, it will be unable to locate the current data files. There could "
                   "also be data loss if bitcoin is started while in a temporary directory.\n",
             gArgs.GetArg("-datadir", ""), fs::current_path().string());
-#else // BUILD_EQB
+#else // BUILD_OCN
         LogPrintf("Warning: relative datadir option '%s' specified, which will be interpreted relative to the "
-            "current working directory '%s'. This is fragile, because if equibit is started in the future "
+            "current working directory '%s'. This is fragile, because if ocean is started in the future "
             "from a different location, it will be unable to locate the current data files. There could "
-            "also be data loss if equibit is started while in a temporary directory.\n",
+            "also be data loss if ocean is started while in a temporary directory.\n",
             gArgs.GetArg("-datadir", ""), fs::current_path().string());
 #endif // END_BUILD
     }

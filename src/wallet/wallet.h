@@ -99,7 +99,7 @@ enum WalletFeature
     FEATURE_NO_DEFAULT_KEY = 159900, // Wallet without a default key written
 
     FEATURE_LATEST = FEATURE_COMPRPUBKEY // HD is optional, use FEATURE_COMPRPUBKEY as latest version
-#else // BUILD_EQB
+#else // BUILD_OCN
     FEATURE_BASE = 20100, // the earliest version new wallets supports (only useful for getwalletinfo's clientversion output)
 
     FEATURE_WALLETCRYPT = 20100, // wallet encryption

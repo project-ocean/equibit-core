@@ -9,7 +9,7 @@ from dateutil import tz
 import numpy
     
 # rpc_user and rpc_password are set in the bitcoin.conf file
-rpc_connection = AuthServiceProxy("http://equibit:equibit@127.0.0.1:18331", timeout=120)
+rpc_connection = AuthServiceProxy("http://ocean:ocean@127.0.0.1:18331", timeout=120)
 best_block_hash = rpc_connection.getbestblockhash()
 tip = rpc_connection.getblock(best_block_hash)
 #print(tip)

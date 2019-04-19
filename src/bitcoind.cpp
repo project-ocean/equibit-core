@@ -80,9 +80,9 @@ bool AppInit(int argc, char* argv[])
 #ifdef BUILD_BTC
             strUsage += "\n" + _("Usage:") + "\n" +
                   "  bitcoind [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
-#else // BUILD_EQB
+#else // BUILD_OCN
 			strUsage += "\n" + _("Usage:") + "\n" +
-                  "  equibitd [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
+                  "  oceand [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
 #endif // END_BUILD
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
@@ -119,8 +119,8 @@ bool AppInit(int argc, char* argv[])
             if (!IsSwitchChar(argv[i][0])) {
 #ifdef BUILD_BTC
                 fprintf(stderr, "Error: Command line contains unexpected token '%s', see bitcoind -h for a list of options.\n", argv[i]);
-#else // BUILD_EQB
-                fprintf(stderr, "Error: Command line contains unexpected token '%s', see equibitd -h for a list of options.\n", argv[i]);
+#else // BUILD_OCN
+                fprintf(stderr, "Error: Command line contains unexpected token '%s', see oceand -h for a list of options.\n", argv[i]);
 #endif // END_BUILD
                 return false;
             }
@@ -151,8 +151,8 @@ bool AppInit(int argc, char* argv[])
 #if HAVE_DECL_DAEMON
 #ifdef BUILD_BTC
             fprintf(stdout, "Bitcoin server starting\n");
-#else // BUILD_EQB
-            fprintf(stdout, "Equibit server starting\n");
+#else // BUILD_OCN
+            fprintf(stdout, "OCEAN server starting\n");
 #endif // END_BUILD
 
             // Daemonize
