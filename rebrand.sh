@@ -23,3 +23,5 @@ find . -name "*.py"  | xargs sed -i 's/EQB/OCN/g'
 find . -name "*.py"  | xargs sed -i 's/equibit/ocean/g'
 find . -name "*.py"  | xargs sed -i 's/Equibit/OCEAN/g'
 find . -name "*.py"  | xargs sed -i 's/OCEAN Group AG/Equibit Group AG/g'
+
+sed -i 's/equibit/ocean/g' eqbtest/util/data/bitcoin-util-test.json
