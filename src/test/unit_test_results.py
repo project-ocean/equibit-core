@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2018 Equibit-group
+# Copyright (c) 2018 OCEAN-group
 
 '''
 This script parses unit_test.log which is being produced by unit_test.sh

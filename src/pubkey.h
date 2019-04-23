@@ -150,7 +150,7 @@ public:
     {
 #ifdef BUILD_BTC
         return CKeyID(Hash160(vch, vch + size()));
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         return CKeyID(SHA3Hash160(vch, vch + size()));
 #endif // END_BUILD
     }
@@ -160,7 +160,7 @@ public:
     {
 #ifdef BUILD_BTC
         return Hash(vch, vch + size());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         return SHA3Hash(vch, vch + size());
 #endif // END_BUILD
     }

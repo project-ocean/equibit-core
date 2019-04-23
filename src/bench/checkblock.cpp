@@ -55,6 +55,6 @@ static void DeserializeAndCheckBlockTest(benchmark::State& state)
 BENCHMARK(DeserializeBlockTest, 130);
 #ifdef BUILD_BTC
 BENCHMARK(DeserializeAndCheckBlockTest, 160);
-#else  // BUILD_EQB
-       // EQB_TODO regenerate test data
+#else  // BUILD_OCN
+       // OCN_TODO regenerate test data
 #endif // END_BUILD

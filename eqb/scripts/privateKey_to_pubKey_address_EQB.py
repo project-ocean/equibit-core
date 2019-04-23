@@ -4,9 +4,9 @@
 Converts PrivateKey -> PublicKey -> PubKeyHash -> Address (legacy)
 Input: Base58-encoded private key (string)
 
-Example EQB:
+Example OCN:
 
-λ python privateKey_to_scriptPubKey_EQB.py cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA
+λ python privateKey_to_scriptPubKey_OCN.py cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN87JcbXMTcA
 Base58 decoded Private Key: b'ef00000000000000000000000000000000000000000000000000000000000000010184e38d1f'
 Network prefix:   b'ef'
 Private Key:      b'0000000000000000000000000000000000000000000000000000000000000001'

@@ -83,7 +83,7 @@ static void MerkleComputation(const std::vector<uint256>& leaves, uint256* proot
             mutated |= (inner[level] == h);
 #ifdef BUILD_BTC
             CHash256().Write(inner[level].begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
             CSHA3Hash256().Write(inner[level].begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
 #endif // END_BUILD
         }
@@ -113,7 +113,7 @@ static void MerkleComputation(const std::vector<uint256>& leaves, uint256* proot
         }
 #ifdef BUILD_BTC
         CHash256().Write(h.begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         CSHA3Hash256().Write(h.begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
 #endif // END_BUILD
         // Increment count to the value it would have if two entries at this
@@ -132,7 +132,7 @@ static void MerkleComputation(const std::vector<uint256>& leaves, uint256* proot
             }
 #ifdef BUILD_BTC
             CHash256().Write(inner[level].begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
             CSHA3Hash256().Write(inner[level].begin(), 32).Write(h.begin(), 32).Finalize(h.begin());
 #endif // END_BUILD
             level++;
@@ -164,7 +164,7 @@ uint256 ComputeMerkleRootFromBranch(const uint256& leaf, const std::vector<uint2
         } else {
             hash = Hash(BEGIN(hash), END(hash), BEGIN(*it), END(*it));
         }
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         if (nIndex & 1) {
             hash = SHA3Hash(BEGIN(*it), END(*it), BEGIN(hash), END(hash));
         } else {

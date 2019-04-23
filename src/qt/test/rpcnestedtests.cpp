@@ -75,8 +75,8 @@ void RPCNestedTests::rpcNestedTests()
     RPCConsole::RPCExecuteCommandLine(result, "getblock(getbestblockhash())[tx][0]", &filtered);
 #ifdef BUILD_BTC
     QVERIFY(result == "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b");
-#else  // BUILD_EQB
-       // EQB_TODO generate new SHA-3 hash
+#else  // BUILD_OCN
+       // OCN_TODO generate new SHA-3 hash
 #endif // END_BUILD
     QVERIFY(filtered == "getblock(getbestblockhash())[tx][0]");
 

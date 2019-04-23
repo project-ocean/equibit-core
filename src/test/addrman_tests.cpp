@@ -36,7 +36,7 @@ public:
     {
 #ifdef BUILD_BTC
         state = (CHashWriter(SER_GETHASH, 0) << state).GetHash().GetCheapHash();
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         state = (CSHA3HashWriter(SER_GETHASH, 0) << state).GetHash().GetCheapHash();
 #endif // END_BUILD
         return (unsigned int)(state % nMax);
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE(addrman_new_collisions)
     CService addr2 = ResolveService("250.1.1.19");
     addrman.Add(CAddress(addr2, NODE_NONE), source);
     BOOST_CHECK_EQUAL(addrman.size(), 18);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     for (unsigned int i = 1; i < 15; i++) {
         CService addr = ResolveService("250.1.1." + boost::to_string(i));
         addrman.Add(CAddress(addr, NODE_NONE), source);
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(addrman_tried_collisions)
     CService addr2 = ResolveService("250.1.1.81");
     addrman.Add(CAddress(addr2, NODE_NONE), source);
     BOOST_CHECK_EQUAL(addrman.size(), 80);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     for (unsigned int i = 1; i < 58; i++) {
         CService addr = ResolveService("250.1.1." + boost::to_string(i));
         addrman.Add(CAddress(addr, NODE_NONE), source);
@@ -446,7 +446,7 @@ BOOST_AUTO_TEST_CASE(addrman_getaddr)
     BOOST_CHECK_EQUAL(vAddr.size(), 461);
     // (Addrman.size() < number of addresses added) due to address collisions.
     BOOST_CHECK_EQUAL(addrman.size(), 2006);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     BOOST_CHECK_EQUAL(vAddr.size(), 461);
     // (Addrman.size() < number of addresses added) due to address collisions.
     BOOST_CHECK_EQUAL(addrman.size(), 2006);
@@ -469,14 +469,14 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_tried_bucket)
 #ifdef BUILD_BTC
     uint256 nKey1 = (uint256)(CHashWriter(SER_GETHASH, 0) << 1).GetHash();
     uint256 nKey2 = (uint256)(CHashWriter(SER_GETHASH, 0) << 2).GetHash();
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     uint256 nKey1 = (uint256)(CSHA3HashWriter(SER_GETHASH, 0) << 1).GetHash();
     uint256 nKey2 = (uint256)(CSHA3HashWriter(SER_GETHASH, 0) << 2).GetHash();
 #endif // END_BUILD
 
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(info1.GetTriedBucket(nKey1), 40);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     BOOST_CHECK_EQUAL(info1.GetTriedBucket(nKey1), 70);
 #endif // END_BUILD
 
@@ -515,7 +515,7 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_tried_bucket)
     //  8 buckets.
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(buckets.size(), 160);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     BOOST_CHECK_EQUAL(buckets.size(), 161);
 #endif // END_BUILD
 }
@@ -534,7 +534,7 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_new_bucket)
 #ifdef BUILD_BTC
     uint256 nKey1 = (uint256)(CHashWriter(SER_GETHASH, 0) << 1).GetHash();
     uint256 nKey2 = (uint256)(CHashWriter(SER_GETHASH, 0) << 2).GetHash();
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     uint256 nKey1 = (uint256)(CSHA3HashWriter(SER_GETHASH, 0) << 1).GetHash();
     uint256 nKey2 = (uint256)(CSHA3HashWriter(SER_GETHASH, 0) << 2).GetHash();
 #endif // END_BUILD
@@ -543,7 +543,7 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_new_bucket)
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1), 786);
     BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1, source1), 786);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1), 218);
     BOOST_CHECK_EQUAL(info1.GetNewBucket(nKey1, source1), 218);
 #endif // END_BUILD

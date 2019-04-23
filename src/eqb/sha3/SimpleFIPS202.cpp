@@ -16,7 +16,7 @@ http://creativecommons.org/publicdomain/zero/1.0/
 #include <stdio.h>
 #include "SimpleFIPS202.h"
 
-#ifdef EQB_ALL_SHA3_VERSIONS
+#ifdef OCN_ALL_SHA3_VERSIONS
 int SHAKE128(unsigned char *output, size_t outputByteLen, const unsigned char *input, size_t inputByteLen)
 {
     return KeccakWidth1600_Sponge(1344, 256, input, inputByteLen, 0x1F, output, outputByteLen);

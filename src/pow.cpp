@@ -100,7 +100,7 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
     return bnNew.GetCompact();
 }
 
-#else // BUILD_EQB
+#else // BUILD_OCN
 
 #include <iomanip>
 #include "pow.h"

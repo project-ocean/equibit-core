@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(siphash)
 
 #ifdef BUILD_BTC
     CHashWriter ss(SER_DISK, CLIENT_VERSION);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     CSHA3HashWriter ss(SER_DISK, CLIENT_VERSION);
 #endif // END_BUILD
     CMutableTransaction tx;
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(siphash)
     ss << tx;
 #ifdef BUILD_BTC
     BOOST_CHECK_EQUAL(SipHashUint256(1, 2, ss.GetHash()), 0x79751e980c2a0a35ULL);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     BOOST_CHECK_EQUAL(SipHashUint256(1, 2, ss.GetHash()), 0x810237de8fd7d8b4ULL);
 #endif // END_BUILD
 

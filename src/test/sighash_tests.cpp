@@ -6,7 +6,7 @@
 #include <consensus/validation.h>
 #ifdef BUILD_BTC
 #include <test/data/sighash.json.h>
-#else  // BUILD_EQB
+#else  // BUILD_OCN
 #include <test/data/eqb_sighash.json.h>
 #endif // END_BUILD
 #include <hash.h>
@@ -87,7 +87,7 @@ uint256 static SignatureHashOld(CScript scriptCode, const CTransaction& txTo, un
     // Serialize and hash
 #ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
-#else // BUILD_EQB
+#else // BUILD_OCN
     CSHA3HashWriter ss(SER_GETHASH, SERIALIZE_TRANSACTION_NO_WITNESS);
 #endif // END_BUILD
     ss << txTmp << nHashType;
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(sighash_from_data)
 {
 #ifdef BUILD_BTC
     UniValue tests = read_json(std::string(json_tests::sighash, json_tests::sighash + sizeof(json_tests::sighash)));
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     UniValue tests = read_json(std::string(json_tests::eqb_sighash, json_tests::eqb_sighash + sizeof(json_tests::eqb_sighash)));
 #endif // END_BUILD
 

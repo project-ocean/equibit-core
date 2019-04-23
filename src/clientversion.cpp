@@ -14,13 +14,13 @@
  * target servers or GUI users specifically.
  */
 const std::string CLIENT_NAME("Satoshi");
-#else // BUILD_EQB
+#else // BUILD_OCN
 /**
  * Name of client reported in the 'version' message. Report the same name
- * for both equibitd and equibit-qt, to make it harder for attackers to
+ * for both oceand and ocean-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("Equibit");
+const std::string CLIENT_NAME("OCEAN");
 #endif // END_BUILD
 
 /**

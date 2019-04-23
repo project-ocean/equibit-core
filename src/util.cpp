@@ -85,13 +85,13 @@ const int64_t nStartupTime = GetTime();
 
 #ifdef BUILD_BTC
 const char * const BITCOIN_CONF_FILENAME = "bitcoin.conf";
-#else // BUILD_EQB
-const char* const BITCOIN_CONF_FILENAME = "equibit.conf";
+#else // BUILD_OCN
+const char* const BITCOIN_CONF_FILENAME = "ocean.conf";
 #endif // END_BUILD
 #ifdef BUILD_BTC
 const char * const BITCOIN_PID_FILENAME = "bitcoind.pid";
-#else // BUILD_EQB
-const char* const BITCOIN_PID_FILENAME = "equibitd.pid";
+#else // BUILD_OCN
+const char* const BITCOIN_PID_FILENAME = "oceand.pid";
 #endif // END_BUILD
 const char * const DEFAULT_DEBUGLOGFILE = "debug.log";
 
@@ -594,8 +594,8 @@ fs::path GetDefaultDataDir()
     // Windows
 #ifdef BUILD_BTC
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Bitcoin";
-#else // BUILD_EQB
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "Equibit";
+#else // BUILD_OCN
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "OCEAN";
 #endif // END_BUILD
 #else
     fs::path pathRet;
@@ -608,15 +608,15 @@ fs::path GetDefaultDataDir()
     // Mac
 #ifdef BUILD_BTC
     return pathRet / "Library/Application Support/Bitcoin";
-#else  // BUILD_EQB
-    return pathRet / "Library/Application Support/Equibit";
+#else  // BUILD_OCN
+    return pathRet / "Library/Application Support/OCEAN";
 #endif // END_BUILD
 #else
     // Unix
 #ifdef BUILD_BTC
     return pathRet / ".bitcoin";
-#else  // BUILD_EQB
-    return pathRet / ".equibit";
+#else  // BUILD_OCN
+    return pathRet / ".ocean";
 #endif // END_BUILD
 #endif
 #endif
@@ -972,9 +972,9 @@ std::string CopyrightHolders(const std::string& strPrefix)
 #ifdef BUILD_BTC
     if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Bitcoin Core") == std::string::npos) {
         strCopyrightHolders += "\n" + strPrefix + "The Bitcoin Core developers";
-#else // BUILD_EQB
-    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Equibit Core") == std::string::npos) {
-        strCopyrightHolders += "\n" + strPrefix + "The Equibit Core developers";
+#else // BUILD_OCN
+    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("OCEAN Core") == std::string::npos) {
+        strCopyrightHolders += "\n" + strPrefix + "The OCEAN Core developers";
 #endif // END_BUILD
 
 

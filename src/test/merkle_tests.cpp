@@ -31,7 +31,7 @@ static uint256 BlockBuildMerkleTree(const CBlock& block, bool* fMutated, std::ve
 #ifdef BUILD_BTC
             vMerkleTree.push_back(Hash(vMerkleTree[j+i].begin(), vMerkleTree[j+i].end(),
                                        vMerkleTree[j+i2].begin(), vMerkleTree[j+i2].end()));
-#else  // BUILD_EQB
+#else  // BUILD_OCN
             vMerkleTree.push_back(SHA3Hash(vMerkleTree[j+i].begin(), vMerkleTree[j+i].end(),
                                            vMerkleTree[j+i2].begin(), vMerkleTree[j+i2].end()));
 #endif // END_BUILD

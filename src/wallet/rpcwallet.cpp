@@ -242,8 +242,8 @@ UniValue getrawchangeaddress(const JSONRPCRequest& request)
             "getrawchangeaddress ( \"address_type\" )\n"
 #ifdef BUILD_BTC
             "\nReturns a new Bitcoin address, for receiving change.\n"
-#else // BUILD_EQB
-            "\nReturns a new Equibit address, for receiving change.\n"
+#else // BUILD_OCN
+            "\nReturns a new OCEAN address, for receiving change.\n"
 #endif // END_BUILD 
             "This is for use with raw transactions, NOT normal use.\n"
             "\nArguments:\n"
@@ -308,8 +308,8 @@ UniValue setaccount(const JSONRPCRequest& request)
     if (!IsValidDestination(dest)) {
 #ifdef BUILD_BTC
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
-#else // BUILD_EQB
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit address");
+#else // BUILD_OCN
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid OCEAN address");
 #endif // END_BUILD 
     }
 
@@ -361,8 +361,8 @@ UniValue getaccount(const JSONRPCRequest& request)
     if (!IsValidDestination(dest)) {
 #ifdef BUILD_BTC
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
-#else // BUILD_EQB
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit address");
+#else // BUILD_OCN
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid OCEAN address");
 #endif // END_BUILD 
     }
 
@@ -653,7 +653,7 @@ UniValue signmessage(const JSONRPCRequest& request)
 
 #ifdef BUILD_BTC
     CHashWriter ss(SER_GETHASH, 0);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     CSHA3HashWriter ss(SER_GETHASH, 0);
 #endif // END_BUILD
     ss << strMessageMagic;
@@ -706,8 +706,8 @@ UniValue getreceivedbyaddress(const JSONRPCRequest& request)
     if (!IsValidDestination(dest)) {
 #ifdef BUILD_BTC
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
-#else // BUILD_EQB
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit address");
+#else // BUILD_OCN
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid OCEAN address");
 #endif // END_BUILD 
     }
     CScript scriptPubKey = GetScriptForDestination(dest);
@@ -1006,8 +1006,8 @@ UniValue sendfrom(const JSONRPCRequest& request)
     if (!IsValidDestination(dest)) {
 #ifdef BUILD_BTC
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
-#else // BUILD_EQB
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit address");
+#else // BUILD_OCN
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid OCEAN address");
 #endif // END_BUILD 
     }
     CAmount nAmount = AmountFromValue(request.params[2]);
@@ -1139,8 +1139,8 @@ UniValue sendmany(const JSONRPCRequest& request)
         if (!IsValidDestination(dest)) {
 #ifdef BUILD_BTC
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + name_);
-#else // BUILD_EQB
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Equibit address: ") + name_);
+#else // BUILD_OCN
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid OCEAN address: ") + name_);
 #endif // END_BUILD 
         }
 
@@ -1202,8 +1202,8 @@ UniValue addmultisigaddress(const JSONRPCRequest& request)
             "\nAdd a nrequired-to-sign multisignature address to the wallet. Requires a new wallet backup.\n"
 #ifdef BUILD_BTC
             "Each key is a Bitcoin address or hex-encoded public key.\n"
-#else // BUILD_EQB
-            "Each key is an Equibit address or hex-encoded public key.\n"
+#else // BUILD_OCN
+            "Each key is an OCEAN address or hex-encoded public key.\n"
 #endif // END_BUILD 
             "This functionality is only intended for use with non-watchonly addresses.\n"
             "See `importaddress` for watchonly p2sh address support.\n"
@@ -1381,8 +1381,8 @@ UniValue addwitnessaddress(const JSONRPCRequest& request)
     if (!IsValidDestination(dest)) {
 #ifdef BUILD_BTC
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
-#else // BUILD_EQB
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Equibit address");
+#else // BUILD_OCN
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid OCEAN address");
 #endif // END_BUILD 
     }
 
@@ -2571,8 +2571,8 @@ UniValue encryptwallet(const JSONRPCRequest& request)
     StartShutdown();
 #ifdef BUILD_BTC
     return "wallet encrypted; Bitcoin server stopping, restart to run with encrypted wallet. The keypool has been flushed and a new HD seed was generated (if you are using HD). You need to make a new backup.";
-#else // BUILD_EQB
-    return "wallet encrypted; Equibit server stopping, restart to run with encrypted wallet. The keypool has been flushed and a new HD seed was generated (if you are using HD). You need to make a new backup.";
+#else // BUILD_OCN
+    return "wallet encrypted; OCEAN server stopping, restart to run with encrypted wallet. The keypool has been flushed and a new HD seed was generated (if you are using HD). You need to make a new backup.";
 #endif // END_BUILD 
 }
 
@@ -2997,8 +2997,8 @@ UniValue listunspent(const JSONRPCRequest& request)
             if (!IsValidDestination(dest)) {
 #ifdef BUILD_BTC
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + input.get_str());
-#else // BUILD_EQB
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Equibit address: ") + input.get_str());
+#else // BUILD_OCN
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid OCEAN address: ") + input.get_str());
 #endif // END_BUILD 
             }
             if (!destinations.insert(dest).second) {

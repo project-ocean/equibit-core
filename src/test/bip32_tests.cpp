@@ -89,9 +89,9 @@ TestVector test3 =
      "xprv9uPDJpEQgRQfDcW7BkF7eTya6RPxXeJCqCJGHuCJ4GiRVLzkTXBAJMu2qaMWPrS7AANYqdq6vcBcBUdJCVVFceUvJFjaPdGZ2y9WACViL4L",
       0);
 
-#else  // BUILD_EQB
+#else  // BUILD_OCN
 
-// EQB_TODO Generate the test data independently
+// OCN_TODO Generate the test data independently
 
 TestVector test1 =
   TestVector("000102030405060708090a0b0c0d0e0f")
@@ -165,7 +165,7 @@ void RunTest(const TestVector &test) {
         CExtKey checkKey = b58keyDecodeCheck.GetKey();
 #ifdef BUILD_BTC
         assert(checkKey == key); //ensure a base58 decoded key also matches
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         BOOST_CHECK(checkKey == key); //ensure a base58 decoded key also matches
 #endif // END_BUILD
 
@@ -177,7 +177,7 @@ void RunTest(const TestVector &test) {
         CExtPubKey checkPubKey = b58PubkeyDecodeCheck.GetKey();
 #ifdef BUILD_BTC
         assert(checkPubKey == pubkey); //ensure a base58 decoded pubkey also matches
-#else  // BUILD_EQB
+#else  // BUILD_OCN
         BOOST_CHECK(checkPubKey == pubkey); //ensure a base58 decoded pubkey also matches
 #endif // END_BUILD
 

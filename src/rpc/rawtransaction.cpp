@@ -123,8 +123,8 @@ UniValue getrawtransaction(const JSONRPCRequest& request)
             "         \"addresses\" : [           (json array of string)\n"
 #ifdef BUILD_BTC
             "           \"address\"        (string) bitcoin address\n"
-#else // BUILD_EQB
-            "           \"address\"        (string) equibit address\n"
+#else // BUILD_OCN
+            "           \"address\"        (string) ocean address\n"
 #endif // END_BUILD
             "           ,...\n"
             "         ]\n"
@@ -349,8 +349,8 @@ UniValue createrawtransaction(const JSONRPCRequest& request)
             "    {\n"
 #ifdef BUILD_BTC
             "      \"address\": x.xxx,    (numeric or string, required) The key is the bitcoin address, the numeric value (can be string) is the " + CURRENCY_UNIT + " amount\n"
-#else // BUILD_EQB
-            "      \"address\": x.xxx,    (numeric or string, required) The key is the equibit address, the numeric value (can be string) is the " + CURRENCY_UNIT + " amount\n"
+#else // BUILD_OCN
+            "      \"address\": x.xxx,    (numeric or string, required) The key is the ocean address, the numeric value (can be string) is the " + CURRENCY_UNIT + " amount\n"
 #endif // END_BUILD
             "      \"data\": \"hex\"      (string, required) The key is \"data\", the value is hex encoded data\n"
             "      ,...\n"
@@ -438,8 +438,8 @@ UniValue createrawtransaction(const JSONRPCRequest& request)
             if (!IsValidDestination(destination)) {
 #ifdef BUILD_BTC
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + name_);
-#else // BUILD_EQB
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Equibit address: ") + name_);
+#else // BUILD_OCN
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid OCEAN address: ") + name_);
 #endif // END_BUILD
             }
 
@@ -507,8 +507,8 @@ UniValue decoderawtransaction(const JSONRPCRequest& request)
             "         \"addresses\" : [           (json array of string)\n"
 #ifdef BUILD_BTC
             "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) bitcoin address\n"
-#else // BUILD_EQB
-            "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) equibit address\n"
+#else // BUILD_OCN
+            "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) ocean address\n"
 #endif // END_BUILD
             "           ,...\n"
             "         ]\n"
@@ -558,8 +558,8 @@ UniValue decodescript(const JSONRPCRequest& request)
             "  \"addresses\": [   (json array of string)\n"
 #ifdef BUILD_BTC
             "     \"address\"     (string) bitcoin address\n"
-#else // BUILD_EQB
-            "     \"address\"     (string) equibit address\n"
+#else // BUILD_OCN
+            "     \"address\"     (string) ocean address\n"
 #endif // END_BUILD
             "     ,...\n"
             "  ],\n"

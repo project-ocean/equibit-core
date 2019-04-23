@@ -20,7 +20,7 @@
 
 #include <eqb/sha3/sha3.h>
 
-/** A hasher class for Equibit's 256-bit hash (single SHA-3). */
+/** A hasher class for OCEAN's 256-bit hash (single SHA-3). */
 class CSHA3Hash256 {
 private:
     CSHA3 sha;
@@ -42,7 +42,7 @@ public:
     }
 };
 
-/** A hasher class for Equibit's 160-bit hash (SHA-3 + RIPEMD-160). */
+/** A hasher class for OCEAN's 160-bit hash (SHA-3 + RIPEMD-160). */
 class CSHA3Hash160 {
 private:
     CSHA3 sha;
@@ -147,7 +147,7 @@ public:
     }
 };
 
-// EQB_TODO alias for Qt
+// OCN_TODO alias for Qt
 typedef CSHA3HashWriter CHashWriter;
 
 /** Reads data from an underlying stream, while hashing the read data. */
@@ -198,7 +198,7 @@ uint256 SHA3SerializeHash(const T& obj, int nType = SER_GETHASH, int nVersion = 
 
 typedef uint256 ChainCode;
 
-// EQB_TODO #ifdef moved down below definition of Hash temporarily for Base58Check (#211)
+// OCN_TODO #ifdef moved down below definition of Hash temporarily for Base58Check (#211)
 // #ifdef BUILD_BTC
 
 /** A hasher class for Bitcoin's 256-bit hash (double SHA-256). */

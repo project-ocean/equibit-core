@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
     stream << filter;
 #ifdef BUILD_BTC
     std::vector<unsigned char> vch = ParseHex("038fc16b080000000000000001");
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     std::vector<unsigned char> vch = ParseHex("03b3c1eb080000000000000001");
 #endif // END_BUILD
     std::vector<char> expected(vch.size());
@@ -114,8 +114,8 @@ BOOST_AUTO_TEST_CASE(bloom_create_insert_key)
 
 BOOST_AUTO_TEST_CASE(bloom_match)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
+    // OCN_TODO generate new test data
+#ifdef OCN_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
     return;
@@ -135,14 +135,14 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     filter.insert(uint256S("0xb4749f017444b051c44dfd2720e88f314ff94f3dd6d56d40ef65854fcd7fff6b"));
 
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match tx hash");
-#else // BUILD_EQB
+#else // BUILD_OCN
     // Random real transaction (570880a3e3fad00e4b8fae6d4e2261cbd38771c8f68c2a63e4fe8d3f167e037c)
     CDataStream stream(ParseHex("02000000000101efcd847453291536de973214d3356a60771c7a28a97df7b227db11c4f03f202e0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0280778e060000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8788c1341d0000000017a914c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc870248304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a20121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824de000000"), SER_DISK, CLIENT_VERSION);
     CTransaction tx(deserialize, stream);
 
     // alternative approach to creating the raw transaction: a606ecb7226335f9d30f4197bf7034db711b1c2a16c31055939eef62e498ad2a
     CDataStream spendStream(ParseHex("020000000001017c037e163f8dfee4632a8cf6c87187d3cb61224e6dae8f4b0ed0fae3a38008570000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0288102c040000000017a914ed649576ad657747835d116611981c90113c074387005a62020000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8702483045022100b40db3a574a7254d60f8e64335d9bab60ff986ad7fe1c0ad06dcfc4ba896e16002201bbf15e25b0334817baa34fd02ebe90c94af2d65226c9302a60a96e8357c0da50121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824df000000"), SER_DISK, CLIENT_VERSION);
-    //! EQB_TODO: use an array of characters(bytes) to represent the tnx 
+    //! OCN_TODO: use an array of characters(bytes) to represent the tnx 
     //unsigned char ch[] = {0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x7c, 0x03, 0x7e, 0x16, 0x3f, 0x8d, 0xfe, 0xe4, 0x63, 0x2a, 0x8c, 0xf6, 0xc8, 0x71, 0x87, 0xd3, 0xcb, 0x61, 0x22, 0x4e, 0x6d, 0xae, 0x8f, 0x4b, 0x0e, 0xd0, 0xfa, 0xe3, 0xa3, 0x80, 0x08, 0x57, 0x00, 0x00, 0x00, 0x00, 0x17, 0x16, 0x00, 0x14, 0xc5, 0x72, 0x9e, 0x3a, 0xaa, 0xcb, 0x6a, 0x16, 0x0f, 0xa7, 0x99, 0x49, 0xa8, 0xd7, 0xf1, 0xe5, 0xcd, 0x1f, 0xbc, 0x51, 0xfe, 0xff, 0xff, 0xff, 0x02, 0x88, 0x10, 0x2c, 0x04, 0x00, 0x00, 0x00, 0x00, 0x17, 0xa9, 0x14, 0xed, 0x64, 0x95, 0x76, 0xad, 0x65, 0x77, 0x47, 0x83, 0x5d, 0x11, 0x66, 0x11, 0x98, 0x1c, 0x90, 0x11, 0x3c, 0x07, 0x43, 0x87, 0x00, 0x5a, 0x62, 0x02, 0x00, 0x00, 0x00, 0x00, 0x17, 0xa9, 0x14, 0xe6, 0x2a, 0x29, 0xe7, 0xd7, 0x56, 0xeb, 0x30, 0xc4, 0x53, 0xae, 0x02, 0x2f, 0x31, 0x56, 0x19, 0xfe, 0x8d, 0xdf, 0xbb, 0x87, 0x02, 0x48, 0x30, 0x45, 0x02, 0x21, 0x00, 0xb4, 0x0d, 0xb3, 0xa5, 0x74, 0xa7, 0x25, 0x4d, 0x60, 0xf8, 0xe6, 0x43, 0x35, 0xd9, 0xba, 0xb6, 0x0f, 0xf9, 0x86, 0xad, 0x7f, 0xe1, 0xc0, 0xad, 0x06, 0xdc, 0xfc, 0x4b, 0xa8, 0x96, 0xe1, 0x60, 0x02, 0x20, 0x1b, 0xbf, 0x15, 0xe2, 0x5b, 0x03, 0x34, 0x81, 0x7b, 0xaa, 0x34, 0xfd, 0x02, 0xeb, 0xe9, 0x0c, 0x94, 0xaf, 0x2d, 0x65, 0x22, 0x6c, 0x93, 0x02, 0xa6, 0x0a, 0x96, 0xe8, 0x35, 0x7c, 0x0d, 0xa5, 0x01, 0x21, 0x03, 0x4f, 0x88, 0x96, 0x91, 0xda, 0xcb, 0x4b, 0x71, 0x52, 0xf4, 0x2f, 0x56, 0x60, 0x95, 0xa8, 0xc2, 0xce, 0xc6, 0x48, 0x2d, 0x2f, 0xc0, 0xa1, 0x6f, 0x87, 0xf5, 0x96, 0x91, 0xe7, 0xe3, 0x78, 0x24, 0xdf, 0x00, 0x00, 0x00};
     //std::vector<unsigned char> vch(ch, ch + sizeof(ch) - 1);
     //CDataStream spendStream(vch, SER_DISK, CLIENT_VERSION);
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     // byte-reversed tx hash
     filter.insert(ParseHex("6bff7fcd4f8565ef406dd5d63d4ff94f318fe82027fd4dc451b04474019f74b4"));
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match manually serialized tx hash");
-#else // BUILD_EQB
+#else // BUILD_OCN
     // byte-reversed tx hash
     filter.insert(ParseHex("7c037e163f8dfee4632a8cf6c87187d3cb61224e6dae8f4b0ed0fae3a3800857")); // id of first tnx
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match manually serialized tx hash");
@@ -179,17 +179,17 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match output address");
 
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(spendingTx), "Simple Bloom filter didn't add output");
-#else // BUILD_EQB
+#else // BUILD_OCN
     // this test consist of a tnx, and a signature, a public key of vIn and and a vOut address as filters
     // old tx1: 01000000010b26e9b7735eb6aabdf358bab62f9816a21ba9ebdb719d5299e88607d722c190000000008b4830450220070aca44506c5cef3a16ed519d7c3c39f8aab192c4e1c90d065f37b8a4af6141022100a8e160b856c2d43d27d8fba71e5aef6405b8643ac4cb7cb3c462aced7f14711a0141046d11fee51b0e60666d5049a9101a72741df480b96ee26488a4d3466b95c9a40ac5eeef87e10a5cd336c19a84565f80fa6c547957b7700ff4dfbdefe76036c339ffffffff021bff3d11000000001976a91404943fdd508053c75000106d3bc6e2754dbcff1988ac2f15de00000000001976a914a266436d2965547608b9e15d9032a7b9d64fa43188ac00000000
     // new tx1: 02000000000101efcd847453291536de973214d3356a60771c7a28a97df7b227db11c4f03f202e0000000017160014c5729e3aaacb6a160fa79949a8d7f1e5cd1fbc51feffffff0280778e060000000017a914e62a29e7d756eb30c453ae022f315619fe8ddfbb8788c1341d0000000017a914c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc870248304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a20121034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824de000000
     // Note: new tnx is P2WPKH type where scriptPubkey is OP_0 0x14 {20-byte-hash}
-    // Note: Bitcoin addresses use the non-segwit address and pubkey addresses. whereas Equibit tests use segwit transactions and script addresses
+    // Note: Bitcoin addresses use the non-segwit address and pubkey addresses. whereas OCEAN tests use segwit transactions and script addresses
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);  // signature of vIN
     
     // prev: 30450220070aca44506c5cef3a16ed519d7c3c39f8aab192c4e1c90d065f37b8a4af6141022100a8e160b856c2d43d27d8fba71e5aef6405b8643ac4cb7cb3c462aced7f14711a01
     // new:  304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a201
-    //! EQB_TODO: the following signature found in txinwitness does not pass the test 
+    //! OCN_TODO: the following signature found in txinwitness does not pass the test 
     // note: the previous content was a regular signature, but the new value is a segwit type signature 
     filter.insert(ParseHex("304502210097d1ec29f4971e431191a4d71e407e52f031510978783f3098630c49efba5d99022025e84eb8adc32117ee31d23a1e8c9cfa96e464b3145a9bbd4880f7aed5c5c1a201")); 
     //BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match input signature");
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);  // public key of vIN
     // prev: 046d11fee51b0e60666d5049a9101a72741df480b96ee26488a4d3466b95c9a40ac5eeef87e10a5cd336c19a84565f80fa6c547957b7700ff4dfbdefe76036c339
     // new:  034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824
-    //! EQB_TODO: the following pkey found in txinwitness does not pass the test  
+    //! OCN_TODO: the following pkey found in txinwitness does not pass the test  
     filter.insert(ParseHex("034f889691dacb4b7152f42f566095a8c2cec6482d2fc0a16f87f59691e7e37824")); 
     //BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match input pub key");
 
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(bloom_match)
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(COutPoint(uint256S("0x000000d70786e899529d71dbeba91ba216982fb6ba58f3bdaab65e73b7e9260b"), 0));
     BOOST_CHECK_MESSAGE(!filter.IsRelevantAndUpdate(tx), "Simple Bloom filter matched COutPoint for an output we didn't care about");
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     filter = CBloomFilter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     filter.insert(ParseHex("c559bbc6a74b7a8fc4c13c51dc2cb048d012f5cc"));
     BOOST_CHECK_MESSAGE(filter.IsRelevantAndUpdate(tx), "Simple Bloom filter didn't match output address");
@@ -280,8 +280,8 @@ BOOST_AUTO_TEST_CASE(bloom_match)
 
 BOOST_AUTO_TEST_CASE(merkle_block_1)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
+    // OCN_TODO generate new test data
+#ifdef OCN_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
     return;
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_1)
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
      // this tests consist of a block and two transactions as filter
      // original block id: 0000000000013b8ab2cd513b0261a14096412195a72a0c4827d229dcc7e0f7af
      // new block id: 3357a296bf0e5de334d9a1318962dca2ec079b49a56c8bb799acf587aaccb0d0
@@ -336,7 +336,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_1)
      // "a4e6f3972f903d4c8ef3e876072b905aeebe9bd7aa0f9b78996dd7bac5f86e26",
      // "dcf3a378f6b6467087f78361b8288b11f85cdd84b6e53554a0ff949128905a5c"
 
-    CBlock block = getBlockEquibit();
+    CBlock block = getBlockOCEAN();
     CBloomFilter filter(10, 0.000001, 0, BLOOM_UPDATE_ALL);
     // Match the last transaction
 
@@ -384,8 +384,8 @@ BOOST_AUTO_TEST_CASE(merkle_block_1)
 
 BOOST_AUTO_TEST_CASE(merkle_block_2)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
+    // OCN_TODO generate new test data
+#ifdef OCN_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
     return;
@@ -443,7 +443,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_2)
     BOOST_CHECK(vMatched.size() == merkleBlock.vMatchedTxn.size());
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     // new block: 23ff0dd345c3c4f4e7608b5c8fe10d528361e0a2e52f32386bca561d5d878eec
     // With 5 txes
     CBlock block;
@@ -501,8 +501,8 @@ BOOST_AUTO_TEST_CASE(merkle_block_2)
 
 BOOST_AUTO_TEST_CASE(merkle_block_2_with_update_none)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
+    // OCN_TODO generate new test data
+#ifdef OCN_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
     return;
@@ -558,7 +558,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_2_with_update_none)
 
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
 
     //new block with id: 23ff0dd345c3c4f4e7608b5c8fe10d528361e0a2e52f32386bca561d5d878eec 
     // list of tnxs:
@@ -622,8 +622,8 @@ BOOST_AUTO_TEST_CASE(merkle_block_2_with_update_none)
 
 BOOST_AUTO_TEST_CASE(merkle_block_3_and_serialize)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
+    // OCN_TODO generate new test data
+#ifdef OCN_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
     return;
@@ -664,7 +664,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_3_and_serialize)
         expected[i] = (char)vch[i];
 
     BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(), merkleStream.begin(), merkleStream.end());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     //new block with id: 48a98eaeadcb82b4a331e5af92e6054b1ff2749f118a8793fc414117cc99456d
     // With one tx
     // list of tnxs:
@@ -711,8 +711,8 @@ BOOST_AUTO_TEST_CASE(merkle_block_3_and_serialize)
 
 BOOST_AUTO_TEST_CASE(merkle_block_4)
 {
-    // EQB_TODO generate new test data
-#ifdef EQB_BREAK_TEST
+    // OCN_TODO generate new test data
+#ifdef OCN_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
     return;
@@ -763,7 +763,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_4)
 
     for (unsigned int i = 0; i < vMatched.size(); i++)
         BOOST_CHECK(vMatched[i] == merkleBlock.vMatchedTxn[i].second);
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     // Random real block (48ea407787f93bc32a21a5dd2e39c0f7248e3d28cc9550e5a01c9785616d99d9)
      // With 7 txes
     /*
@@ -843,7 +843,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_4_test_p2pubkey_only)
     BOOST_CHECK(filter.contains(COutPoint(uint256S("0x147caa76786596590baa4e98f5d9f48b86c7765e489f7a6ff3360fe5c674360b"), 0)));
     // ... but not the 4th transaction's output (its not pay-2-pubkey)
     BOOST_CHECK(!filter.contains(COutPoint(uint256S("0x02981fa052f0481dbc5868f4fc2166035a10f27a03cfd2de67326471df5bc041"), 0)));
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     // Random real block (48ea407787f93bc32a21a5dd2e39c0f7248e3d28cc9550e5a01c9785616d99d9)
     // With 7 txes
     CBlock block;
@@ -872,7 +872,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_4_test_p2pubkey_only)
     // We should match the generation outpoint
     // prev tnx: 147caa76786596590baa4e98f5d9f48b86c7765e489f7a6ff3360fe5c674360b
     // .. -> 1BhWBa8wFfnazLEnSyiVRC3D6UaB4ow94r
-    //! EQB_TODO: fix this check
+    //! OCN_TODO: fix this check
     //BOOST_CHECK(filter.contains(COutPoint(uint256S("0x74d55152a949f17ffb6c9ac388cca2a669183169c402f5a9cee0d5900c5bcff2"), 0)));
     // ... but not the 4th transaction's output (its not pay-2-pubkey)
     BOOST_CHECK(!filter.contains(COutPoint(uint256S("0x7efd031e30791b73b8dbe1a419c17a4f19e13d978dce871b379da28d2928c034"), 0)));
@@ -900,7 +900,7 @@ BOOST_AUTO_TEST_CASE(merkle_block_4_test_update_none)
     // We shouldn't match any outpoints (UPDATE_NONE)
     BOOST_CHECK(!filter.contains(COutPoint(uint256S("0x147caa76786596590baa4e98f5d9f48b86c7765e489f7a6ff3360fe5c674360b"), 0)));
     BOOST_CHECK(!filter.contains(COutPoint(uint256S("0x02981fa052f0481dbc5868f4fc2166035a10f27a03cfd2de67326471df5bc041"), 0)));
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     // Random real block (000000000000b731f2eef9e8c63173adfb07e41bd53eb0ef0a6b720d6cb6dea4)
      // With 7 txes
     CBlock block;

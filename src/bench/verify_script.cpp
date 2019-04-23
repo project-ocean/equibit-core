@@ -67,7 +67,7 @@ static void VerifyScriptBench(benchmark::State& state)
     uint160 pubkeyHash;
 #ifdef BUILD_BTC
     CHash160().Write(pubkey.begin(), pubkey.size()).Finalize(pubkeyHash.begin());
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     CSHA3Hash160().Write(pubkey.begin(), pubkey.size()).Finalize(pubkeyHash.begin());
 #endif // END_BUILD
 

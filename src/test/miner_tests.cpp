@@ -27,8 +27,8 @@
 
 BOOST_FIXTURE_TEST_SUITE(miner_tests, TestingSetup)
 
-#ifndef BUILD_BTC // BUILD_EQB
-    #define GENERATE_EQB_BLOCKS false
+#ifndef BUILD_BTC // BUILD_OCN
+    #define GENERATE_OCN_BLOCKS false
 #endif // END_BUILD
 
 // BOOST_CHECK_EXCEPTION predicates to check the specific validation error
@@ -87,7 +87,7 @@ struct {
     {2, 0xd351e722}, {1, 0xf4ca48c9}, {1, 0x5b19c670}, {1, 0xa164bf0e},
     {2, 0xbbbeb305}, {2, 0xfe1c810a},
 };
-#else  // BUILD_EQB
+#else  // BUILD_OCN
 static struct
 {
     unsigned char   extranonce;
@@ -160,7 +160,7 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
     tx.vout.resize(1);
 #ifdef BUILD_BTC
     tx.vout[0].nValue = 5000000000LL - 1000;
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     tx.vout[0].nValue = FirstYearBlockSubsidyLowerBound - 1000;
 #endif // END_BUILD
     // This tx has a low fee: 1000 satoshis
@@ -170,7 +170,7 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
     tx.vin[0].prevout.hash = txFirst[1]->GetHash();
 #ifdef BUILD_BTC
     tx.vout[0].nValue = 5000000000LL - 10000;
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     tx.vout[0].nValue = FirstYearBlockSubsidyLowerBound - 10000;
 #endif // END_BUILD
     uint256 hashMediumFeeTx = tx.GetHash();
@@ -180,7 +180,7 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
     tx.vin[0].prevout.hash = hashParentTx;
 #ifdef BUILD_BTC
     tx.vout[0].nValue = 5000000000LL - 1000 - 50000; // 50k satoshi fee
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     tx.vout[0].nValue = FirstYearBlockSubsidyLowerBound - 1000 - 50000; // 50k satoshi fee
 #endif // END_BUILD
     uint256 hashHighFeeTx = tx.GetHash();
@@ -195,7 +195,7 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
     tx.vin[0].prevout.hash = hashHighFeeTx;
 #ifdef BUILD_BTC
     tx.vout[0].nValue = 5000000000LL - 1000 - 50000; // 0 fee
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     tx.vout[0].nValue = FirstYearBlockSubsidyLowerBound - 1000 - 50000; // 0 fee
 #endif // END_BUILD
     uint256 hashFreeTx = tx.GetHash();
@@ -209,7 +209,7 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
     tx.vin[0].prevout.hash = hashFreeTx;
 #ifdef BUILD_BTC
     tx.vout[0].nValue = 5000000000LL - 1000 - 50000 - feeToUse;
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     tx.vout[0].nValue = FirstYearBlockSubsidyLowerBound - 1000 - 50000 - feeToUse;
 #endif // END_BUILD
     uint256 hashLowFeeTx = tx.GetHash();
@@ -240,9 +240,9 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
 #ifdef BUILD_BTC
     tx.vout[0].nValue = 5000000000LL - 100000000;
     tx.vout[1].nValue = 100000000; // 1BTC output
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     tx.vout[0].nValue = FirstYearBlockSubsidyLowerBound - COIN;
-    tx.vout[1].nValue = COIN; // 1 EQB output
+    tx.vout[1].nValue = COIN; // 1 OCN output
 #endif // END_BUILD
     uint256 hashFreeTx2 = tx.GetHash();
     mempool.addUnchecked(hashFreeTx2, entry.Fee(0).SpendsCoinbase(true).FromTx(tx));
@@ -253,7 +253,7 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
     feeToUse = blockMinFeeRate.GetFee(freeTxSize);
 #ifdef BUILD_BTC
     tx.vout[0].nValue = 5000000000LL - 100000000 - feeToUse;
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     tx.vout[0].nValue = FirstYearBlockSubsidyLowerBound - COIN - feeToUse;
 #endif // END_BUILD
     uint256 hashLowFeeTx2 = tx.GetHash();
@@ -278,8 +278,8 @@ void TestPackageSelection(const CChainParams& chainparams, CScript scriptPubKey,
 // NOTE: These tests rely on CreateNewBlock doing its own self-validation!
 BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
 {
-    // EQB_TODO fix test
-#ifdef EQB_BREAK_TEST
+    // OCN_TODO fix test
+#ifdef OCN_BREAK_TEST
     BOOST_ERROR("TEST DISABLED!");
 #endif
     return;
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     {
         CBlock *pblock = &pblocktemplate->block; // pointer for convenience
 
-        //! EQB_TODO_REMOVE: Trying to mine 102 blocks with lower difficulty
+        //! OCN_TODO_REMOVE: Trying to mine 102 blocks with lower difficulty
         {
             LOCK(cs_main);
         RESTART:
@@ -332,9 +332,9 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
                 txFirst.push_back(pblock->vtx[0]);
             pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
             pblock->nNonce = blockinfo[i].nonce;
-            // EQB_TODO_REMOVE: Mining pblock; i.e. finding the right nonce and extranonce
+            // OCN_TODO_REMOVE: Mining pblock; i.e. finding the right nonce and extranonce
             //                  if correct values are not given in blockinfo
-            if(GENERATE_EQB_BLOCKS)
+            if(GENERATE_OCN_BLOCKS)
             {
                 CBlock &b = const_cast<CBlock&>(*pblock);
                 bool triedZeroBefore = false;
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     const CAmount LOWFEE = CENT;
     const CAmount HIGHFEE = COIN;
     const CAmount HIGHERFEE = 4*COIN;
-#else  // BUILD_EQB
+#else  // BUILD_OCN
     const CAmount BLOCKSUBSIDY  = 3.05 * COIN;
     const CAmount LOWFEE        = CENT * 3 / 50;
     const CAmount HIGHFEE       = COIN * 3 / 50;

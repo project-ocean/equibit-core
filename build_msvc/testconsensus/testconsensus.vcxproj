@@ -24,7 +24,7 @@
     <ProjectGuid>{E78473E9-B850-456C-9120-276301E04C06}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>testconsensus</RootNamespace>
-    <ProjectName>test_libequibitconsensus</ProjectName>
+    <ProjectName>test_liboceanconsensus</ProjectName>
     <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
     <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
   </PropertyGroup>
@@ -164,13 +164,13 @@
     <ClCompile Include="testconsensus.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libequibitconsensus\libequibitconsensus.vcxproj">
+    <ProjectReference Include="..\liboceanconsensus\liboceanconsensus.vcxproj">
       <Project>{2b384fa8-9ee1-4544-93cb-0d733c25e8ce}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\libequibit_crypto\libequibit_crypto.vcxproj">
+    <ProjectReference Include="..\libocean_crypto\libocean_crypto.vcxproj">
       <Project>{6190199c-6cf4-4dad-bfbd-93fa72a760c1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\libequibit_util\libequibit_util.vcxproj">
+    <ProjectReference Include="..\libocean_util\libocean_util.vcxproj">
       <Project>{b53a5535-ee9d-4c6f-9a26-f79ee3bc3754}</Project>
     </ProjectReference>
   </ItemGroup>
